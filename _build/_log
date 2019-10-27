@@ -1,0 +1,8 @@
+### Starting build.
+# Target: main.ml.depends, tags: { extension:ml, file:main.ml, ocaml, ocamldep, quiet }
+/Users/Chrissy/.opam/4.08.1/bin/ocamldep.opt -modules main.ml > main.ml.depends
+# Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
+/Users/Chrissy/.opam/4.08.1/bin/ocamlc.opt -c -o main.cmo main.ml
+# Target: main.byte, tags: { byte, dont_link_with, extension:byte, file:main.byte, link, ocaml, program, quiet }
+/Users/Chrissy/.opam/4.08.1/bin/ocamlc.opt main.cmo -o main.byte
+# Compilation successful.
