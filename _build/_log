@@ -1,0 +1,13 @@
+### Starting build.
+# Target: game.mli.depends, tags: { extension:mli, file:game.mli, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules game.mli > game.mli.depends # cached
+# Target: game.cmi, tags: { byte, compile, extension:mli, file:game.mli, interf, ocaml, quiet }
+ocamlfind ocamlc -c -o game.cmi game.mli
++ ocamlfind ocamlc -c -o game.cmi game.mli
+File "game.mli", line 21, characters 13-18:
+21 | val is_hit : Tap.t -> t -> bool
+                  ^^^^^
+Error: Unbound module Tap
+Hint: Did you mean Map?
+Command exited with code 2.
+# Compilation unsuccessful.
