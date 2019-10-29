@@ -5,10 +5,10 @@
    that data from JSON as well as querying the data.
 *)
 
+type difficulty = Easy | Med | Hard
+
 (** The abstract type of values representing songs. *)
 type t
-
-type difficulty = Easy | Med | Hard
 
 (** [from_json j] is the adventure that [j] represents.
     Requires: [j] is a valid JSON adventure representation. *)

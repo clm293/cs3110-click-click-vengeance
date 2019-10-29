@@ -4,8 +4,6 @@
    This module handles all scoring, music, and game data.
 *)
 
-open Main
-
 (** The type of values representing the positions of the icons. *)
 type matrix
 
@@ -29,3 +27,6 @@ val update : t -> t
 (** [update_matrix t] is the updated matrix, updated the rows for each beat. 
     randomizes new icon position and sequences.*)
 val update_matrix : matrix -> matrix
+
+(** [check_hit st t] is true if the player's tap is a hit, and false otherwise*)
+val check_hit : Main.inpt -> tap
