@@ -1,5 +1,3 @@
-open Main
-
 (** Left is 0, Down is 1, Up is 2, Right is 3*)
 type arrow = Left | Down | Up | Right
 
@@ -11,9 +9,10 @@ type t = {
   matrix: matrix;
   score: int list;
   num_players: int;
+  bpm: int;
 }
 
-let init_state = {
+let init_state num bpm = {
   matrix = [
     [None; None; None; None];
     [None; None; None; None];
@@ -25,17 +24,12 @@ let init_state = {
     [None; None; None; None];
   ];
   score = [];
-  num_players = 0
+  num_players = num;
+  bpm = bpm
 }
 
 let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
-
-let set_number_players n t = {
-  matrix = t.matrix;
-  score = make_score_list n [];
-  num_players = n
-}
 
 let score t = t.score
 
