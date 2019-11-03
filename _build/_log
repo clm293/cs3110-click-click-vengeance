@@ -4,25 +4,14 @@ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package
 # Target: main.cmi, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:mli, file:main.mli, interf, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o main.cmi main.mli # cached
 # Target: main.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules main.ml > main.ml.depends # cached
-# Target: game.mli.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:mli, file:game.mli, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules game.mli > game.mli.depends # cached
-# Target: game.cmi, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:mli, file:game.mli, interf, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o game.cmi game.mli # cached
-# Target: song.mli.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:mli, file:song.mli, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules song.mli > song.mli.depends # cached
-# Target: song.cmi, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:mli, file:song.mli, interf, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o song.cmi song.mli # cached
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules main.ml > main.ml.depends
 # Target: main.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o main.cmo main.ml # cached
-# Target: game.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:game.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules game.ml > game.ml.depends # cached
-# Target: game.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:game.cmo, file:game.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o game.cmo game.ml # cached
-# Target: song.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:song.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules song.ml > song.ml.depends # cached
-# Target: song.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:song.cmo, file:song.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o song.cmo song.ml # cached
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o main.cmo main.ml
++ ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o main.cmo main.ml
+File "main.ml", line 41, characters 2-20:
+41 |   wait_next_event []; ()
+       ^^^^^^^^^^^^^^^^^^
+Warning 10: this expression should have type unit.
 # Target: main.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:main.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package graphics game.cmo song.cmo main.cmo -o main.byte
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package graphics main.cmo -o main.byte
 # Compilation successful.

@@ -3,7 +3,7 @@ type key = Up | Down | Left | Right | Space
 
 type inpt = key option
 
-let get_key_pressed = 
+(*let get_key_pressed = 
   let e = Graphics.wait_next_event [Key_pressed] in
   match e.key with
   | 'i' -> Some Up
@@ -12,14 +12,14 @@ let get_key_pressed =
   | 'l' -> Some Right
   | _ -> None
 
-let rec loop st = 
+  let rec loop st = 
   match get_key_pressed with
   | Some Up -> Game.update st "up"
   | Some Left -> Game.update st "left"
   | Some Right -> Game.update st "right"
   | Some Down -> Game.update st "down"
   | Some Space -> failwith "pause"
-  | None -> failwith "bad key"
+  | None -> failwith "bad key")*)
 
 let init_graphics s = 
   open_graph s;
@@ -37,28 +37,32 @@ let init_graphics s =
   set_color Graphics.magenta;
   fill_rect 365 20 115 460;
   set_color Graphics.black;
-  draw_rect 20 20 440 75; ()
+  draw_rect 20 20 440 75;
+  wait_next_event []; ()
 
 
-let play_game song_file num_players =
-  let song = Song.from_json (Yojson.Basic.from_file song_file) in
-  let game = Game.init_state num_players (Song.bpm song) in
-  init_graphics ""
+(* let play_game song_file num_players =
+   (*let song = Song.from_json (Yojson.Basic.from_file song_file) in
+     let game = Game.init_state num_players (Song.bpm song) in'''*)
+   open_graph ""*)
 
 
 let main () =
-  ANSITerminal.(print_string [red]
+  init_graphics ""
+(* ANSITerminal.(print_string [red]
                   "\n\nWelcome to Tap Tap Revenge.\n");
-  print_endline "Please enter the song you wish to play\n";
-  print_string  "> ";
-  (* 
+   print_endline "Please enter the song you wish to play\n";
+   print_string  "> "*)
+
+(* 
   let song = match read_line () with
     | exception End_of_file -> ()
     | song_file -> play_game song_file *)
 
-  (* print_endline "Please enter the song you wish to play\n";
-     print_string  "> ";
-     let num_players = match read_line () with
-     | exception End_of_file -> ()
-     | num -> Game.set_number_players  *)
+(* print_endline "Please enter the song you wish to play\n";
+   print_string  "> ";
+   let num_players = match read_line () with
+   | exception End_of_file -> ()
+   | num -> Game.set_number_players  *)
 
+let () = main ()
