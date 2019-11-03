@@ -20,16 +20,16 @@ play:
 
 check:
 	bash checkenv.sh && bash checktypes.sh
-
+	
 finalcheck: check
 	bash checkzip.sh
 	bash finalcheck.sh
 
 zip:
 	zip game.zip *.ml* *.json _tags Makefile
-
+	
 docs: docs-public docs-private
-
+	
 docs-public: build
 	mkdir -p doc.public
 	ocamlfind ocamldoc -I _build -package yojson,ANSITerminal \

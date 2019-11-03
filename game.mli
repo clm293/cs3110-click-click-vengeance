@@ -12,14 +12,15 @@ type arrow
 (** The abstact type of values representing game state. *)
 type t 
 
+(** Sets the number of players for this game. *)
+val set_number_players : int -> t -> t
+
 (** Calculates score for current state. *)
 val score : t -> int list
 
 (** [is_hit c t] is whether or not the player tap is accurate. 
     A tap is accurate if it is hit at the right time and position. *)
 (* val is_hit : Tap.t -> t -> bool *)
-
-val init_state : int -> int -> t
 
 (** [update t i] is the updated game state at this beat. [update] is called each
     beat.*)

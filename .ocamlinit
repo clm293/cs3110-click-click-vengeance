@@ -1,6 +1,5 @@
 #require "oUnit";;
 #require "yojson";;
-#require "graphics";;
 #require "ANSITerminal";;
 #directory "_build";;
 #load "game.cmo";;
