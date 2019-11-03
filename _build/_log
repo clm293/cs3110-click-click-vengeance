@@ -8,8 +8,8 @@ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package
 # Target: main.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o main.cmo main.ml
 + ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o main.cmo main.ml
-File "main.ml", line 41, characters 2-20:
-41 |   wait_next_event []; ()
+File "main.ml", line 40, characters 2-20:
+40 |   wait_next_event []; ()
        ^^^^^^^^^^^^^^^^^^
 Warning 10: this expression should have type unit.
 # Target: main.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:main.byte, link, ocaml, program, quiet, traverse }

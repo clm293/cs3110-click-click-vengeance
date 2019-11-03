@@ -24,20 +24,19 @@ type inpt = key option
 let init_graphics s = 
   open_graph s;
   resize_window 500 500;
-  set_color Graphics.magenta;
-  fill_rect 0 0 500 500;
   set_color Graphics.black;
-  fill_rect 20 20 460 460;
-  set_color Graphics.red;
+  fill_rect 0 0 500 500;
+  set_color Graphics.magenta;
   fill_rect 20 20 115 460;
-  set_color Graphics.blue;
+  set_color Graphics.yellow;
   fill_rect 135 20 115 460;
   set_color Graphics.green;
   fill_rect 250 20 115 460;
-  set_color Graphics.magenta;
+  set_color Graphics.cyan;
   fill_rect 365 20 115 460;
+  set_line_width 5;
   set_color Graphics.black;
-  draw_rect 20 20 440 75;
+  draw_rect 30 30 440 75;
   wait_next_event []; ()
 
 
