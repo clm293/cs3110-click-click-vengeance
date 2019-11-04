@@ -40,23 +40,21 @@ let init_graphics s =
   wait_next_event []; ()
 
 
-(* let play_game song_file num_players =
-   (*let song = Song.from_json (Yojson.Basic.from_file song_file) in
-     let game = Game.init_state num_players (Song.bpm song) in'''*)
-   open_graph ""*)
+let play_game song_file num_players =
+  let song = Song.from_json (Yojson.Basic.from_file song_file) in
+  let game = Game.init_state num_players (Song.bpm song) in
+  init_graphics ""
 
 
 let main () =
-  init_graphics ""
-(* ANSITerminal.(print_string [red]
+  ANSITerminal.(print_string [red]
                   "\n\nWelcome to Tap Tap Revenge.\n");
-   print_endline "Please enter the song you wish to play\n";
-   print_string  "> "*)
+  print_endline "Please enter the song you wish to play\n";
+  print_string  "> ";
 
-(* 
-  let song = match read_line () with
-    | exception End_of_file -> ()
-    | song_file -> play_game song_file *)
+  match read_line () with
+  | exception End_of_file -> ()
+  | song_file -> play_game song_file 1
 
 (* print_endline "Please enter the song you wish to play\n";
    print_string  "> ";
