@@ -1,4 +1,5 @@
 open Graphics
+
 type key = Up | Down | Left | Right | Space
 
 type inpt = key option
@@ -45,21 +46,33 @@ let play_game song_file num_players =
   let game = Game.init_state num_players (Song.bpm song) in
   init_graphics ""
 
+let rec song_selection_loop () = 
+  print_endline "Please enter the number of the song you wish to play\n";
+  print_endline "1: Song 1, Difficulty: Easy";
+  print_endline "2: Song 2, Difficulty: Medium";
+  print_endline "3: Song 3, Difficulty: Hard";
+  print_string  "> ";
+  match read_line () with
+  | "1" -> "test_song.json" 
+  | "2" -> "test_song.json" 
+  | "3" -> "test_song.json"
+  | _ -> print_endline "Please enter a valid song number";
+    song_selection_loop ()
+
+let rec num_player_selection_loop () =
+  print_endline "Please enter the number of players you wish to play\n";
+  print_string  "> ";
+  match read_line () with
+  | "1" -> 1
+  | "2" -> 2
+  | _ -> print_endline "Please enter a valid number of players";
+    num_player_selection_loop ()
 
 let main () =
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to Tap Tap Revenge.\n");
-  print_endline "Please enter the song you wish to play\n";
-  print_string  "> ";
-
-  match read_line () with
-  | exception End_of_file -> ()
-  | song_file -> play_game song_file 1
-
-(* print_endline "Please enter the song you wish to play\n";
-   print_string  "> ";
-   let num_players = match read_line () with
-   | exception End_of_file -> ()
-   | num -> Game.set_number_players  *)
+  let num_players = num_player_selection_loop () in
+  let song = song_selection_loop () in
+  play_game song num_players
 
 let () = main ()
