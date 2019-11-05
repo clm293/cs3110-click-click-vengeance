@@ -1,10 +1,43 @@
 open Graphics
 
-type key = Up | Down | Left | Right | Space
+type keey = Up | Down | Left | Right | Space
 
-type inpt = key option
+type inpt = keey option
 
-(*let get_key_pressed = 
+let init_graphics s = 
+  open_graph s;
+  resize_window 500 680;
+  set_window_title "Tap Tap Revenge Game";
+  set_color Graphics.black;
+  fill_rect 0 0 500 680;
+  set_color Graphics.magenta;
+  fill_rect 20 20 115 640;
+  set_color Graphics.yellow;
+  fill_rect 135 20 115 640;
+  set_color Graphics.green;
+  fill_rect 250 20 115 640;
+  set_color Graphics.cyan;
+  fill_rect 365 20 115 640;
+  set_line_width 5;
+  set_color Graphics.black;
+  draw_rect 30 30 440 75; 
+  wait_next_event [Key_pressed]
+
+let rec loop st status = 
+  match status.key with
+  | 'i' -> print_endline "up"; loop (Game.update st "up") (wait_next_event [Key_pressed])(*Game.update st "up"*)
+  | 'j' -> print_endline "left"; loop (Game.update st "left") (wait_next_event [Key_pressed])(*Game.update st "left"*)
+  | 'k' -> print_endline "down"; loop (Game.update st "down") (wait_next_event [Key_pressed])(*Game.update st "right"*)
+  | 'l' -> print_endline "right"; loop (Game.update st "right") (wait_next_event [Key_pressed])(*Game.update st "down"*)
+  | _ -> print_endline "bad"; loop st (wait_next_event [Key_pressed])
+
+let rec play_game song_file num_players =
+  let song = Song.from_json (Yojson.Basic.from_file song_file) in
+  let game = Game.init_state num_players (Song.bpm song) in
+  let status = init_graphics "" in
+  loop game status
+
+(*and get_key_pressed = 
   let e = Graphics.wait_next_event [Key_pressed] in
   match e.key with
   | 'i' -> Some Up
@@ -13,38 +46,15 @@ type inpt = key option
   | 'l' -> Some Right
   | _ -> None
 
-  let rec loop st = 
+  and loop st = 
   match get_key_pressed with
-  | Some Up -> Game.update st "up"
-  | Some Left -> Game.update st "left"
-  | Some Right -> Game.update st "right"
-  | Some Down -> Game.update st "down"
+  | Some Up -> print_endline "up"(*Game.update st "up"*)
+  | Some Left -> print_endline "left"(*Game.update st "left"*)
+  | Some Right -> print_endline "right"(*Game.update st "right"*)
+  | Some Down -> print_endline "down"(*Game.update st "down"*)
   | Some Space -> failwith "pause"
   | None -> failwith "bad key")*)
 
-let init_graphics s = 
-  open_graph s;
-  resize_window 500 500;
-  set_color Graphics.black;
-  fill_rect 0 0 500 500;
-  set_color Graphics.magenta;
-  fill_rect 20 20 115 460;
-  set_color Graphics.yellow;
-  fill_rect 135 20 115 460;
-  set_color Graphics.green;
-  fill_rect 250 20 115 460;
-  set_color Graphics.cyan;
-  fill_rect 365 20 115 460;
-  set_line_width 5;
-  set_color Graphics.black;
-  draw_rect 30 30 440 75;
-  wait_next_event []; ()
-
-
-let play_game song_file num_players =
-  let song = Song.from_json (Yojson.Basic.from_file song_file) in
-  let game = Game.init_state num_players (Song.bpm song) in
-  init_graphics ""
 
 let rec song_selection_loop () = 
   print_endline "Please enter the number of the song you wish to play\n";
