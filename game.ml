@@ -35,17 +35,22 @@ let score t = t.score
 
 let is_hit tap = failwith "unimplemented"
 
-let generate_random_row = 
+let generate_random_row () = 
   match Random.int 4 with
-  | 0 -> [Some Left; None; None; None]
-  | 1 -> [None; Some Down; None; None]
-  | 2 -> [None; None; Some Up; None]
-  | 3 -> [None; None; None; Some Right]
+  | 0 -> print_endline "0";[Some Left; None; None; None]
+  | 1 -> print_endline "1";[None; Some Down; None; None]
+  | 2 -> print_endline "2";[None; None; Some Up; None]
+  | 3 -> print_endline "3";[None; None; None; Some Right]
   | _ -> failwith "bad row"
 
 let update_matrix t : matrix =
   match List.rev t.matrix with
-  | h :: t -> (generate_random_row)::(List.rev t)
+  | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
-let update t i = failwith "unimplemented"
+let update t inpt = print_endline "hi";{
+    matrix = update_matrix t;
+    score = t.score;
+    num_players = t.num_players;
+    bpm = t.bpm
+  }
