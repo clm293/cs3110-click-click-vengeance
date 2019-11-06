@@ -147,6 +147,8 @@ let rec song_selection_loop () =
   print_endline "3: Song 3, Difficulty: Hard";
   print_string  "> ";
   match read_line () with
+  (* this file is currently hard-coded for sake of testing, because we have no 
+     other song files created yet, will be data-driven later. *)
   | "1" -> "test_song.json" 
   | "2" -> "test_song.json" 
   | "3" -> "test_song.json"

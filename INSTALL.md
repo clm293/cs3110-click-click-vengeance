@@ -8,6 +8,7 @@ To install these enter these commands into the command line:
 ```opam install yojson```
 ```opam install graphics```
 
-To play the game:
+To build and play the game:
+```make build```
 ```make play```
 
