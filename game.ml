@@ -35,6 +35,8 @@ let rec make_score_list n acc =
 
 let score t = t.score
 
+(** [generate_random_row ()] is a row with an arrow in a randomly generated 
+    position *)
 let generate_random_row () = 
   match Random.int 4 with
   | 0 -> print_endline "0"; [Some Left; None; None; None]
@@ -43,11 +45,14 @@ let generate_random_row () =
   | 3 -> print_endline "3"; [None; None; None; Some Right]
   | _ -> failwith "bad row"
 
+(** [bottom_row m] is the bottom row of the matrix [m] *)
 let bottom_row m = 
   match List.rev m with
   | h :: t -> h
   | _ -> failwith "bad matrix"
 
+(** [is_hit t inpt] is whether or not the player's tap is accurate. 
+    A tap is accurate if it is hit at the correct time and position. *)
 let is_hit t inpt = 
   match inpt with
   | "up" -> if List.mem (Some Up) (bottom_row t.matrix) then Hit else Miss
@@ -56,17 +61,23 @@ let is_hit t inpt =
   | "right" -> if List.mem (Some Right) (bottom_row t.matrix) then Hit else Miss
   | _ -> failwith "bad key"
 
+(** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
+    shifted down and pops off the bottom row and adds a new random row to the 
+    top. *)
 let update_matrix t : matrix =
   match List.rev t.matrix with
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
+(** [calc-score t inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score t inpt = 
   if is_hit t inpt = Hit then t.score + 1 else t.score
 
-let update t inpt = print_endline "hi";{
-    matrix = update_matrix t;
-    score = calc_score t inpt;
-    num_players = t.num_players;
-    bpm = t.bpm
-  }
+let update t inpt = {
+  matrix = update_matrix t;
+  score = calc_score t inpt;
+  num_players = t.num_players;
+  bpm = t.bpm
+}
+
+let speed bpm = failwith "unimplemented"
