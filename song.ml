@@ -4,7 +4,7 @@ type difficulty = Easy | Med | Hard
 
 type t = {
   song_name: string;
-  bpm: int;
+  bpm: float;
   difficulty: difficulty;
   file: string
 }
@@ -18,7 +18,7 @@ let diff_from_json json =
 
 let from_json json = {
   song_name = json |> member "song name" |> to_string;
-  bpm = json |> member "bpm" |> to_int;
+  bpm = json |> member "bpm" |> to_float;
   difficulty = diff_from_json json;
   file = json |> member "file" |> to_string;
 }

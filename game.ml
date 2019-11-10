@@ -11,7 +11,7 @@ type t = {
   matrix: matrix;
   score: int; (* changed this back to an int for single player*)
   num_players: int;
-  bpm: int;
+  bpm: float;
 }
 
 let init_state num bpm = {
@@ -29,6 +29,9 @@ let init_state num bpm = {
   num_players = num;
   bpm = bpm
 }
+
+let beats_per_sec st = 
+  st.bpm /. 60.0
 
 let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
