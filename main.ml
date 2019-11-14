@@ -16,7 +16,7 @@ let rec call_update st num =
   | _ -> print_endline "bad"; beat st
 
 and beat st = 
-  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (print_hi))
+  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st))
 
 let start_loop st = 
   print_endline "in test";
