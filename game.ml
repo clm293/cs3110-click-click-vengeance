@@ -83,4 +83,6 @@ let update t inpt = {
   bpm = t.bpm
 }
 
+let get_matrix t = t.matrix
+
 let speed bpm = failwith "unimplemented"

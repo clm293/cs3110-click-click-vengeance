@@ -21,12 +21,18 @@ let make3 arr =
 let create_right_arrow_matrix c1 c2 = 
   let empty = Array.make 75 c2 in 
   let emptysec = Array.make 21 empty in
-  let line8  = Array.append (Array.append (Array.make 51 c2) (Array.make 3 c1)) (Array.make 21 c2) in
-  let line9  = Array.append (Array.append (Array.make 51 c2) (Array.make 6 c1)) (Array.make 18 c2) in
-  let line10 = Array.append (Array.append (Array.make 54 c2) (Array.make 6 c1)) (Array.make 15 c2) in
-  let line11 = Array.append (Array.append (Array.make 57 c2) (Array.make 6 c1)) (Array.make 12 c2) in
-  let line12 = Array.append (Array.append (Array.make 60 c2) (Array.make 6 c1)) (Array.make 9 c2) in
-  let line13 = Array.append (Array.append (Array.make 6 c2) (Array.make 63 c1)) (Array.make 6 c2) in
+  let line8  = Array.append (Array.append (Array.make 51 c2) (Array.make 3 c1)) 
+      (Array.make 21 c2) in
+  let line9  = Array.append (Array.append (Array.make 51 c2) (Array.make 6 c1)) 
+      (Array.make 18 c2) in
+  let line10 = Array.append (Array.append (Array.make 54 c2) (Array.make 6 c1)) 
+      (Array.make 15 c2) in
+  let line11 = Array.append (Array.append (Array.make 57 c2) (Array.make 6 c1)) 
+      (Array.make 12 c2) in
+  let line12 = Array.append (Array.append (Array.make 60 c2) (Array.make 6 c1)) 
+      (Array.make 9 c2) in
+  let line13 = Array.append (Array.append (Array.make 6 c2) (Array.make 63 c1)) 
+      (Array.make 6 c2) in
   let middlesec = (make3 line8) 
                   |> Array.append (make3 line9) 
                   |> Array.append (make3 line10) 
@@ -97,26 +103,68 @@ let create_up_arrow_matrix c1 c2 =
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
-let init_graphics s st = 
-  open_graph s;
-  resize_window 500 680;
-  set_window_title "Tap Tap Revenge Game";
+let draw_background c1 c2 c3 c4 = 
   set_color black;
   fill_rect 0 0 500 680;
-  set_color magenta;
+  set_color c1;
   fill_rect 20 20 115 640;
-  set_color yellow;
+  set_color c2;
   fill_rect 135 20 115 640;
-  set_color green;
+  set_color c3;
   fill_rect 250 20 115 640;
-  set_color cyan;
+  set_color c4;
   fill_rect 365 20 115 640;
   set_line_width 5;
   set_color black;
   draw_rect 30 30 440 75;
-
-  draw_image (make_image (create_left_arrow_matrix black magenta)) 40 565;
-  draw_image (make_image (create_down_arrow_matrix black yellow)) 155 565;
-  draw_image (make_image (create_up_arrow_matrix black green)) 270 565;
-  draw_image (make_image (create_right_arrow_matrix black cyan)) 395 565;
   ()
+
+let draw_left_arrow x y = 
+  draw_image (make_image (create_left_arrow_matrix black transp)) x y;
+  ()
+
+let draw_down_arrow x y = 
+  draw_image (make_image (create_down_arrow_matrix black transp)) x y;
+  ()
+
+let draw_up_arrow x y = 
+  draw_image (make_image (create_up_arrow_matrix black transp)) x y;
+  ()
+
+let draw_right_arrow x y = 
+  draw_image (make_image (create_right_arrow_matrix black transp)) x y;
+  ()
+
+let init_graphics s st = 
+  open_graph s;
+  resize_window 500 680;
+  set_window_title "Tap Tap Revenge Game";
+  draw_background magenta yellow green cyan;
+
+  draw_left_arrow 40 565;
+  draw_down_arrow 155 565;
+  draw_up_arrow 270 565;
+  draw_right_arrow 385 565;
+  ()
+
+
+
+let update_graphics matrix = 
+  let rec draw_row row i j = 
+    match row with 
+    | [] -> ()
+    | h :: t -> if h = None then draw_row t i (j+1) else begin
+        match j with
+        | 0 -> draw_left_arrow 40 (565-(75*i));
+        | 1 -> draw_down_arrow 155 (565-(75*i));
+        | 2 -> draw_up_arrow 270 (565-(75*i));
+        | 3 -> draw_right_arrow 385 (565-(75*i));
+        | _ -> ()
+      end in
+  let rec helper matrix i = 
+    match matrix with 
+    | [] -> ()
+    | h :: t -> draw_row h i 0; helper t (i+1); in 
+  clear_graph ();
+  draw_background magenta yellow green cyan;
+  helper matrix 0
