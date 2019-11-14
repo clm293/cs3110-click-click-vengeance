@@ -147,8 +147,6 @@ let init_graphics s st =
   draw_right_arrow 385 565;
   ()
 
-
-
 let update_graphics matrix = 
   let rec draw_row row i j = 
     match row with 
