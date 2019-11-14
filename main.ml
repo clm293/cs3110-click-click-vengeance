@@ -16,7 +16,9 @@ let rec call_update st num =
   | _ -> print_endline "bad"; beat st
 
 and beat st = 
-  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (print_hi))
+  let helper num = fun _ -> Graphic.update_graphics (Game.get_matrix st) in
+  (* let helper num = Graphic.update_graphics (Game.get_matrix st) in *)
+  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (helper))
 
 let start_loop st = 
   print_endline "in test";
