@@ -15,7 +15,7 @@ type t
 val from_json : Yojson.Basic.t -> t
 
 (** [bpm t] is the beats per minute of the song. *)
-val bpm : t -> int
+val bpm : t -> float
 
 (** [difficulty t] is the difficulty of the song. *)
 val difficulty : t -> difficulty 
