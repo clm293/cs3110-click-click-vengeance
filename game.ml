@@ -76,13 +76,15 @@ let update_matrix t : matrix =
 let calc_score t inpt = 
   if is_hit t inpt = Hit then t.score + 1 else t.score
 
-let update t inpt = {
-  matrix = update_matrix t;
-  score = calc_score t inpt;
-  num_players = t.num_players;
-  bpm = t.bpm
-}
-
 let get_matrix t = t.matrix
+
+let update t inpt = 
+  Graphic.update_graphics (get_matrix t);
+  {
+    matrix = update_matrix t;
+    score = calc_score t inpt;
+    num_players = t.num_players;
+    bpm = t.bpm
+  }
 
 let speed bpm = failwith "unimplemented"

@@ -19,12 +19,18 @@ let rec call_update st num =
 and beat st = 
   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st))
 
+let set_timer its = 
+  let _ = setitimer ITIMER_REAL its in
+  ()
+
 let start_loop st = 
   print_endline "in test";
   let its = {it_interval = 0.5;
              it_value = 0.5} in
   beat st;
-  setitimer ITIMER_REAL its; wait_next_event [Key_pressed]; ()
+  set_timer its; 
+  wait_next_event [Key_pressed]; 
+  ()
 
 let rec loop st status = 
   match status.key with
@@ -37,7 +43,7 @@ let rec loop st status =
 let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in
   let game = Game.init_state num_players (Song.bpm song) in
-  let status = Graphic.init_graphics "" game in
+  let _ = Graphic.init_graphics "" game in
   start_loop game
 (*loop game status*)
 
@@ -48,13 +54,7 @@ let rec song_selection_loop () =
   print_endline "3: Song 3, Difficulty: Hard";
   print_string  "> ";
   match read_line () with
-  <<<<<<< HEAD
   | "1" -> "coughSyrup.json"
-           =======
-           (* this file is currently hard-coded for sake of testing, because we have no 
-              other song files created yet, will be data-driven later. *)
-  | "1" -> "test_song.json" 
-    >>>>>>> 0e79c4f5aedc980d9144d2e66274d43332e58387
   | "2" -> "test_song.json" 
   | "3" -> "test_song.json"
   | _ -> print_endline "Please enter a valid song number";
