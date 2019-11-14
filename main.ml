@@ -19,6 +19,9 @@ and check_key_pressed () =
   | 'j' -> print_endline "left"; "left"
   | 'k' -> print_endline "down"; "down"
   | 'l' -> print_endline "right"; "right"
+  | 'q' -> print_endline "You quit the game:("; close_graph (); ""
+  | ' ' -> print_endline "Paused. Press any key to resume.";
+    wait_next_event [Key_pressed]; ""
   | _ -> print_endline "bad"; "bad"
 
 let set_timer its = 
