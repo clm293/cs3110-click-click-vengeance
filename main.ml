@@ -6,18 +6,20 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
-let print_hi num = print_endline "hi"
-
-let rec call_update st num = 
-  match read_key () with
-  | 'i' -> print_endline "up"; beat (Game.update st "up") 
-  | 'j' -> print_endline "left"; beat (Game.update st "left")
-  | 'k' -> print_endline "down"; beat(Game.update st "down")
-  | 'l' -> print_endline "right"; beat (Game.update st "right")
-  | _ -> print_endline "bad"; beat st
+let rec call_update st key num = 
+  beat (Game.update st key) 
 
 and beat st = 
-  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st))
+  let key = check_key_pressed () in
+  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st key))
+
+and check_key_pressed () = 
+  match (wait_next_event [Poll]).key with
+  | 'i' -> print_endline "up"; "up"
+  | 'j' -> print_endline "left"; "left"
+  | 'k' -> print_endline "down"; "down"
+  | 'l' -> print_endline "right"; "right"
+  | _ -> print_endline "bad"; "bad"
 
 let set_timer its = 
   let _ = setitimer ITIMER_REAL its in
@@ -32,20 +34,11 @@ let start_loop st =
   wait_next_event [Key_pressed]; 
   ()
 
-let rec loop st status = 
-  match status.key with
-  | 'i' -> print_endline "up"; loop (Game.update st "up") (wait_next_event [Key_pressed])(*Game.update st "up"*)
-  | 'j' -> print_endline "left"; loop (Game.update st "left") (wait_next_event [Key_pressed])(*Game.update st "left"*)
-  | 'k' -> print_endline "down"; loop (Game.update st "down") (wait_next_event [Key_pressed])(*Game.update st "right"*)
-  | 'l' -> print_endline "right"; loop (Game.update st "right") (wait_next_event [Key_pressed])(*Game.update st "down"*)
-  | _ -> print_endline "bad"; loop st (wait_next_event [Key_pressed])
-
 let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in
   let game = Game.init_state num_players (Song.bpm song) in
   let _ = Graphic.init_graphics "" game in
   start_loop game
-(*loop game status*)
 
 let rec song_selection_loop () = 
   print_endline "Please enter the number of the song you wish to play\n";

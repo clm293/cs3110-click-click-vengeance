@@ -82,7 +82,8 @@ let update t inpt =
   Graphic.update_graphics (get_matrix t);
   {
     matrix = update_matrix t;
-    score = calc_score t inpt;
+    score = 0;
+    (* score = calc_score t inpt; *)
     num_players = t.num_players;
     bpm = t.bpm
   }
