@@ -1,5 +1,6 @@
 open Graphics
 
+
 type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
@@ -147,7 +148,7 @@ let rec song_selection_loop () =
   print_endline "3: Song 3, Difficulty: Hard";
   print_string  "> ";
   match read_line () with
-  | "1" -> "test_song.json" 
+  | "1" -> "coughSyrup.json"
   | "2" -> "test_song.json" 
   | "3" -> "test_song.json"
   | _ -> print_endline "Please enter a valid song number";
