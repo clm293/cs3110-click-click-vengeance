@@ -83,7 +83,6 @@ let update t inpt =
   {
     matrix = update_matrix t;
     score = 0;
-    (* score = calc_score t inpt; *)
     num_players = t.num_players;
     bpm = t.bpm
   }

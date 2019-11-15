@@ -10,31 +10,32 @@ let rec call_update st key num =
   beat (Game.update st key) 
 
 and beat st = 
-  let key = check_key_pressed () in
-  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st key))
 
-and check_key_pressed () = 
-  match (wait_next_event [Poll]).key with
-  | 'i' -> print_endline "up"; "up"
-  | 'j' -> print_endline "left"; "left"
-  | 'k' -> print_endline "down"; "down"
-  | 'l' -> print_endline "right"; "right"
-  | 'q' -> print_endline "You quit the game:("; close_graph (); ""
+  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st "up"))
+
+and check_key_pressed press st = 
+  match press.key with
+  | 'i' -> print_endline "up"; call_update st "up"
+  | 'j' -> print_endline "left"; call_update st "left"
+  | 'k' -> print_endline "down"; call_update st "down"
+  | 'l' -> print_endline "right"; call_update st "right"
+  | 'q' -> print_endline "You quit the game:("; close_graph (); call_update st "up"
   | ' ' -> print_endline "Paused. Press any key to resume.";
-    wait_next_event [Key_pressed]; ""
-  | _ -> print_endline "bad"; "bad"
+    wait_next_event [Key_pressed]; call_update st ""
+  | _ -> print_endline "bad";  call_update st ""
 
 let set_timer its = 
   let _ = setitimer ITIMER_REAL its in
   ()
 
-let start_loop st = 
+let rec start_loop st = 
   print_endline "in test";
   let its = {it_interval = 0.5;
              it_value = 0.5} in
-  beat st;
   set_timer its; 
-  wait_next_event [Key_pressed]; 
+  beat st;
+  check_key_pressed (wait_next_event [Key_pressed]) st;
+
   ()
 
 let rec play_game song_file num_players =
