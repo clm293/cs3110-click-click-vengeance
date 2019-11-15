@@ -7,35 +7,36 @@ type keey = Up | Down | Left | Right | Space
 type inpt = keey option
 
 let rec call_update st key num = 
-  beat (Game.update st key) 
+  beat (Game.update st) 
 
 and beat st = 
-
   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st "up"))
 
 and check_key_pressed press st = 
   match press.key with
-  | 'i' -> print_endline "up"; call_update st "up"
-  | 'j' -> print_endline "left"; call_update st "left"
-  | 'k' -> print_endline "down"; call_update st "down"
-  | 'l' -> print_endline "right"; call_update st "right"
-  | 'q' -> print_endline "You quit the game:("; close_graph (); call_update st "up"
+  | 'i' -> print_endline "up"; nother_loop (Game.update_score st "up")
+  | 'j' -> print_endline "left"; nother_loop (Game.update_score st "left")
+  | 'k' -> print_endline "down"; nother_loop (Game.update_score st "down")
+  | 'l' -> print_endline "right"; nother_loop (Game.update_score st "right")
+  | 'q' -> print_endline "You quit the game:("; close_graph (); ()
   | ' ' -> print_endline "Paused. Press any key to resume.";
-    wait_next_event [Key_pressed]; call_update st ""
-  | _ -> print_endline "bad";  call_update st ""
+    wait_next_event [Key_pressed];()
+  | _ -> print_endline "bad"; ()
 
-let set_timer its = 
+and set_timer its = 
   let _ = setitimer ITIMER_REAL its in
   ()
 
-let rec start_loop st = 
+and  start_loop st = 
   print_endline "in test";
   let its = {it_interval = 0.5;
              it_value = 0.5} in
   set_timer its; 
-  beat st;
-  check_key_pressed (wait_next_event [Key_pressed]) st;
+  nother_loop st
 
+and nother_loop st = 
+  beat st;
+  check_key_pressed (wait_next_event [Key_pressed]) st; (* need to get this st to be the current state *)
   ()
 
 let rec play_game song_file num_players =

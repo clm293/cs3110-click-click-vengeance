@@ -78,13 +78,27 @@ let calc_score t inpt =
 
 let get_matrix t = t.matrix
 
-let update t inpt = 
-  Graphic.update_graphics (get_matrix t);
-  {
+let update t = 
+
+  let new_state = {
     matrix = update_matrix t;
-    score = 0;
+    score = t.score;
     num_players = t.num_players;
     bpm = t.bpm
-  }
+  } in 
+  Graphic.update_graphics (new_state.matrix);
+  new_state
+
+let update_score t inpt = 
+  let new_state = {
+    matrix =  t.matrix;
+    score = calc_score t inpt;
+    num_players = t.num_players;
+    bpm = t.bpm
+  } in 
+  update new_state
+
+
+
 
 let speed bpm = failwith "unimplemented"
