@@ -21,7 +21,7 @@ and check_key_pressed press st =
   | 'q' -> print_endline "You quit the game:("; close_graph (); ()
   | ' ' -> print_endline "Paused. Press any key to resume.";
     wait_next_event [Key_pressed];()
-  | _ -> print_endline "bad"; ()
+  | _ -> print_endline "bad"; nother_loop (Game.update_score st "");
 
 and set_timer its = 
   let _ = setitimer ITIMER_REAL its in

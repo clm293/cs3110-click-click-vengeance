@@ -86,7 +86,7 @@ let update t =
     num_players = t.num_players;
     bpm = t.bpm
   } in 
-  Graphic.update_graphics (new_state.matrix);
+  Graphic.update_graphics (new_state.matrix) t.score;
   new_state
 
 let update_score t inpt = 
@@ -97,7 +97,7 @@ let update_score t inpt =
     bpm = t.bpm
   } in 
   update new_state
-
+(* new_state *)
 
 
 

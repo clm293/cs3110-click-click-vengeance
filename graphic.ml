@@ -103,20 +103,28 @@ let create_up_arrow_matrix c1 c2 =
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
-let draw_background c1 c2 c3 c4 = 
+let draw_background c1 c2 c3 c4 score = 
   set_color black;
-  fill_rect 0 0 500 680;
+  fill_rect 0 0 600 640;
   set_color c1;
-  fill_rect 20 20 115 640;
+  fill_rect 20 95 115 525;
+  fill_rect 250 20 115 75;
   set_color c2;
-  fill_rect 135 20 115 640;
+  fill_rect 135 95 115 525;
+  fill_rect 365 20 115 75;
   set_color c3;
-  fill_rect 250 20 115 640;
+  fill_rect 250 95 115 525;
+  fill_rect 20 20 115 75;
   set_color c4;
-  fill_rect 365 20 115 640;
-  set_line_width 5;
-  set_color black;
-  draw_rect 30 30 440 75;
+  fill_rect 365 95 115 525;
+  fill_rect 135 20 115 75;
+  set_color white;
+  set_text_size 100;
+  moveto 500 610;
+  draw_string ("Score: " ^ (string_of_int score));
+  (* set_line_width 5;
+     set_color black;
+     draw_rect 30 30 440 75; *)
   ()
 
 let draw_left_arrow x y = 
@@ -137,26 +145,26 @@ let draw_right_arrow x y =
 
 let init_graphics s st = 
   open_graph s;
-  resize_window 500 680;
+  resize_window 600 640;
   set_window_title "Tap Tap Revenge Game";
-  draw_background magenta yellow green cyan;
+  draw_background magenta green cyan yellow 0;
 
-  draw_left_arrow 40 565;
-  draw_down_arrow 155 565;
-  draw_up_arrow 270 565;
-  draw_right_arrow 385 565;
+  draw_left_arrow 40 545;
+  draw_down_arrow 155 545;
+  draw_up_arrow 270 545;
+  draw_right_arrow 385 545;
   ()
 
-let update_graphics matrix = 
+let update_graphics matrix score = 
   let rec draw_row row i j = 
     match row with 
     | [] -> ()
     | h :: t -> if h = None then draw_row t i (j+1) else begin
         match j with
-        | 0 -> draw_left_arrow 40 (565-(75*i));
-        | 1 -> draw_down_arrow 155 (565-(75*i));
-        | 2 -> draw_up_arrow 270 (565-(75*i));
-        | 3 -> draw_right_arrow 385 (565-(75*i));
+        | 0 -> draw_left_arrow 40 (545-(75*i));
+        | 1 -> draw_down_arrow 155 (545-(75*i));
+        | 2 -> draw_up_arrow 270 (545-(75*i));
+        | 3 -> draw_right_arrow 385 (545-(75*i));
         | _ -> ()
       end in
   let rec helper matrix i = 
@@ -164,5 +172,5 @@ let update_graphics matrix =
     | [] -> ()
     | h :: t -> draw_row h i 0; helper t (i+1); in 
   clear_graph ();
-  draw_background magenta yellow green cyan;
+  draw_background magenta green cyan yellow score;
   helper matrix 0
