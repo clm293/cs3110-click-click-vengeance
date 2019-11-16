@@ -96,7 +96,7 @@ let update_score t inpt =
     num_players = t.num_players;
     bpm = t.bpm
   } in 
-  update new_state
+  new_state
 
 
 
