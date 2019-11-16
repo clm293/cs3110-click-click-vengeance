@@ -7,20 +7,20 @@ type keey = Up | Down | Left | Right | Space
 type inpt = keey option
 
 let rec call_update st key num = 
-  let s = (Game.update st) in
-  beat s
+  let s = (Game.update_graphics (Game.update st key)) in
+  beat s 
 
 
-and beat st = 
+and beat st  = 
   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st "up"))
 
 and check_key_pressed press st = 
   match press.key with
-  | 'i' -> print_endline "up"; nother_loop (Game.update_score st "up")
-  | 'j' -> print_endline "left"; nother_loop (Game.update_score st "left")
-  | 'k' -> print_endline "down"; nother_loop (Game.update_score st "down")
-  | 'l' -> print_endline "right"; nother_loop (Game.update_score st "right")
-  | 'q' -> print_endline "You quit the game:("; close_graph (); ()
+  | 'i' -> print_endline "up"; nother_loop (Game.update st "up")
+  | 'j' -> print_endline "left"; nother_loop (Game.update st "left")
+  | 'k' -> print_endline "down"; nother_loop (Game.update st "down")
+  | 'l' -> print_endline "right"; nother_loop (Game.update st "right")
+  | 'q' -> print_endline "You quit the game :("; close_graph (); ()
   | ' ' -> print_endline "Paused. Press any key to resume.";
     wait_next_event [Key_pressed];()
   | _ -> print_endline "bad"; nother_loop st

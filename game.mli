@@ -23,6 +23,8 @@ val beats_per_sec : t -> float
 
 (** [update t i] is the updated game state at this beat. [update] is called each
     beat.*)
-val update : t -> t
+val update : t -> string -> t
+
+val update_graphics : t -> t
 
 val update_score : t -> string -> t
