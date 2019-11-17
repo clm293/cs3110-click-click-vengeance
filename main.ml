@@ -6,47 +6,51 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
-let rec call_update st key num = 
-  let s = (Game.update_graphics (Game.update st key)) in
-  beat s 
+let wrapped_state = Game.state
 
+let unwrap_state () = !Game.state
 
-and beat st  = 
-  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update st "up"))
+let state = unwrap_state ()
 
-and check_key_pressed press st = 
+let rec call_update num = 
+  Game.update ""
+
+(* and beat () =
+   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (Game.update "")) *)
+
+and check_key_pressed press = 
   match press.key with
-  | 'i' -> print_endline "up"; nother_loop (Game.update st "up")
-  | 'j' -> print_endline "left"; nother_loop (Game.update st "left")
-  | 'k' -> print_endline "down"; nother_loop (Game.update st "down")
-  | 'l' -> print_endline "right"; nother_loop (Game.update st "right")
+  | 'i' -> print_endline "up"; Game.update "up"; check_key_pressed (wait_next_event [Key_pressed])
+  | 'j' -> print_endline "left"; Game.update "left"; check_key_pressed (wait_next_event [Key_pressed])
+  | 'k' -> print_endline "down"; Game.update "down"; check_key_pressed (wait_next_event [Key_pressed])
+  | 'l' -> print_endline "right"; Game.update "right"; check_key_pressed (wait_next_event [Key_pressed])
   | 'q' -> print_endline "You quit the game :("; close_graph (); ()
   | ' ' -> print_endline "Paused. Press any key to resume.";
-    wait_next_event [Key_pressed];()
-  | _ -> print_endline "bad"; nother_loop st
+    wait_next_event [Key_pressed]; ()
+  | _ -> print_endline "bad"; Game.update ""; check_key_pressed (wait_next_event [Key_pressed])
 
 and set_timer its = 
   let _ = setitimer ITIMER_REAL its in
   ()
 
-and  start_loop st = 
+and start_loop st = 
   print_endline "in test";
-  let its = {it_interval = 0.5;
-             it_value = 0.5} in
+  let its = {it_interval = 1.0;
+             it_value = 1.0} in
   set_timer its; 
-  beat st;
-  nother_loop st
+  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
+  check_key_pressed (wait_next_event [Key_pressed])
 
-and nother_loop st = 
 
-  check_key_pressed (wait_next_event [Key_pressed]) st;(* need to get this st to be the current state *)
-  ()
+(* and nother_loop () = 
+   check_key_pressed (wait_next_event [Key_pressed]);(* need to get this st to be the current state *)
+   () *)
 
 let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in
-  let game = Game.init_state num_players (Song.bpm song) in
-  let _ = Graphic.init_graphics "" game in
-  start_loop game
+  Game.init_state num_players (Song.bpm song);
+  Graphic.init_graphics "" state;
+  start_loop state
 
 let rec song_selection_loop () = 
   print_endline "Please enter the number of the song you wish to play\n";

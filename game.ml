@@ -14,21 +14,29 @@ type t = {
   bpm: float;
 }
 
-let init_state num bpm = {
-  matrix = [
-    [None; None; None; None];
-    [None; None; None; None];
-    [None; None; None; None];
-    [None; None; None; None];
-    [None; None; None; None]; 
-    [None; None; None; None];
-    [None; None; None; None];
-    [None; None; None; None];
-  ];
-  score = 0; (* changed this back to an int for single player*)
-  num_players = num;
-  bpm = bpm
-}
+let state = ref {
+    matrix = [];
+    score = 0;
+    num_players = 0;
+    bpm = 0.0;
+  }
+
+let init_state num bpm = 
+  state := {
+    matrix = [
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None]; 
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None];
+    ];
+    score = 0; (* changed this back to an int for single player*)
+    num_players = num;
+    bpm = bpm
+  }
 
 let beats_per_sec st = 
   st.bpm /. 60.0
@@ -41,6 +49,7 @@ let score t = t.score
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
+  print_endline "hi";
   match Random.int 4 with
   | 0 -> print_endline "0"; [Some Left; None; None; None]
   | 1 -> print_endline "1"; [None; Some Down; None; None]
@@ -62,7 +71,7 @@ let is_hit t inpt =
   | "down" -> if List.mem (Some Down) (bottom_row t.matrix) then Hit else Miss
   | "left" -> if List.mem (Some Left) (bottom_row t.matrix) then Hit else Miss
   | "right" -> if List.mem (Some Right) (bottom_row t.matrix) then Hit else Miss
-  (* | "" -> Miss *)
+  | "" -> Miss
   | _ -> failwith "bad key"
 
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
@@ -77,31 +86,29 @@ let update_matrix t : matrix =
 let calc_score t inpt = 
   if is_hit t inpt = Hit then t.score + 1 else t.score
 
-let get_matrix t = t.matrix
+let update_graphics () = 
+  Graphic.update_graphics !state.matrix !state.score
 
-let update_graphics t = 
-  Graphic.update_graphics t.matrix t.score;
-  t
-
-let update t inpt = 
-  let new_score = calc_score t inpt in
+let update (inpt: string) : unit =
+  let new_score = calc_score !state inpt in
   let new_state = {
-    matrix = update_matrix t;
+    matrix = if inpt = "" then update_matrix !state else !state.matrix;
     score = new_score;
-    num_players = t.num_players;
-    bpm = t.bpm
+    num_players = !state.num_players;
+    bpm = !state.bpm
   } in 
   (* Graphic.update_graphics (new_state.matrix) new_state.score; *)
-  new_state
+  state := new_state;
+  update_graphics ()
 
-let update_score t inpt = 
-  let new_state = {
+(* let update_score t inpt = 
+   let new_state = {
     matrix =  t.matrix;
     score = calc_score t inpt;
     num_players = t.num_players;
     bpm = t.bpm
-  } in 
-  new_state
+   } in 
+   new_state *)
 
 
 
