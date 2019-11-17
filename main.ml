@@ -6,17 +6,12 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
-let wrapped_state = Game.state
-
 let unwrap_state () = !Game.state
 
 let state = unwrap_state ()
 
 let rec call_update num = 
   Game.update ""
-
-(* and beat () =
-   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (Game.update "")) *)
 
 and check_key_pressed press = 
   match press.key with
@@ -29,28 +24,15 @@ and check_key_pressed press =
     wait_next_event [Key_pressed]; ()
   | _ -> print_endline "bad"; Game.update ""; check_key_pressed (wait_next_event [Key_pressed])
 
-and set_timer its = 
-  let _ = setitimer ITIMER_REAL its in
-  ()
-
-and start_loop st = 
-  print_endline "in test";
-  let its = {it_interval = 1.0;
-             it_value = 1.0} in
-  set_timer its; 
-  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-  check_key_pressed (wait_next_event [Key_pressed])
-
-
-(* and nother_loop () = 
-   check_key_pressed (wait_next_event [Key_pressed]);(* need to get this st to be the current state *)
-   () *)
-
 let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in
   Game.init_state num_players (Song.bpm song);
   Graphic.init_graphics "" state;
-  start_loop state
+  let its = {it_interval = 1.0;
+             it_value = 1.0} in
+  setitimer ITIMER_REAL its; 
+  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
+  check_key_pressed (wait_next_event [Key_pressed])
 
 let rec song_selection_loop () = 
   print_endline "Please enter the number of the song you wish to play\n";

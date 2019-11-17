@@ -101,16 +101,4 @@ let update (inpt: string) : unit =
   state := new_state;
   update_graphics ()
 
-(* let update_score t inpt = 
-   let new_state = {
-    matrix =  t.matrix;
-    score = calc_score t inpt;
-    num_players = t.num_players;
-    bpm = t.bpm
-   } in 
-   new_state *)
-
-
-
-
 let speed bpm = failwith "unimplemented"
