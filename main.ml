@@ -52,7 +52,7 @@ let rec song_selection_loop () =
   match read_line () with
   | "1" -> "coughSyrup.json"
   | "2" -> "test_song.json" 
-  | "3" -> "test_song.json"
+  | "3" -> "test_song_fast.json"
   | _ -> print_endline "Please enter a valid song number";
     song_selection_loop ()
 
