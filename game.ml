@@ -98,7 +98,7 @@ let calc_score t inpt =
     (if is_hit t inpt = Hit then t.score + 1 else t.score)
 
 let update_graphics () = 
-  Graphic.update_graphics !state.matrix !state.score
+  Graphic.update_graphics !state.matrix !state.score !state.lives_remaining
 
 let update (inpt: string) : unit =
   let new_score = if inpt <> "beat" then (calc_score !state inpt) 

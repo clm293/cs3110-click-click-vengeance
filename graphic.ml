@@ -103,7 +103,7 @@ let create_up_arrow_matrix c1 c2 =
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
-let draw_background c1 c2 c3 c4 score = 
+let draw_background c1 c2 c3 c4 score lives = 
   set_color black;
   fill_rect 0 0 600 640;
   set_color c1;
@@ -122,6 +122,10 @@ let draw_background c1 c2 c3 c4 score =
   set_text_size 100;
   moveto 500 610;
   draw_string ("Score: " ^ (string_of_int score));
+  moveto 500 580;
+  draw_string ("Lives");
+  moveto 500 560;
+  draw_string  ("remaining: " ^ (string_of_int lives));
   ()
 
 let draw_left_arrow x y = 
@@ -144,14 +148,14 @@ let init_graphics s st =
   open_graph s;
   resize_window 600 640;
   set_window_title "Tap Tap Revenge Game";
-  draw_background magenta green cyan yellow 0;
+  draw_background magenta green cyan yellow 0 5;
   draw_left_arrow 40 545;
   draw_down_arrow 155 545;
   draw_up_arrow 270 545;
   draw_right_arrow 385 545;
   ()
 
-let update_graphics matrix score = 
+let update_graphics matrix score lives= 
   let rec draw_row row i j = 
     match row with 
     | [] -> ()
@@ -168,5 +172,5 @@ let update_graphics matrix score =
     | [] -> ()
     | h :: t -> draw_row h i 0; helper t (i+1); in 
   clear_graph ();
-  draw_background magenta green cyan yellow score;
+  draw_background magenta green cyan yellow score lives;
   helper matrix 0
