@@ -1,0 +1,8 @@
+#require "oUnit";;
+#require "yojson";;
+#require "ANSITerminal";;
+#require "graphics";;
+#directory "_build";;
+#load "game.cmo";;
+#load "song.cmo";;
+#load "view.cmo";;
