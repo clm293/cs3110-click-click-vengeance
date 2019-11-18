@@ -22,7 +22,7 @@ let rec check_key_pressed press =
   | _ -> print_endline "bad"; Game.update ""; check_key_pressed (wait_next_event [Key_pressed])
 
 let call_update num = 
-  Game.update ""
+  Game.update "beat"
 
 let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in

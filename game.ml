@@ -12,6 +12,7 @@ type t = {
   score: int; (* changed this back to an int for single player*)
   num_players: int;
   bpm: float;
+  scored_this_arrow : bool
 }
 
 let state = ref {
@@ -19,6 +20,7 @@ let state = ref {
     score = 0;
     num_players = 0;
     bpm = 0.0;
+    scored_this_arrow = false;
   }
 
 let init_state num bpm = 
@@ -35,7 +37,8 @@ let init_state num bpm =
     ];
     score = 0; (* changed this back to an int for single player*)
     num_players = num;
-    bpm = bpm
+    bpm = bpm;
+    scored_this_arrow = false;
   }
 
 let beats_per_sec () = 
@@ -72,6 +75,7 @@ let is_hit t inpt =
   | "left" -> if List.mem (Some Left) (bottom_row t.matrix) then Hit else Miss
   | "right" -> if List.mem (Some Right) (bottom_row t.matrix) then Hit else Miss
   | "" -> Miss
+  | "beat" -> Miss
   | _ -> failwith "bad key"
 
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
@@ -84,7 +88,8 @@ let update_matrix t : matrix =
 
 (** [calc-score t inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score t inpt = 
-  if is_hit t inpt = Hit then t.score + 1 else t.score
+  if t.scored_this_arrow = true then t.score else
+    (if is_hit t inpt = Hit then t.score + 1 else t.score)
 
 let update_graphics () = 
   Graphic.update_graphics !state.matrix !state.score
@@ -92,10 +97,13 @@ let update_graphics () =
 let update (inpt: string) : unit =
   let new_score = calc_score !state inpt in
   let new_state = {
-    matrix = if inpt = "" then update_matrix !state else !state.matrix;
+    matrix = if inpt = "beat" then update_matrix !state else !state.matrix;
     score = new_score;
     num_players = !state.num_players;
-    bpm = !state.bpm
+    bpm = !state.bpm;
+    scored_this_arrow = if inpt = "beat" then !state.scored_this_arrow = false 
+      else  (if !state.scored_this_arrow = true then true else 
+             if (new_score <> !state.score) then true else false)
   } in 
   (* Graphic.update_graphics (new_state.matrix) new_state.score; *)
   state := new_state;
