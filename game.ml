@@ -38,8 +38,8 @@ let init_state num bpm =
     bpm = bpm
   }
 
-let beats_per_sec st = 
-  st.bpm /. 60.0
+let beats_per_sec () = 
+  !state.bpm /. 60.0
 
 let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc

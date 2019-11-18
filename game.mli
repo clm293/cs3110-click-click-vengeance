@@ -21,7 +21,7 @@ val score : t -> int
 val init_state : int -> float -> unit
 
 (** [beats_per_sec st] is the beats per second for the current song. *)
-val beats_per_sec : t -> float
+val beats_per_sec : unit -> float
 
 (** [update t i] is the updated game state at this beat. [update] is called each
     beat.*)

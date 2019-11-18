@@ -122,9 +122,6 @@ let draw_background c1 c2 c3 c4 score =
   set_text_size 100;
   moveto 500 610;
   draw_string ("Score: " ^ (string_of_int score));
-  (* set_line_width 5;
-     set_color black;
-     draw_rect 30 30 440 75; *)
   ()
 
 let draw_left_arrow x y = 
@@ -148,7 +145,6 @@ let init_graphics s st =
   resize_window 600 640;
   set_window_title "Tap Tap Revenge Game";
   draw_background magenta green cyan yellow 0;
-
   draw_left_arrow 40 545;
   draw_down_arrow 155 545;
   draw_up_arrow 270 545;

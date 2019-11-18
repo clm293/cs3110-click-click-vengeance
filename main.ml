@@ -10,10 +10,7 @@ let unwrap_state () = !Game.state
 
 let state = unwrap_state ()
 
-let rec call_update num = 
-  Game.update ""
-
-and check_key_pressed press = 
+let rec check_key_pressed press = 
   match press.key with
   | 'i' -> print_endline "up"; Game.update "up"; check_key_pressed (wait_next_event [Key_pressed])
   | 'j' -> print_endline "left"; Game.update "left"; check_key_pressed (wait_next_event [Key_pressed])
@@ -24,11 +21,14 @@ and check_key_pressed press =
     wait_next_event [Key_pressed]; ()
   | _ -> print_endline "bad"; Game.update ""; check_key_pressed (wait_next_event [Key_pressed])
 
+let call_update num = 
+  Game.update ""
+
 let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in
   Game.init_state num_players (Song.bpm song);
   Graphic.init_graphics "" state;
-  let its = {it_interval = 1.0;
+  let its = {it_interval = (Game.beats_per_sec ());
              it_value = 1.0} in
   setitimer ITIMER_REAL its; 
   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
