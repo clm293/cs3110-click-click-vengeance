@@ -14,6 +14,10 @@ type t
 
 val state : t ref
 
+(** [get_lives t] is the number of lives remaining for the player in the current
+    state *)
+val get_lives : t -> int
+
 (** [score t] is the score for current state. *)
 val score : t -> int
 

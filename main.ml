@@ -7,19 +7,28 @@ type keey = Up | Down | Left | Right | Space
 type inpt = keey option
 
 let unwrap_state () = !Game.state
+let close_game = close_graph ()
+let check_still_alive () = if Game.get_lives (unwrap_state ()) = 0
+  then close_graph ()
+
 
 let state = unwrap_state ()
 
 let rec check_key_pressed press = 
   match press.key with
-  | 'i' -> print_endline "up"; Game.update "up"; check_key_pressed (wait_next_event [Key_pressed])
-  | 'j' -> print_endline "left"; Game.update "left"; check_key_pressed (wait_next_event [Key_pressed])
-  | 'k' -> print_endline "down"; Game.update "down"; check_key_pressed (wait_next_event [Key_pressed])
-  | 'l' -> print_endline "right"; Game.update "right"; check_key_pressed (wait_next_event [Key_pressed])
+  | 'i' -> print_endline "up"; Game.update "up"; check_still_alive ();
+    check_key_pressed (wait_next_event [Key_pressed])
+  | 'j' -> print_endline "left"; Game.update "left"; check_still_alive ();
+    check_key_pressed (wait_next_event [Key_pressed])
+  | 'k' -> print_endline "down"; Game.update "down"; check_still_alive (); 
+    check_key_pressed (wait_next_event [Key_pressed])
+  | 'l' -> print_endline "right"; Game.update "right"; check_still_alive (); 
+    check_key_pressed (wait_next_event [Key_pressed])
   | 'q' -> print_endline "You quit the game :("; close_graph (); ()
   | ' ' -> print_endline "Paused. Press any key to resume.";
     wait_next_event [Key_pressed]; ()
-  | _ -> print_endline "bad"; Game.update ""; check_key_pressed (wait_next_event [Key_pressed])
+  | _ -> print_endline "bad"; Game.update ""; check_still_alive (); 
+    check_key_pressed (wait_next_event [Key_pressed])
 
 let call_update num = 
   Game.update "beat"

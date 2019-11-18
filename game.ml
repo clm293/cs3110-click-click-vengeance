@@ -1,3 +1,5 @@
+
+
 (** Left is 0, Down is 1, Up is 2, Right is 3*)
 type arrow = Left | Down | Up | Right
 
@@ -12,7 +14,8 @@ type t = {
   score: int; (* changed this back to an int for single player*)
   num_players: int;
   bpm: float;
-  scored_this_arrow : bool
+  scored_this_arrow : bool;
+  lives_remaining: int
 }
 
 let state = ref {
@@ -21,6 +24,7 @@ let state = ref {
     num_players = 0;
     bpm = 0.0;
     scored_this_arrow = false;
+    lives_remaining = 0;
   }
 
 let init_state num bpm = 
@@ -39,6 +43,7 @@ let init_state num bpm =
     num_players = num;
     bpm = bpm;
     scored_this_arrow = false;
+    lives_remaining = 5;
   }
 
 let beats_per_sec () = 
@@ -48,6 +53,8 @@ let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
 
 let score t = t.score
+
+let get_lives t = t.lives_remaining
 
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
@@ -75,8 +82,7 @@ let is_hit t inpt =
   | "left" -> if List.mem (Some Left) (bottom_row t.matrix) then Hit else Miss
   | "right" -> if List.mem (Some Right) (bottom_row t.matrix) then Hit else Miss
   | "" -> Miss
-  | "beat" -> Miss
-  | _ -> failwith "bad key"
+  | _ -> Miss
 
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
     shifted down and pops off the bottom row and adds a new random row to the 
@@ -95,17 +101,21 @@ let update_graphics () =
   Graphic.update_graphics !state.matrix !state.score
 
 let update (inpt: string) : unit =
-  let new_score = calc_score !state inpt in
+  let new_score = if inpt <> "beat" then (calc_score !state inpt) 
+    else !state.score in
   let new_state = {
     matrix = if inpt = "beat" then update_matrix !state else !state.matrix;
     score = new_score;
     num_players = !state.num_players;
     bpm = !state.bpm;
-    scored_this_arrow = if inpt = "beat" then !state.scored_this_arrow = false 
+    scored_this_arrow = if inpt = "beat" then  false 
       else  (if !state.scored_this_arrow = true then true else 
-             if (new_score <> !state.score) then true else false)
+             if (new_score <> !state.score) then true else false);
+    lives_remaining = if inpt <> "beat" & (is_hit !state inpt = Miss) then
+        (!state.lives_remaining -1) else !state.lives_remaining
   } in 
   (* Graphic.update_graphics (new_state.matrix) new_state.score; *)
+  if new_state.lives_remaining = 0 then print_endline "Game Over.";
   state := new_state;
   update_graphics ()
 
