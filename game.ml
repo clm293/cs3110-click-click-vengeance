@@ -27,6 +27,7 @@ let state = ref {
     lives_remaining = 0;
   }
 
+(** [init_state num bpm] is the initial state of the game. *)
 let init_state num bpm = 
   state := {
     matrix = [
@@ -47,13 +48,15 @@ let init_state num bpm =
   }
 
 let beats_per_sec () = 
-  !state.bpm /. 60.0
+  1.0 /. (!state.bpm /. 60.0)
 
 let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
 
+(** [score t] is the score of state [t]. *)
 let score t = t.score
 
+(** [get_lives t] is the number of lives remaining in state [t]. *)
 let get_lives t = t.lives_remaining
 
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
@@ -95,28 +98,40 @@ let update_matrix t : matrix =
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
-(** [calc-score t inpt] is the score of the game, adjusted for hits and misses. *)
-let calc_score t inpt = 
-  if t.scored_this_arrow = true then t.score else
-    (if is_hit t inpt = Hit then t.score + 1 else t.score - 1)
+(** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
+let calc_score inpt = 
+  let t = !state in
+  if t.scored_this_arrow = true then t.score 
+  else if is_hit t inpt = Hit then t.score + 1 
+  else t.score - 1
+
+(** [scored_this_arrow inpt new_score] is true if the player already scored 
+    during this beat and false otherwise. *)
+let scored_this_arrow inpt new_score = 
+  if inpt = "beat" then false 
+  else (if !state.scored_this_arrow = true then true else 
+        if (new_score <> !state.score) then true else false)
+
+(** [lives_remaining inpt] is the number of remaining lives the player has. *)
+let lives_remaining inpt = 
+  if inpt <> "beat" && ((is_hit !state inpt) = Miss) then
+    (!state.lives_remaining -1) else !state.lives_remaining
 
 let update_graphics () = 
   Graphic.update_graphics !state.matrix !state.score !state.lives_remaining
 
-let update (inpt: string) : unit =
-  let new_score = if bottom_row !state.matrix <> [None;None;None;None] then calc_score !state inpt else !state.score in
+let update inpt =
+  let new_score = if bottom_row !state.matrix <> [None;None;None;None] then 
+      calc_score inpt else !state.score in
   let new_state = {
     matrix = if inpt = "beat" then update_matrix !state else !state.matrix;
     score = new_score;
     num_players = !state.num_players;
     bpm = !state.bpm;
-    scored_this_arrow = if inpt = "beat" then false 
-      else (if !state.scored_this_arrow = true then true else 
-            if (new_score <> !state.score) then true else false);
-    lives_remaining = if inpt <> "beat" && ((is_hit !state inpt) = Miss) then
-        (!state.lives_remaining -1) else !state.lives_remaining
+    scored_this_arrow = scored_this_arrow inpt new_score;
+    lives_remaining = lives_remaining inpt
   } in 
-  (* Graphic.update_graphics (new_state.matrix) new_state.score; *)
+
   if new_state.lives_remaining = 0 then print_endline "Game Over.";
   state := new_state;
   update_graphics ()
