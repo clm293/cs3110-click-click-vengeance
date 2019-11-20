@@ -176,3 +176,19 @@ let update_graphics matrix score lives hs=
   clear_graph ();
   draw_background magenta green cyan yellow score lives hs;
   helper matrix 0
+
+let pause s = 
+  set_color white;
+  moveto 200 320;
+  draw_string "Paused";
+  moveto 200 300;
+  draw_string "Press any key to resume.";
+  ()
+
+let quit s = 
+  set_color white;
+  moveto 200 320;
+  draw_string "Quit?";
+  moveto 200 300;
+  draw_string "Press q to quit.";
+  ()
