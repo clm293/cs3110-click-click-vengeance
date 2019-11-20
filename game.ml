@@ -1,5 +1,3 @@
-
-
 (** Left is 0, Down is 1, Up is 2, Right is 3*)
 type arrow = Left | Down | Up | Right
 
@@ -7,22 +5,23 @@ type cell = arrow option
 
 type matrix = cell list list
 
-type press = Hit | Miss | Other 
+type press = Hit | Miss | Other
 
 type t = {
   matrix: matrix;
   score: int; (* changed this back to an int for single player*)
   num_players: int;
-  bpm: float;
+  speed: float;
   scored_this_arrow : bool;
   lives_remaining: int
 }
 
+(** [state] is the reference pointing to the current state of the game. *)
 let state = ref {
     matrix = [];
     score = 0;
     num_players = 0;
-    bpm = 0.0;
+    speed = 0.0;
     scored_this_arrow = false;
     lives_remaining = 0;
   }
@@ -42,13 +41,14 @@ let init_state num bpm =
     ];
     score = 0; (* changed this back to an int for single player*)
     num_players = num;
-    bpm = bpm;
+    speed = bpm;
     scored_this_arrow = false;
     lives_remaining = 5;
   }
 
-let beats_per_sec () = 
-  1.0 /. (!state.bpm /. 60.0)
+(** [speed ()] is the beats per second for the state's bpm *)
+let speed () = 
+  1.0 /. (!state.speed /. 60.0)
 
 let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
@@ -62,12 +62,11 @@ let get_lives t = t.lives_remaining
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
-  print_endline "hi";
   match Random.int 4 with
-  | 0 -> print_endline "0"; [Some Left; None; None; None]
-  | 1 -> print_endline "1"; [None; Some Down; None; None]
-  | 2 -> print_endline "2"; [None; None; Some Up; None]
-  | 3 -> print_endline "3"; [None; None; None; Some Right]
+  | 0 -> [Some Left; None; None; None]
+  | 1 -> [None; Some Down; None; None]
+  | 2 -> [None; None; Some Up; None]
+  | 3 -> [None; None; None; Some Right]
   | _ -> failwith "bad row"
 
 (** [bottom_row m] is the bottom row of the matrix [m] *)
@@ -84,11 +83,8 @@ let is_hit t inpt =
   | "down" -> if List.mem (Some Down) (bottom_row t.matrix) then Hit else Miss
   | "left" -> if List.mem (Some Left) (bottom_row t.matrix) then Hit else Miss
   | "right" -> if List.mem (Some Right) (bottom_row t.matrix) then Hit else Miss
-  | "beat" -> Miss
+  | "" -> Other
   | _ -> Miss
-
-let calc_lives inpt = 
-  failwith "unimplemented"
 
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
     shifted down and pops off the bottom row and adds a new random row to the 
@@ -102,8 +98,12 @@ let update_matrix t : matrix =
 let calc_score inpt = 
   let t = !state in
   if t.scored_this_arrow = true then t.score 
-  else if is_hit t inpt = Hit then t.score + 1 
-  else t.score - 1
+  else begin
+    match is_hit t inpt with
+    | Hit -> t.score + 1
+    | Miss -> t.score - 1  
+    | Other -> t.score  
+  end
 
 (** [scored_this_arrow inpt new_score] is true if the player already scored 
     during this beat and false otherwise. *)
@@ -117,6 +117,11 @@ let lives_remaining inpt =
   if inpt <> "beat" && ((is_hit !state inpt) = Miss) then
     (!state.lives_remaining -1) else !state.lives_remaining
 
+let increase_speed score = 
+  if (score mod 10 = 0) && (score > 0) 
+  then begin print_endline "change speed"; !state.speed *. 2.0 end 
+  else !state.speed
+
 let update_graphics () = 
   Graphic.update_graphics !state.matrix !state.score !state.lives_remaining
 
@@ -127,7 +132,7 @@ let update inpt =
     matrix = if inpt = "beat" then update_matrix !state else !state.matrix;
     score = new_score;
     num_players = !state.num_players;
-    bpm = !state.bpm;
+    speed = increase_speed new_score;
     scored_this_arrow = scored_this_arrow inpt new_score;
     lives_remaining = lives_remaining inpt
   } in 
@@ -135,5 +140,3 @@ let update inpt =
   if new_state.lives_remaining = 0 then print_endline "Game Over.";
   state := new_state;
   update_graphics ()
-
-let speed bpm = failwith "unimplemented"

@@ -29,10 +29,16 @@ and check_key_pressed press =
   | 'q' -> print_endline "You quit the game :("; close_graph ()
   | ' ' -> print_endline "Paused. Press any key to resume.";
     wait_next_event [Key_pressed]; ()
-  | _ -> print_endline "bad"; Game.update "beat"; check_still_alive ()
+  | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
+
+let set_timer () = 
+  let its = {it_interval = (Game.speed ());
+             it_value = 1.0} in
+  setitimer ITIMER_REAL its; ()
 
 (** [call_update num] updates the game state for a beat. *)
 let call_update num = 
+  set_timer ();
   Game.update "beat"
 
 (** [play_game song_file num_players] initializes the game with the appropriate 
@@ -41,9 +47,7 @@ let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in
   Game.init_state num_players (Song.bpm song);
   Graphic.init_graphics "" state;
-  let its = {it_interval = (Game.beats_per_sec ());
-             it_value = 1.0} in
-  setitimer ITIMER_REAL its; 
+  set_timer ();
   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
   check_key_pressed (wait_next_event [Key_pressed])
 
@@ -61,7 +65,6 @@ let rec song_selection_loop () =
   | "3" -> "test_song_fast.json"
   | _ -> print_endline "Please enter a valid song number";
     song_selection_loop ()
-
 
 (** [num_player_selection_loop ()] prompts the player to select the number of 
     players they wish to play with and returns the number. *)
