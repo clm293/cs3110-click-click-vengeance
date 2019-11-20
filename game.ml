@@ -141,8 +141,7 @@ let scored_this_arrow inpt new_score =
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
 let lives_remaining inpt = 
   if inpt <> "beat" && (is_hit !state inpt = Miss) then
-    (!state.lives_remaining -1)
-  else !state.lives_remaining
+    (!state.lives_remaining -1) else !state.lives_remaining
 
 let increase_speed score = 
   if (score mod 10 = 0) && (score > 0) 
@@ -179,7 +178,6 @@ let pause_game () =
   update_graphics ()
 
 let resume_game () = 
-
   let new_state = {
     matrix = !state.matrix;
     score = !state.score;
@@ -207,7 +205,7 @@ let update (inpt: string) : unit =
           update_matrix !state else !state.matrix;
       score = new_score;
       num_players = !state.num_players;
-      speed = !state.speed;
+      speed = !state.speed; (* should add increase_speed here *)
       scored_this_arrow = scored_this_arrow inpt new_score;
       lives_remaining = lives_remaining inpt;
       paused = !state.paused;
