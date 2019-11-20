@@ -1,5 +1,3 @@
-
-
 (** Left is 0, Down is 1, Up is 2, Right is 3*)
 type arrow = Left | Down | Up | Right
 
@@ -15,7 +13,9 @@ type t = {
   num_players: int;
   bpm: float;
   scored_this_arrow : bool;
-  lives_remaining: int
+  lives_remaining: int;
+  paused: bool;
+  last_ten: press list
 }
 
 let state = ref {
@@ -25,6 +25,8 @@ let state = ref {
     bpm = 0.0;
     scored_this_arrow = false;
     lives_remaining = 0;
+    paused = false;
+    last_ten = []
   }
 
 let init_state num bpm = 
@@ -44,6 +46,8 @@ let init_state num bpm =
     bpm = bpm;
     scored_this_arrow = false;
     lives_remaining = 5;
+    paused = false;
+    last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss]
   }
 
 let beats_per_sec () = 
@@ -59,13 +63,30 @@ let get_lives t = t.lives_remaining
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
-  print_endline "hi";
+  (* if !state.score < 20 then *)
   match Random.int 4 with
   | 0 -> print_endline "0"; [Some Left; None; None; None]
   | 1 -> print_endline "1"; [None; Some Down; None; None]
   | 2 -> print_endline "2"; [None; None; Some Up; None]
   | 3 -> print_endline "3"; [None; None; None; Some Right]
-  | _ -> failwith "bad row"
+  | _ -> failwith "random"
+(* else 
+   match Random.int 10 with 
+   | 0 -> print_endline "0"; [Some Left; None; None; None]
+   | 1 -> print_endline "1"; [None; Some Down; None; None]
+   | 2 -> print_endline "2"; [None; None; Some Up; None]
+   | 3 -> print_endline "3"; [None; None; None; Some Right]
+   | 4 -> print_endline "4"; [Some Left; Some Down; None; None]
+   | 5 -> print_endline "5"; [None; Some Down; Some Up; None]
+   | 6 -> print_endline "6"; [None; None; Some Up; Some Right]
+   | 7 -> print_endline "7"; [None; Some Down; None; Some Right]
+   | 8 -> print_endline "8"; [Some Left; None; Some Up; None]
+   | 9 -> print_endline "9"; [Some Left; None; None; Some Right]
+   | _ -> failwith "random"*)
+
+
+let is_hot lst = 
+  lst = [Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit]
 
 (** [bottom_row m] is the bottom row of the matrix [m] *)
 let bottom_row m = 
@@ -95,28 +116,88 @@ let update_matrix t : matrix =
 (** [calc-score t inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score t inpt = 
   if t.scored_this_arrow = true then t.score else
-    (if is_hit t inpt = Hit then t.score + 1 else t.score)
+    (if is_hit t inpt = Hit then (if is_hot (!state.last_ten )
+                                  then t.score +2 else t.score + 1) 
+     else t.score)
 
 let update_graphics () = 
-  Graphic.update_graphics !state.matrix !state.score !state.lives_remaining
+  if is_hot (!state.last_ten )then 
+    print_endline "hotstreak";
+  if !state.paused = true then () else
+    Graphic.update_graphics !state.matrix !state.score !state.lives_remaining 
+      (is_hot (!state.last_ten ))
 
-let update (inpt: string) : unit =
-  let new_score = if inpt <> "beat" then (calc_score !state inpt) 
-    else !state.score in
+(*last_ten tracks the 10 most recent press results, with the most recent 
+  being the last element of the list*)
+let update_last_ten (p:press) (lst: press list) = 
+  match lst with
+  | h::t -> List.concat [t; [p]]
+  | _ -> failwith "somethings very wrong"
+
+let pause_game () = 
   let new_state = {
-    matrix = if inpt = "beat" then update_matrix !state else !state.matrix;
-    score = new_score;
+    matrix = !state.matrix;
+    score = !state.score;
     num_players = !state.num_players;
     bpm = !state.bpm;
-    scored_this_arrow = if inpt = "beat" then  false 
-      else  (if !state.scored_this_arrow = true then true else 
-             if (new_score <> !state.score) then true else false);
-    lives_remaining = if inpt <> "beat" & (is_hit !state inpt = Miss) then
-        (!state.lives_remaining -1) else !state.lives_remaining
-  } in 
-  (* Graphic.update_graphics (new_state.matrix) new_state.score; *)
-  if new_state.lives_remaining = 0 then print_endline "Game Over.";
+    scored_this_arrow = !state.scored_this_arrow;
+    lives_remaining = !state.lives_remaining;
+    paused = true;
+    last_ten = !state.last_ten
+  } 
+  in 
   state := new_state;
   update_graphics ()
+
+let resume_game () = 
+  let new_state = {
+    matrix = !state.matrix;
+    score = !state.score;
+    num_players = !state.num_players;
+    bpm = !state.bpm;
+    scored_this_arrow = !state.scored_this_arrow;
+    lives_remaining = !state.lives_remaining;
+    paused = false;
+    last_ten = !state.last_ten
+  } 
+  in 
+  state := new_state;
+  update_graphics ()
+
+
+
+let update (inpt: string) : unit =
+
+  if inpt = "pause" then pause_game ()
+
+  else if inpt = "resume" then resume_game ()
+
+  else
+    let new_score = if inpt <> "beat" then (calc_score !state inpt) 
+      else !state.score in
+    let new_state = {
+      matrix = if inpt = "beat" && (!state.paused = false) then 
+          update_matrix !state else !state.matrix;
+      score = new_score;
+      num_players = !state.num_players;
+      bpm = !state.bpm;
+      scored_this_arrow = if inpt = "beat" then  false 
+        else  (if !state.scored_this_arrow = true then true else 
+               if (new_score <> !state.score) then true else false);
+      lives_remaining = if inpt <> "beat" && (is_hit !state inpt = Miss) then
+          (!state.lives_remaining -1) else if 
+          inpt = "beat" && !state.scored_this_arrow = false && 
+                 (bottom_row !state.matrix <> [None;None;None;None])
+        then (!state.lives_remaining -1)
+        else !state.lives_remaining;
+      paused = !state.paused;
+      last_ten = if inpt <> "beat" && (!state.scored_this_arrow = false) then 
+          (update_last_ten (is_hit !state inpt) (!state.last_ten)) else
+          !state.last_ten
+    } in 
+
+    if new_state.lives_remaining = 0 then print_endline "Game Over.";
+    state := new_state;
+    update_graphics ()
 
 let speed bpm = failwith "unimplemented"

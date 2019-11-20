@@ -7,8 +7,9 @@ type keey = Up | Down | Left | Right | Space
 type inpt = keey option
 
 let unwrap_state () = !Game.state
-let close_game = close_graph ()
-let check_still_alive () = if Game.get_lives (unwrap_state ()) = 0
+
+let check_still_alive () = 
+  if Game.get_lives (unwrap_state ()) = 0
   then close_graph ()
 
 
@@ -25,10 +26,14 @@ let rec check_key_pressed press =
   | 'l' -> print_endline "right"; Game.update "right"; check_still_alive (); 
     check_key_pressed (wait_next_event [Key_pressed])
   | 'q' -> print_endline "You quit the game :("; close_graph (); ()
-  | ' ' -> print_endline "Paused. Press any key to resume.";
-    wait_next_event [Key_pressed]; ()
+  | ' ' -> print_endline "Paused. Press any key to resume."; 
+    Game.update "pause"; wait_next_event [Key_pressed]; 
+    print_endline "Resuming"; Game.update "resume"; 
+    check_key_pressed (wait_next_event [Key_pressed])
   | _ -> print_endline "bad"; Game.update ""; check_still_alive (); 
     check_key_pressed (wait_next_event [Key_pressed])
+
+
 
 let call_update num = 
   Game.update "beat"
