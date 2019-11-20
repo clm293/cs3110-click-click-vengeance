@@ -31,8 +31,9 @@ and check_key_pressed press =
   | 'j' -> print_endline "left"; Game.update "left"; check_still_alive ()
   | 'k' -> print_endline "down"; Game.update "down"; check_still_alive ()
   | 'l' -> print_endline "right"; Game.update "right"; check_still_alive ()
-  | 'q' -> print_endline "You quit the game :("; close_graph ()
+  | 'q' -> print_endline "You quit the game :("; Graphic.quit (); close_graph ()
   | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause";
+    Graphic.pause ();
     (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
   | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
 
