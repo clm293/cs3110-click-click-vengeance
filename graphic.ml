@@ -163,10 +163,10 @@ let update_graphics matrix score lives hs=
     | [] -> ()
     | h :: t -> if h = None then draw_row t i (j+1) else begin
         match j with
-        | 0 -> draw_left_arrow 40 (545-(75*i));
-        | 1 -> draw_down_arrow 155 (545-(75*i));
-        | 2 -> draw_up_arrow 270 (545-(75*i));
-        | 3 -> draw_right_arrow 385 (545-(75*i));
+        | 0 -> draw_left_arrow 40 (545-(75*i)); draw_row t i (j+1)
+        | 1 -> draw_down_arrow 155 (545-(75*i)); draw_row t i (j+1)
+        | 2 -> draw_up_arrow 270 (545-(75*i)); draw_row t i (j+1)
+        | 3 -> draw_right_arrow 385 (545-(75*i)); draw_row t i (j+1)
         | _ -> ()
       end in
   let rec helper matrix i = 
