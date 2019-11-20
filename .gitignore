@@ -20,3 +20,4 @@ _build
 .DS_Store
 
 game.zip
+main.byte
