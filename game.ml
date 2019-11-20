@@ -5,30 +5,32 @@ type cell = arrow option
 
 type matrix = cell list list
 
-type press = Hit | Miss | Other 
+type press = Hit | Miss | Other
 
 type t = {
   matrix: matrix;
   score: int; (* changed this back to an int for single player*)
   num_players: int;
-  bpm: float;
+  speed: float;
   scored_this_arrow : bool;
   lives_remaining: int;
   paused: bool;
   last_ten: press list
 }
 
+(** [state] is the reference pointing to the current state of the game. *)
 let state = ref {
     matrix = [];
     score = 0;
     num_players = 0;
-    bpm = 0.0;
+    speed = 0.0;
     scored_this_arrow = false;
     lives_remaining = 0;
     paused = false;
     last_ten = []
   }
 
+(** [init_state num bpm] is the initial state of the game. *)
 let init_state num bpm = 
   state := {
     matrix = [
@@ -43,21 +45,24 @@ let init_state num bpm =
     ];
     score = 0; (* changed this back to an int for single player*)
     num_players = num;
-    bpm = bpm;
+    speed = bpm;
     scored_this_arrow = false;
     lives_remaining = 5;
     paused = false;
     last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss]
   }
 
-let beats_per_sec () = 
-  !state.bpm /. 60.0
+(** [speed ()] is the beats per second for the state's bpm *)
+let speed () = 
+  1.0 /. (!state.speed /. 60.0)
 
 let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
 
+(** [score t] is the score of state [t]. *)
 let score t = t.score
 
+(** [get_lives t] is the number of lives remaining in state [t]. *)
 let get_lives t = t.lives_remaining
 
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
@@ -102,7 +107,7 @@ let is_hit t inpt =
   | "down" -> if List.mem (Some Down) (bottom_row t.matrix) then Hit else Miss
   | "left" -> if List.mem (Some Left) (bottom_row t.matrix) then Hit else Miss
   | "right" -> if List.mem (Some Right) (bottom_row t.matrix) then Hit else Miss
-  | "" -> Miss
+  | "" -> Other
   | _ -> Miss
 
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
@@ -113,12 +118,35 @@ let update_matrix t : matrix =
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
-(** [calc-score t inpt] is the score of the game, adjusted for hits and misses. *)
-let calc_score t inpt = 
-  if t.scored_this_arrow = true then t.score else
-    (if is_hit t inpt = Hit then (if is_hot (!state.last_ten )
-                                  then t.score +2 else t.score + 1) 
-     else t.score)
+
+(** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
+let calc_score inpt = 
+  let t = !state in
+  if t.scored_this_arrow = true then t.score 
+  else begin
+    match is_hit t inpt with
+    | Hit -> (if is_hot (!state.last_ten )
+              then t.score +2 else t.score + 1)
+    | Miss -> t.score - 1  
+    | Other -> t.score  
+  end
+
+(** [scored_this_arrow inpt new_score] is true if the player already scored 
+    during this beat and false otherwise. *)
+let scored_this_arrow inpt new_score = 
+  if inpt = "beat" then false 
+  else (if !state.scored_this_arrow = true then true else 
+        if (new_score <> !state.score) then true else false)
+
+(** [lives_remaining inpt] is the number of remaining lives the player has. *)
+let lives_remaining inpt = 
+  if inpt <> "beat" && ((is_hit !state inpt) = Miss) then
+    (!state.lives_remaining -1) else !state.lives_remaining
+
+let increase_speed score = 
+  if (score mod 10 = 0) && (score > 0) 
+  then begin print_endline "change speed"; !state.speed *. 2.0 end 
+  else !state.speed
 
 let update_graphics () = 
   if is_hot (!state.last_ten )then 
@@ -139,7 +167,7 @@ let pause_game () =
     matrix = !state.matrix;
     score = !state.score;
     num_players = !state.num_players;
-    bpm = !state.bpm;
+    speed = !state.speed;
     scored_this_arrow = !state.scored_this_arrow;
     lives_remaining = !state.lives_remaining;
     paused = true;
@@ -150,11 +178,12 @@ let pause_game () =
   update_graphics ()
 
 let resume_game () = 
+
   let new_state = {
     matrix = !state.matrix;
     score = !state.score;
     num_players = !state.num_players;
-    bpm = !state.bpm;
+    speed = !state.speed;
     scored_this_arrow = !state.scored_this_arrow;
     lives_remaining = !state.lives_remaining;
     paused = false;
@@ -167,20 +196,17 @@ let resume_game () =
 
 
 let update (inpt: string) : unit =
-
   if inpt = "pause" then pause_game ()
-
   else if inpt = "resume" then resume_game ()
-
   else
-    let new_score = if inpt <> "beat" then (calc_score !state inpt) 
+    let new_score = if inpt <> "beat" then (calc_score  inpt) 
       else !state.score in
     let new_state = {
       matrix = if inpt = "beat" && (!state.paused = false) then 
           update_matrix !state else !state.matrix;
       score = new_score;
       num_players = !state.num_players;
-      bpm = !state.bpm;
+      speed = !state.speed;
       scored_this_arrow = if inpt = "beat" then  false 
         else  (if !state.scored_this_arrow = true then true else 
                if (new_score <> !state.score) then true else false);
@@ -200,4 +226,3 @@ let update (inpt: string) : unit =
     state := new_state;
     update_graphics ()
 
-let speed bpm = failwith "unimplemented"

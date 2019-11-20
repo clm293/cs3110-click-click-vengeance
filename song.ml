@@ -23,8 +23,6 @@ let from_json json = {
   file = json |> member "file" |> to_string;
 }
 
-
-
 let bpm s = s.bpm
 
 let difficulty s = s.difficulty
