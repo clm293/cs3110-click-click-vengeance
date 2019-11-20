@@ -15,7 +15,7 @@ let state = unwrap_state ()
 (** [check_still_alive ()] continues the input loop if the player still has at 
     least one life left. *)
 let rec check_still_alive () = 
-  if Game.get_lives (unwrap_state ()) = 0 
+  if (Game.get_lives ()) = 0 
   then close_graph ()
   else check_key_pressed (wait_next_event [Key_pressed])
 
