@@ -128,20 +128,24 @@ let calc_score inpt =
     | Hit -> (if is_hot (!state.last_ten )
               then t.score +2 else t.score + 1)
     | Miss -> t.score - 1  
-    | Other -> t.score  
+    | Other -> t.score
   end
 
 (** [scored_this_arrow inpt new_score] is true if the player already scored 
     during this beat and false otherwise. *)
 let scored_this_arrow inpt new_score = 
-  if inpt = "beat" then false 
-  else (if !state.scored_this_arrow = true then true else 
-        if (new_score <> !state.score) then true else false)
+  if inpt = "beat" then  false 
+  else  (if !state.scored_this_arrow = true then true else 
+         if (new_score <> !state.score) then true else false)
 
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
 let lives_remaining inpt = 
-  if inpt <> "beat" && ((is_hit !state inpt) = Miss) then
-    (!state.lives_remaining -1) else !state.lives_remaining
+  if inpt <> "beat" && (is_hit !state inpt = Miss) then
+    (!state.lives_remaining -1) else if 
+    inpt = "beat" && !state.scored_this_arrow = false && 
+    (bottom_row !state.matrix <> [None;None;None;None])
+  then (!state.lives_remaining -1)
+  else !state.lives_remaining
 
 let increase_speed score = 
   if (score mod 10 = 0) && (score > 0) 
@@ -199,23 +203,16 @@ let update (inpt: string) : unit =
   if inpt = "pause" then pause_game ()
   else if inpt = "resume" then resume_game ()
   else
-    let new_score = if inpt <> "beat" then (calc_score  inpt) 
-      else !state.score in
+    let new_score = if bottom_row !state.matrix <> [None;None;None;None]
+      then calc_score inpt else !state.score in
     let new_state = {
       matrix = if inpt = "beat" && (!state.paused = false) then 
           update_matrix !state else !state.matrix;
       score = new_score;
       num_players = !state.num_players;
       speed = !state.speed;
-      scored_this_arrow = if inpt = "beat" then  false 
-        else  (if !state.scored_this_arrow = true then true else 
-               if (new_score <> !state.score) then true else false);
-      lives_remaining = if inpt <> "beat" && (is_hit !state inpt = Miss) then
-          (!state.lives_remaining -1) else if 
-          inpt = "beat" && !state.scored_this_arrow = false && 
-                 (bottom_row !state.matrix <> [None;None;None;None])
-        then (!state.lives_remaining -1)
-        else !state.lives_remaining;
+      scored_this_arrow = scored_this_arrow inpt new_score;
+      lives_remaining = lives_remaining inpt;
       paused = !state.paused;
       last_ten = if inpt <> "beat" && (!state.scored_this_arrow = false) then 
           (update_last_ten (is_hit !state inpt) (!state.last_ten)) else

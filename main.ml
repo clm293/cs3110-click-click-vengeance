@@ -9,11 +9,6 @@ type inpt = keey option
 (** [unwrap_state ()] is the current game state. *)
 let unwrap_state () = !Game.state
 
-let check_still_alive () = 
-  if Game.get_lives (unwrap_state ()) = 0
-  then close_graph ()
-
-
 (** [state] is the current game state. *)
 let state = unwrap_state ()
 
