@@ -123,11 +123,12 @@ let update_matrix t : matrix =
 let calc_score inpt = 
   let t = !state in
   if t.scored_this_arrow = true then t.score 
+  else if t.paused = true then t.score
   else begin
     match is_hit t inpt with
     | Hit -> (if is_hot (!state.last_ten )
               then t.score +2 else t.score + 1)
-    | Miss -> t.score - 1  
+    | Miss -> t.score - 1 
     | Other -> t.score
   end
 
