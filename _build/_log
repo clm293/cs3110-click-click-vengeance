@@ -1,8 +1,0 @@
-### Starting build.
-# Target: view.ml.depends, tags: { extension:ml, file:view.ml, ocaml, ocamldep, quiet }
-/Users/oliviazhu/.opam/4.08.1/bin/ocamldep.opt -modules view.ml > view.ml.depends
-# Target: view.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:view.cmo, file:view.ml, implem, ocaml, quiet }
-/Users/oliviazhu/.opam/4.08.1/bin/ocamlc.opt -c -o view.cmo view.ml
-# Target: view.byte, tags: { byte, dont_link_with, extension:byte, file:view.byte, link, ocaml, program, quiet }
-/Users/oliviazhu/.opam/4.08.1/bin/ocamlc.opt view.cmo -o view.byte
-# Compilation successful.
