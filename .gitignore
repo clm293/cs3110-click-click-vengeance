@@ -11,7 +11,6 @@ adventure.zip
 *.cmx
 *.native
 *.byte
-
 _build
 
 # temporary files
