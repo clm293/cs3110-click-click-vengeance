@@ -60,10 +60,10 @@ let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
 
 (** [score t] is the score of state [t]. *)
-let score t = t.score
+let score () = !state.score
 
-(** [get_lives t] is the number of lives remaining in state [t]. *)
-let get_lives t = t.lives_remaining
+(** [get_lives] is the number of lives remaining in state [t]. *)
+let get_lives () = !state.lives_remaining
 
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
