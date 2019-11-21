@@ -34,7 +34,7 @@ and check_key_pressed press =
 
 let set_timer () = 
   let its = {it_interval = (Game.speed ());
-             it_value = 1.0} in
+             it_value = (Game.speed ())} in
   setitimer ITIMER_REAL its; ()
 
 (** [call_update num] updates the game state for a beat. *)

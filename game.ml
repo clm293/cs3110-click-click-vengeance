@@ -128,7 +128,7 @@ let calc_score inpt =
     match is_hit t inpt with
     | Hit -> (if is_hot (!state.last_ten )
               then t.score +2 else t.score + 1)
-    | Miss -> t.score - 1 
+    | Miss -> t.score
     | Other -> t.score
   end
 
@@ -142,7 +142,7 @@ let scored_this_arrow inpt new_score =
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
 let lives_remaining inpt = 
   if inpt <> "beat" && (is_hit !state inpt = Miss) then
-    (!state.lives_remaining -1) else !state.lives_remaining
+    (!state.lives_remaining - 1) else !state.lives_remaining
 
 let increase_speed score = 
   if (score mod 10 = 0) && (score > 0) 
@@ -150,7 +150,7 @@ let increase_speed score =
   else !state.speed
 
 let update_graphics () = 
-  if is_hot (!state.last_ten )then 
+  if is_hot (!state.last_ten)then 
     print_endline "hotstreak";
   if !state.paused = true then () else
     Graphic.update_graphics !state.matrix !state.score !state.lives_remaining 
@@ -206,7 +206,7 @@ let update (inpt: string) : unit =
           update_matrix !state else !state.matrix;
       score = new_score;
       num_players = !state.num_players;
-      speed = !state.speed; (* should add increase_speed here *)
+      speed = (increase_speed new_score); (* should add increase_speed here *)
       scored_this_arrow = scored_this_arrow inpt new_score;
       lives_remaining = lives_remaining inpt;
       paused = !state.paused;
