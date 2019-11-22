@@ -177,7 +177,7 @@ let update_graphics matrix score lives hs=
   draw_background magenta green cyan yellow score lives hs;
   helper matrix 0
 
-let pause s = 
+let pause () = 
   set_color white;
   moveto 200 320;
   draw_string "Paused";
@@ -185,7 +185,7 @@ let pause s =
   draw_string "Press any key to resume.";
   ()
 
-let quit s = 
+let quit () = 
   set_color white;
   moveto 200 320;
   draw_string "Quit?";
