@@ -16,7 +16,7 @@ let state = unwrap_state ()
     least one life left. *)
 let rec check_still_alive () = 
   if (Game.get_lives ()) = 0 
-  then close_graph ()
+  then (* insert restart screen*) play_game 1
   else check_key_pressed (wait_next_event [Key_pressed])
 
 (** [check_key_pressed press] updates the game state on each player input. *)
@@ -26,27 +26,28 @@ and check_key_pressed press =
   | 'j' -> print_endline "left"; Game.update "left"; check_still_alive ()
   | 'k' -> print_endline "down"; Game.update "down"; check_still_alive ()
   | 'l' -> print_endline "right"; Game.update "right"; check_still_alive ()
-  | 'q' -> print_endline "You quit the game :(";  close_graph ()
+  | 'q' -> print_endline "You quit the game :(";Game.update "pause"; Graphic.quit (); (*insert graphic.init screen here*) 
+    (wait_next_event [Key_pressed]); play_game 1
   | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause"; 
     Graphic.pause ();
     (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
+  | '0' -> close_graph ();
   | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
 
-let set_timer () = 
+and set_timer () = 
   let its = {it_interval = (Game.speed ());
              it_value = (Game.speed ())} in
   setitimer ITIMER_REAL its; ()
 
 (** [call_update num] updates the game state for a beat. *)
-let call_update num = 
+and call_update num = 
   set_timer ();
   Game.update "beat"
 
 (** [play_game song_file num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
-let rec play_game song_file num_players =
-  let song = Song.from_json (Yojson.Basic.from_file song_file) in
-  Game.init_state num_players (Song.bpm song);
+and play_game  num_players =
+  Game.init_state num_players (60.0);
   Graphic.init_graphics "" state;
   set_timer ();
   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
@@ -83,6 +84,6 @@ let main () =
                   "\n\nWelcome to Tap Tap Revenge.\n");
   let num_players = num_player_selection_loop () in
   let song = song_selection_loop () in
-  play_game song num_players
+  play_game num_players
 
 let () = main ()

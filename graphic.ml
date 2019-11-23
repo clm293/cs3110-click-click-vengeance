@@ -188,7 +188,7 @@ let pause () =
 let quit () = 
   set_color white;
   moveto 200 320;
-  draw_string "Quit?";
+  draw_string "You quit the game";
   moveto 200 300;
-  draw_string "Press q to quit.";
+  draw_string "Press any key to play again.";
   ()
