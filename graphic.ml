@@ -194,26 +194,27 @@ let draw_background_2 c1 c2 c3 c4 score1 lives1 (hotstreak1:bool)
   if hotstreak2 then draw_string  ("HOTSTREAK!") else ();
   ()
 
-(** [draw_left_arrow x y] draws the left arrow with at [x] [y]*)
+(** [draw_left_arrow x y] draws the left arrow with at ([x],[y]). *)
 let draw_left_arrow x y = 
   draw_image (make_image (create_left_arrow_matrix black transp)) x y;
   ()
 
-(** [draw_down_arrow x y] draws the down arrow with at [x] [y]*)
+(** [draw_down_arrow x y] draws the down arrow with at [([x],[y]). *)
 let draw_down_arrow x y = 
   draw_image (make_image (create_down_arrow_matrix black transp)) x y;
   ()
 
-(** [draw_up_arrow x y] draws the up arrow with at [x] [y]*)
+(** [draw_up_arrow x y] draws the up arrow with at ([x],[y]). *)
 let draw_up_arrow x y = 
   draw_image (make_image (create_up_arrow_matrix black transp)) x y;
   ()
 
-(** [draw_right_arrow x y] draws the right arrow with at [x] [y]*)
+(** [draw_right_arrow x y] draws the right arrow with at ([x],[y]). *)
 let draw_right_arrow x y = 
   draw_image (make_image (create_right_arrow_matrix black transp)) x y;
   ()
 
+(** [draw_logo s] draws the logo. *)
 let draw_logo s = 
   set_color white;
   fill_rect 125 250 350 350;
@@ -222,6 +223,8 @@ let draw_logo s =
   draw_string "Tap Tap Revenge";
   ()
 
+(** [draw_button s] draws the button at ([x],[y]) 
+    with [str] centered in the button. *)
 let draw_button str x y bkg_color txt_color= 
   set_color bkg_color;
   fill_rect x y 100 75;
@@ -243,6 +246,7 @@ let draw_button str x y bkg_color txt_color=
     draw_string str;
     (x,y)
 
+(** [start_window s] is the first window shown when the game starts. *)
 let start_window s =
   open_graph s;
   resize_window 600 640;
@@ -252,6 +256,8 @@ let start_window s =
   draw_logo s;
   draw_button "Start" 250 150 magenta white
 
+(** [player_selection st] is the where the player(s) chooses 
+    the number of players in the game. *)
 let player_selection st = 
   clear_graph ();
   set_color black;
@@ -265,6 +271,7 @@ let player_selection st =
     (draw_button "Single Player" (400/3) 150 cyan black, 
      draw_button "Double Plyer" (800/3 + 100) 150 magenta white)
 
+(** [level_selection st] is where the player(s) chooses the difficulty. *)
 let level_selection st =
   clear_graph ();
   set_color black;
@@ -280,6 +287,8 @@ let level_selection st =
      draw_button "Medium" (600/4 + 100) 150 green black, 
      draw_button "Hard" (900/4 + 200) 150 magenta white)
 
+(** [init_graphics s num_players] is where the first screen 
+    when the game officially begins. *)
 let init_graphics s num_players = 
   clear_graph ();
   match num_players with 
@@ -306,6 +315,8 @@ let init_graphics s num_players =
     end
   | _ -> failwith "Invalid number of players"
 
+(** [update_graphics_1 matrix score lives hs] is the updated graphics 
+    for single player. *)
 let update_graphics_1 matrix score lives hs = 
   let rec draw_row row i j = 
     match row with 
@@ -326,6 +337,8 @@ let update_graphics_1 matrix score lives hs =
   draw_background_1 magenta green cyan yellow score lives hs;
   helper matrix 0
 
+(** [update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2] 
+    is the updated graphics for double player. *)
 let update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2 = 
   let rec draw_row_1 row i j = 
     match row with 
@@ -366,28 +379,47 @@ let update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2 =
   helper_2 matrix2 0;
   ()
 
+(** [pause s] is the graphics screen when the game is paused. *)
 let pause s = 
   set_color white;
-  moveto 200 320;
-  draw_string "Paused";
-  moveto 200 300;
-  draw_string "Press any key to resume.";
-  ()
+  let x = ((size_x ()) - 200)/2 in let y = ((640-200)/2) in
+  fill_rect x y 200 200;
+  set_color black;
+  match text_size "Paused" with
+  | (a,b) -> let xp = x + (200-a)/2 in let yp = y + (200-b)/2 + 15 in 
+    moveto xp yp;
+    draw_string "Paused";
+    match text_size "Press any key to resume" with
+    | (c,d) -> let xk = x + (200-c)/2 in let yk = y + (200-d)/2 - 15 in 
+      moveto xk yk;
+      draw_string "Press any key to resume";
+      ()
 
+(** [quit s] is the graphics screen when the game is quit. *)
 let quit s = 
   set_color white;
-  moveto 200 320;
-  draw_string "Quit?";
-  moveto 200 300;
-  draw_string "Press q to quit.";
-  ()
+  let x = ((size_x ()) - 200)/2 in let y = ((640-200)/2) in
+  fill_rect x y 200 200;
+  set_color black;
+  match text_size "Quit?" with
+  | (a,b) -> let xp = x + (200-a)/2 in let yp = y + (200-b)/2 + 30 in 
+    moveto xp yp;
+    draw_string "Quit?";
+    match text_size "Press q to quit" with
+    | (c,d) -> let xk = x + (200-c)/2 in let yk = y + (200-d)/2 in 
+      moveto xk yk;
+      draw_string "Press q to quit";
+      match text_size "Press any key to resume" with
+      | (c,d) -> let xk = x + (200-c)/2 in let yk = y + (200-d)/2 -30 in 
+        moveto xk yk;
+        draw_string "Press any key to resume";
+        ()
 
+(** [restart s] is the graphics screen when the one round ahs ended. *)
 let restart s = 
-  open_graph s;
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;
-  set_window_title "Tap Tap Revenge";
   draw_logo s;
   moveto 200 300;
   (draw_button "Play Again" (400/3) 150 cyan black, 
