@@ -1,5 +1,6 @@
 open Graphics 
 
+(** [to_list arr] converts the 2D array [arr] to a 2D list. *)
 let to_list arr = 
   let rec helper list = 
     match list with 
@@ -8,6 +9,7 @@ let to_list arr =
     | h :: t -> Array.to_list h :: (helper t) in
   helper (Array.to_list arr)
 
+(** [of_list list] converts the 2D list [list] to a 2D array. *)
 let of_list list = 
   let rec helper list = 
     match list with 
@@ -15,9 +17,12 @@ let of_list list =
     | h :: t -> Array.of_list h :: (helper t) in 
   Array.of_list (helper list)
 
+(** [make3 arr] repeates the array [arr] 3 times. *)
 let make3 arr =
   Array.make 3 arr
 
+(** [create_right_arrow_matrix c1 c2] creates the matrix for a right arrow 
+    with arrow color c1 and background color c2. *)
 let create_right_arrow_matrix c1 c2 = 
   let empty = Array.make 75 c2 in 
   let emptysec = Array.make 21 empty in
@@ -48,6 +53,8 @@ let create_right_arrow_matrix c1 c2 =
   |> Array.append middlesec 
   |> Array.append emptysec 
 
+(** [create_left_arrow_matrix c1 c2] creates the matrix for a left arrow 
+    with arrow color c1 and background color c2. *)
 let create_left_arrow_matrix c1 c2 = 
   let rec helper list = 
     match list with 
@@ -55,6 +62,8 @@ let create_left_arrow_matrix c1 c2 =
     | h :: t -> List.rev h :: helper t in
   helper (to_list (create_right_arrow_matrix c1 c2)) |> of_list
 
+(** [create_up_arrow_matrix c1 c2] creates the matrix for a up arrow 
+    with arrow color c1 and background color c2. *)
 let create_up_arrow_matrix c1 c2 = 
   let empty = Array.make 75 c2 in 
   let emptysec = Array.make 6 empty in 
@@ -100,9 +109,13 @@ let create_up_arrow_matrix c1 c2 =
   |> Array.append middlesec1 
   |> Array.append emptysec
 
+(** [create_down_arrow_matrix c1 c2] creates the matrix for a down arrow 
+    with arrow color c1 and background color c2. *)
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
+(** [draw_background_1 c1 c2 c3 c4 score lives hotstreak] draws the background 
+    in the single player mode. *)
 let draw_background_1 c1 c2 c3 c4 score lives (hotstreak:bool) = 
   set_color black;
   fill_rect 0 0 600 640;
@@ -129,6 +142,8 @@ let draw_background_1 c1 c2 c3 c4 score lives (hotstreak:bool) =
   if hotstreak then draw_string  ("HOTSTREAK!") else ();
   ()
 
+(** [draw_background_2 c1 c2 c3 c4 score1 lives1 hotstreak1 
+    score2 lives2 hotstreak2] draws the background in the double player mode. *)
 let draw_background_2 c1 c2 c3 c4 score1 lives1 (hotstreak1:bool) 
     score2 lives2 (hotstreak2:bool) = 
   set_color black;
@@ -179,19 +194,22 @@ let draw_background_2 c1 c2 c3 c4 score1 lives1 (hotstreak1:bool)
   if hotstreak2 then draw_string  ("HOTSTREAK!") else ();
   ()
 
-
+(** [draw_left_arrow x y] draws the left arrow with at [x] [y]*)
 let draw_left_arrow x y = 
   draw_image (make_image (create_left_arrow_matrix black transp)) x y;
   ()
 
+(** [draw_down_arrow x y] draws the down arrow with at [x] [y]*)
 let draw_down_arrow x y = 
   draw_image (make_image (create_down_arrow_matrix black transp)) x y;
   ()
 
+(** [draw_up_arrow x y] draws the up arrow with at [x] [y]*)
 let draw_up_arrow x y = 
   draw_image (make_image (create_up_arrow_matrix black transp)) x y;
   ()
 
+(** [draw_right_arrow x y] draws the right arrow with at [x] [y]*)
 let draw_right_arrow x y = 
   draw_image (make_image (create_right_arrow_matrix black transp)) x y;
   ()
@@ -204,15 +222,20 @@ let draw_logo s =
   draw_string "Tap Tap Revenge";
   ()
 
-let draw_button str x y (* bkg_color line_color txt_color *)= 
-  set_color white;
+let draw_button str x y bkg_color txt_color= 
+  set_color bkg_color;
   fill_rect x y 100 75;
+
   set_color black;
   draw_image (make_image [|[|black|]|])x y;
   draw_image (make_image [|[|black|]|])(x+100) y;
   draw_image (make_image [|[|black|]|])x (y+75);
   draw_image (make_image [|[|black|]|])(x+100) (y+75);
+
+  set_color black;
   draw_rect (x+2) (y+2) 96 71;
+
+  set_color txt_color;
   match text_size str with
   |(x_text,y_text) -> let x_pos = x + (100-x_text)/2 in 
     let y_pos = y + (75-y_text)/2 in
@@ -227,7 +250,7 @@ let start_window s =
   fill_rect 0 0 600 640;
   set_window_title "Tap Tap Revenge";
   draw_logo s;
-  draw_button "Start" 250 150
+  draw_button "Start" 250 150 magenta white
 
 let player_selection st = 
   clear_graph ();
@@ -239,8 +262,8 @@ let player_selection st =
   | (x,_) -> let x_pos = (600-x)/2 in
     moveto x_pos 300;
     draw_string "Select a Playing Mode";
-    (draw_button "Single Player" (400/3) 150, 
-     draw_button "Double Plyer" (800/3 + 100) 150)
+    (draw_button "Single Player" (400/3) 150 cyan black, 
+     draw_button "Double Plyer" (800/3 + 100) 150 magenta white)
 
 let level_selection st =
   clear_graph ();
@@ -253,9 +276,9 @@ let level_selection st =
   | (x,_) -> let x_pos = (600-x)/2 in
     moveto x_pos 300;
     draw_string "Select a Level";
-    (draw_button "Easy" (300/4) 150, 
-     draw_button "Medium" (600/4 + 100) 150, 
-     draw_button "Hard" (900/4 + 200) 150)
+    (draw_button "Easy" (300/4) 150 cyan black, 
+     draw_button "Medium" (600/4 + 100) 150 green black, 
+     draw_button "Hard" (900/4 + 200) 150 magenta white)
 
 let init_graphics s num_players = 
   clear_graph ();
@@ -367,5 +390,5 @@ let restart s =
   set_window_title "Tap Tap Revenge";
   draw_logo s;
   moveto 200 300;
-  (draw_button "Play Again" (400/3) 150, 
-   draw_button "Quit" (800/3 + 100) 150)
+  (draw_button "Play Again" (400/3) 150 cyan black, 
+   draw_button "Quit" (800/3 + 100) 150 magenta white)
