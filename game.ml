@@ -68,14 +68,14 @@ let get_lives () = !state.lives_remaining
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
-  if !state.score < 2 then
-    match Random.int 4 with
-    | 0 -> print_endline "0"; [Some Left; None; None; None]
-    | 1 -> print_endline "1"; [None; Some Down; None; None]
-    | 2 -> print_endline "2"; [None; None; Some Up; None]
-    | 3 -> print_endline "3"; [None; None; None; Some Right]
-    | _ -> failwith "random"
-  else 
+  (* if !state.score < 2 then*)
+  match Random.int 4 with
+  | 0 -> print_endline "0"; [Some Left; None; None; None]
+  | 1 -> print_endline "1"; [None; Some Down; None; None]
+  | 2 -> print_endline "2"; [None; None; Some Up; None]
+  | 3 -> print_endline "3"; [None; None; None; Some Right]
+  | _ -> failwith "random"
+(*  else 
     match Random.int 10 with 
     | 0 -> print_endline "0"; [Some Left; None; None; None]
     | 1 -> print_endline "1"; [None; Some Down; None; None]
@@ -88,7 +88,7 @@ let generate_random_row () =
     | 8 -> print_endline "8"; [Some Left; None; Some Up; None]
     | 9 -> print_endline "9"; [Some Left; None; None; Some Right]
     | _ -> failwith "random"
-
+*)
 
 let is_hot lst = 
   lst = [Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit]

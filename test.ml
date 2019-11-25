@@ -23,7 +23,7 @@ let cmp_set_like_lists lst1 lst2 =
 let j = Yojson.Basic.from_file "test_song.json"
 let json_tests = [
   "bpm" >:: (fun _ -> 
-      (assert_equal (bpm (from_json j)) 100 ));
+      (assert_equal (bpm (from_json j)) 100.0 ));
   "song name" >:: (fun _ -> 
       (assert_equal (song_name (from_json j)) "test song" ));
   "difficulty" >:: (fun _ -> 
@@ -35,8 +35,6 @@ let json_tests = [
 ]
 
 let tests = [
-  "test init state" >:: (fun _ -> 
-      (assert_equal init_state init_state ))
 
 ] 
 
