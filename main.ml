@@ -18,7 +18,7 @@ let state = unwrap_state ()
     least one life left. *)
 let rec check_still_alive () = 
   if (Game.get_lives ()) = 0 
-  then close_graph ()
+  then (* insert restart screen*) (Graphic.restart ""; ())
   else check_key_pressed (wait_next_event [Key_pressed])
 
 (** [check_key_pressed press] updates the game state on each player input. *)
@@ -30,52 +30,42 @@ and check_key_pressed press =
   | 'l' -> print_endline "right"; Game.update "right"; check_still_alive ()
   | 'q' -> print_endline "You quit the game :(";  Game.update "pause";
     Graphic.quit(); 
-    if (wait_next_event[Key_pressed]).key = 'q' then close_graph ()
+    if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
     else Game.update "resume"; check_still_alive ()
   | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause"; 
     Graphic.pause ();
     (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
   | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
 
-let set_timer () =
+and set_timer () =
   print_endline "in timer";
   let its = {it_interval = (Game.speed ());
              it_value = (Game.speed ())} in
   setitimer ITIMER_REAL its; ()
 
 (** [call_update num] updates the game state for a beat. *)
-let call_update num = 
+and call_update num = 
   set_timer ();
   Game.update "beat"
 
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
-let rec play_game mode num_players =
-  match mode with
-  | "endless" -> 
-    Game.init_state num_players 50.0 None;
-    Graphic.init_graphics "" num_players;
-    set_timer ();
-    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-    check_key_pressed (wait_next_event [Key_pressed])
-  | _ -> 
-    let song = Song.from_json (Yojson.Basic.from_file mode) in
-    Game.init_state num_players (Song.bpm song) (Song.length song);
-    Graphic.init_graphics "" num_players;
-    set_timer ();
-    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-    check_key_pressed (wait_next_event [Key_pressed])
-
-let rec mode_selection_loop () = 
-  print_endline "Please select the mode you wish to play\n";
-  print_endline "1: Levels";
-  print_endline "2: Endless";
-  print_string  "> ";
-  match read_line () with
-  | "1" -> "levels"
-  | "2" -> "endless" 
-  | _ -> print_endline "Please enter a valid mode option";
-    mode_selection_loop ()
+and play_game mode num_players =
+  begin match mode with
+    | "endless" -> 
+      Game.init_state num_players 50.0 None;
+      Graphic.init_graphics "" num_players;
+      set_timer ();
+      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
+      check_key_pressed (wait_next_event [Key_pressed]);()
+    | _ -> 
+      let song = Song.from_json (Yojson.Basic.from_file mode) in
+      Game.init_state num_players (Song.bpm song) (Song.length song);
+      Graphic.init_graphics "" num_players;
+      set_timer ();
+      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
+      check_key_pressed (wait_next_event [Key_pressed]);()
+  end
 
 let click_location click = 
   (click.mouse_x,click.mouse_y)
