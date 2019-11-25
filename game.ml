@@ -159,9 +159,15 @@ let increase_speed score =
 let update_graphics () = 
   if is_hot (!state.last_ten)then 
     print_endline "hotstreak";
-  if !state.paused = true then () else
-    Graphic.update_graphics !state.matrix !state.score !state.lives_remaining 
-      (is_hot (!state.last_ten ))
+  if !state.num_players = 1 
+  then if !state.paused = true then ()
+    else Graphic.update_graphics_1 !state.matrix !state.score 
+        !state.lives_remaining (is_hot (!state.last_ten ))
+  else if !state.paused = true then () 
+  else Graphic.update_graphics_2 !state.matrix !state.score 
+      !state.lives_remaining (is_hot (!state.last_ten )) 
+      !state.matrix !state.score 
+      !state.lives_remaining (is_hot (!state.last_ten ))
 
 (*last_ten tracks the 10 most recent press results, with the most recent 
   being the last element of the list*)
