@@ -6,7 +6,6 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
-<<<<<<< HEAD
 let leaderboard = []
 
 (** [unwrap_state ()] is the current game state. *)
@@ -15,14 +14,6 @@ let unwrap_state () = !Game.state
 (** [state] is the current game state. *)
 let state = unwrap_state ()
 
-=======
-(** [unwrap_state ()] is the current game state. *)
-let unwrap_state () = !Game.state
-
-(** [state] is the current game state. *)
-let state = unwrap_state ()
-
->>>>>>> master
 (** [check_still_alive ()] continues the input loop if the player still has at 
     least one life left. *)
 let rec check_still_alive () = 
@@ -37,14 +28,10 @@ and check_key_pressed press =
   | 'j' -> print_endline "left"; Game.update "left"; check_still_alive ()
   | 'k' -> print_endline "down"; Game.update "down"; check_still_alive ()
   | 'l' -> print_endline "right"; Game.update "right"; check_still_alive ()
-<<<<<<< HEAD
   | 'q' -> print_endline "You quit the game :(";  Game.update "pause";
     Graphic.quit(); 
     if (wait_next_event[Key_pressed]).key = 'q' then close_graph ()
     else Game.update "resume"; check_still_alive ()
-=======
-  | 'q' -> print_endline "You quit the game :(";  close_graph ()
->>>>>>> master
   | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause"; 
     Graphic.pause ();
     (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
@@ -54,36 +41,22 @@ let set_timer () =
   let its = {it_interval = (Game.speed ());
              it_value = (Game.speed ())} in
   setitimer ITIMER_REAL its; ()
-<<<<<<< HEAD
 
 (** [call_update num] updates the game state for a beat. *)
 let call_update num = 
   set_timer ();
   Game.update "beat"
 
-=======
-
-(** [call_update num] updates the game state for a beat. *)
-let call_update num = 
-  set_timer ();
-  Game.update "beat"
-
->>>>>>> master
 (** [play_game song_file num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
 let rec play_game song_file num_players =
   let song = Song.from_json (Yojson.Basic.from_file song_file) in
   Game.init_state num_players (Song.bpm song);
-<<<<<<< HEAD
   Graphic.init_graphics "" num_players;
-=======
-  Graphic.init_graphics "" state;
->>>>>>> master
   set_timer ();
   Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
   check_key_pressed (wait_next_event [Key_pressed])
 
-<<<<<<< HEAD
 let click_location click = 
   (click.mouse_x,click.mouse_y)
 
@@ -141,7 +114,7 @@ let rec level_selection s =
                   if button_clicked b4x1 b4x2 b4y1 b4y2 click
                   then "test_song_fast.json"
                   else level_selection s
-=======
+
 (** [song_selection_loop ()] prompts the player to select the song they wish to 
     play and returns the name of that song file.*)
 let rec song_selection_loop () = 
@@ -167,7 +140,6 @@ let rec num_player_selection_loop () =
   | "2" -> 2
   | _ -> print_endline "Please enter a valid number of players";
     num_player_selection_loop ()
->>>>>>> master
 
 let main () =
   (* ANSITerminal.(print_string [red]
