@@ -269,7 +269,7 @@ let player_selection st =
     moveto x_pos 300;
     draw_string "Select a Playing Mode";
     (draw_button "Single Player" (400/3) 150 cyan black, 
-     draw_button "Double Plyer" (800/3 + 100) 150 magenta white)
+     draw_button "Double Player" (800/3 + 100) 150 magenta white)
 
 (** [level_selection st] is where the player(s) chooses the difficulty. *)
 let level_selection st =
@@ -283,9 +283,10 @@ let level_selection st =
   | (x,_) -> let x_pos = (600-x)/2 in
     moveto x_pos 300;
     draw_string "Select a Level";
-    (draw_button "Easy" (300/4) 150 cyan black, 
-     draw_button "Medium" (600/4 + 100) 150 green black, 
-     draw_button "Hard" (900/4 + 200) 150 magenta white)
+    (draw_button "Easy" (200/5) 150 yellow black, 
+     draw_button "Medium" (400/5 + 100) 150 cyan white, 
+     draw_button "Hard" (600/5 + 200) 150 green black,
+     draw_button "Endless" (800/5 + 300) 150 magenta white)
 
 (** [init_graphics s num_players] is where the first screen 
     when the game officially begins. *)

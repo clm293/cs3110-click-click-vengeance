@@ -6,6 +6,8 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
+let leaderboard = []
+
 (** [unwrap_state ()] is the current game state. *)
 let unwrap_state () = !Game.state
 
@@ -89,7 +91,7 @@ let rec player_selection s =
 
 let rec level_selection s = 
   match Graphic.level_selection s with
-  | (b1, b2, b3) ->  
+  | (b1, b2, b3, b4) ->  
     let click = (wait_next_event [Button_down]) in 
     match b1 with 
     | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
@@ -106,7 +108,12 @@ let rec level_selection s =
               let b3y1 = b3y in let b3y2 = b3y + 75 in 
               if button_clicked b3x1 b3x2 b3y1 b3y2 click
               then "test_song_fast.json"
-              else level_selection s
+              else match b4 with 
+                | (b4x,b4y) -> let b4x1 = b4x in let b4x2 = b4x + 100 in 
+                  let b4y1 = b4y in let b4y2 = b4y + 75 in 
+                  if button_clicked b4x1 b4x2 b4y1 b4y2 click
+                  then "test_song_fast.json"
+                  else level_selection s
 
 let main () =
   (* ANSITerminal.(print_string [red]
