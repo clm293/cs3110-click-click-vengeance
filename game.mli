@@ -1,6 +1,5 @@
 (** 
    Controls all game functions.
-
    This module handles all scoring, music, and game data.
 *)
 type arrow
@@ -30,7 +29,7 @@ val score : unit -> int
 val get_curr_matrix : unit -> matrix
 
 (** [init_state num bpm] is the initial state of the game before play has started. *)
-val init_state : int -> float -> unit
+val init_state : int -> float -> int option -> unit
 
 val speed : unit -> float
 
