@@ -177,7 +177,7 @@ let is_double_hit t sec_inpt =
 
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
-let is_hit t inpt update_fun = 
+let is_hit t inpt = 
   if List.mem (bottom_row (t.matrix)) double_rows then is_double_hit t inpt 
   else 
     match inpt with
@@ -198,14 +198,14 @@ let update_matrix t : matrix =
 
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
-let calc_score inpt update_fun= 
+let calc_score inpt = 
   let t = !state in
   if t.scored_this_arrow = true then t.score 
   else if t.paused = true then t.score
   else begin
-    match is_hit t inpt update_fun with
-    | Hit -> (if is_hot (!state.last_ten )
-              then t.score +2 else t.score + 1)
+    match is_hit t inpt with
+    | Hit -> (if is_hot (!state.last_ten)
+              then t.score + 2 else t.score + 1)
     | Miss -> t.score
     | Other -> t.score
   end
@@ -218,16 +218,15 @@ let scored_this_arrow inpt new_score =
          if (new_score <> !state.score) then true else false)
 
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
-let lives_remaining inpt update_fun new_matrix = 
+let lives_remaining inpt new_matrix = 
   if (List.mem (bottom_row new_matrix) double_rows) &&
      !state.first_of_double = "" then !state.lives_remaining else
-    (if inpt <> "beat" && (is_hit !state inpt update_fun= Miss) then
+    (if inpt <> "beat" && (is_hit !state inpt = Miss) then
        (print_endline !state.first_of_double; !state.lives_remaining - 1) else !state.lives_remaining)
 
-
-(** [increase_speed score] is the increased speed. *)
-let increase_speed score = 
-  if (score mod 20 = 0) && (score > 0) 
+(** [increase_speed] is the increased speed. *)
+let increase_speed beat = 
+  if (beat mod 20 = 0) 
   then begin print_endline "change speed"; !state.speed *. 1.1 end 
   else !state.speed
 
@@ -292,25 +291,24 @@ let rec update (inpt: string) : unit =
   else if inpt = "resume" then resume_game ()
   else
     let new_score = if bottom_row !state.matrix <> [None;None;None;None]
-      then calc_score inpt update else !state.score in
+      then calc_score inpt else !state.score in
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
         update_matrix !state else !state.matrix in
     let new_state = {
       matrix = new_matrix;
       score = new_score;
       num_players = !state.num_players;
-      speed = if inpt = "beat" then (increase_speed new_score) else !state.speed; (* should add increase_speed here *)
+      speed = if inpt = "beat" then (increase_speed (!state.beat + 1)) else !state.speed; (* should add increase_speed here *)
       scored_this_arrow = scored_this_arrow inpt new_score;
-      lives_remaining = lives_remaining inpt update new_matrix;
+      lives_remaining = lives_remaining inpt new_matrix;
       paused = !state.paused;
       last_ten = if inpt <> "beat" && (!state.scored_this_arrow = false) then 
-          (update_last_ten (is_hit !state inpt update) (!state.last_ten)) else
+          (update_last_ten (is_hit !state inpt) (!state.last_ten)) else
           !state.last_ten;
       first_of_double = if List.mem (bottom_row new_matrix) double_rows &&
                            inpt <> "beat" then inpt else "";
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat
-
     } in 
 
     if new_state.lives_remaining = 0 then print_endline "Game Over.";
