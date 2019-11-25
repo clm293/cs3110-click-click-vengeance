@@ -3,7 +3,10 @@ open Game
 open Main
 open Song
 
-
+(** Our approach to testing:
+ *unit tests for function
+ *testing changes made to the mutable state behave as intended
+*)
 
 let init_tests = [
 
@@ -28,6 +31,6 @@ let paused_tests = [
 let suite_init = "test suite init" >::: (init_tests) 
 let suite_pause = "test suite pause" >::: (paused_tests) 
 
-let ()= Game.init_state 1 60.0; run_test_tt_main suite_init;
+let () = Game.init_state 1 60.0; run_test_tt_main suite_init;
   print_endline "done init";
   Game.update "paused";  run_test_tt_main suite_pause; print_endline "done paused"

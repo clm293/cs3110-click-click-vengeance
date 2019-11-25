@@ -31,7 +31,6 @@ and check_key_pressed press =
   | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause"; 
     Graphic.pause ();
     (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
-  | '0' -> close_graph ();
   | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
 
 and set_timer () = 

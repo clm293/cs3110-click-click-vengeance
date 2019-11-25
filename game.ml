@@ -127,7 +127,7 @@ let bottom_row m =
   | _ -> failwith "bad matrix"
 
 let is_double_hit t sec_inpt = 
-  print_endline "in double";
+  print_endline "in is double hit";
   if not (List.mem (t.first_of_double) ["right";"left";"up";"down"]) then Miss else
     let fst_inpt = t.first_of_double in 
     match fst_inpt, sec_inpt with 
