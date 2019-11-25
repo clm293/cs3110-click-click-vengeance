@@ -32,7 +32,8 @@ and check_key_pressed press =
     (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
   | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
 
-let set_timer () = 
+let set_timer () =
+  print_endline "in timer";
   let its = {it_interval = (Game.speed ());
              it_value = (Game.speed ())} in
   setitimer ITIMER_REAL its; ()

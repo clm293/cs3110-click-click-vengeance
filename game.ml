@@ -145,8 +145,8 @@ let lives_remaining inpt =
     (!state.lives_remaining - 1) else !state.lives_remaining
 
 let increase_speed score = 
-  if (score mod 10 = 0) && (score > 0) 
-  then begin print_endline "change speed"; !state.speed *. 2.0 end 
+  if (score mod 20 = 0) && (score > 0) 
+  then begin print_endline "change speed"; !state.speed *. 1.1 end 
   else !state.speed
 
 let update_graphics () = 
@@ -206,7 +206,7 @@ let update (inpt: string) : unit =
           update_matrix !state else !state.matrix;
       score = new_score;
       num_players = !state.num_players;
-      speed = (increase_speed new_score); (* should add increase_speed here *)
+      speed = if inpt = "beat" then (increase_speed new_score) else !state.speed; (* should add increase_speed here *)
       scored_this_arrow = scored_this_arrow inpt new_score;
       lives_remaining = lives_remaining inpt;
       paused = !state.paused;
