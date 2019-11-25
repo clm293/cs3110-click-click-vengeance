@@ -1,6 +1,5 @@
 (** 
    Controls all game functions.
-
    This module handles all scoring, music, and game data.
 *)
 
