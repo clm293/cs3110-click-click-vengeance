@@ -22,7 +22,7 @@ val get_lives : unit -> int
 val score : unit -> int
 
 (** [init_state num bpm] is the initial state of the game before play has started. *)
-val init_state : int -> float -> unit
+val init_state : int -> float -> int option -> unit
 
 val speed : unit -> float
 

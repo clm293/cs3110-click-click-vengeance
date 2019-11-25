@@ -43,15 +43,34 @@ let call_update num =
   set_timer ();
   Game.update "beat"
 
-(** [play_game song_file num_players] initializes the game with the appropriate 
+(** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
-let rec play_game song_file num_players =
-  let song = Song.from_json (Yojson.Basic.from_file song_file) in
-  Game.init_state num_players (Song.bpm song);
-  Graphic.init_graphics "" state;
-  set_timer ();
-  Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-  check_key_pressed (wait_next_event [Key_pressed])
+let rec play_game mode num_players =
+  match mode with
+  | "endless" -> 
+    Game.init_state num_players 50.0 None;
+    Graphic.init_graphics "" state;
+    set_timer ();
+    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
+    check_key_pressed (wait_next_event [Key_pressed])
+  | _ -> 
+    let song = Song.from_json (Yojson.Basic.from_file mode) in
+    Game.init_state num_players (Song.bpm song) (Song.length song);
+    Graphic.init_graphics "" state;
+    set_timer ();
+    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
+    check_key_pressed (wait_next_event [Key_pressed])
+
+let rec mode_selection_loop () = 
+  print_endline "Please select the mode you wish to play\n";
+  print_endline "1: Levels";
+  print_endline "2: Endless";
+  print_string  "> ";
+  match read_line () with
+  | "1" -> "levels"
+  | "2" -> "endless" 
+  | _ -> print_endline "Please enter a valid mode option";
+    mode_selection_loop ()
 
 (** [song_selection_loop ()] prompts the player to select the song they wish to 
     play and returns the name of that song file.*)
@@ -83,7 +102,10 @@ let main () =
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to Tap Tap Revenge.\n");
   let num_players = num_player_selection_loop () in
-  let song = song_selection_loop () in
-  play_game song num_players
+  let mode = mode_selection_loop () in
+  if mode = "levels" then
+    let song = song_selection_loop () in
+    play_game song num_players
+  else play_game mode num_players
 
 let () = main ()

@@ -15,7 +15,9 @@ type t = {
   scored_this_arrow : bool;
   lives_remaining: int;
   paused: bool;
-  last_ten: press list
+  last_ten: press list;
+  length: int option;
+  beat: int;
 }
 
 (** [state] is the reference pointing to the current state of the game. *)
@@ -27,11 +29,13 @@ let state = ref {
     scored_this_arrow = false;
     lives_remaining = 0;
     paused = false;
-    last_ten = []
+    last_ten = [];
+    length = None;
+    beat = 0;
   }
 
-(** [init_state num bpm] is the initial state of the game. *)
-let init_state num bpm = 
+(** [init_state num bpm len] is the initial state of the game. *)
+let init_state num bpm len = 
   state := {
     matrix = [
       [None; None; None; None];
@@ -49,7 +53,9 @@ let init_state num bpm =
     scored_this_arrow = false;
     lives_remaining = 5;
     paused = false;
-    last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss]
+    last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
+    length = len;
+    beat = 0;
   }
 
 (** [speed ()] is the beats per second for the state's bpm *)
@@ -144,6 +150,7 @@ let lives_remaining inpt =
   if inpt <> "beat" && (is_hit !state inpt = Miss) then
     (!state.lives_remaining - 1) else !state.lives_remaining
 
+(** [increase_speed score] is the increased speed. *)
 let increase_speed score = 
   if (score mod 20 = 0) && (score > 0) 
   then begin print_endline "change speed"; !state.speed *. 1.1 end 
@@ -172,7 +179,9 @@ let pause_game () =
     scored_this_arrow = !state.scored_this_arrow;
     lives_remaining = !state.lives_remaining;
     paused = true;
-    last_ten = !state.last_ten
+    last_ten = !state.last_ten;
+    length = !state.length;
+    beat = !state.beat;
   } 
   in 
   state := new_state;
@@ -187,13 +196,13 @@ let resume_game () =
     scored_this_arrow = !state.scored_this_arrow;
     lives_remaining = !state.lives_remaining;
     paused = false;
-    last_ten = !state.last_ten
+    last_ten = !state.last_ten;
+    length = !state.length;
+    beat = !state.beat;
   } 
   in 
   state := new_state;
   update_graphics ()
-
-
 
 let update (inpt: string) : unit =
   if inpt = "pause" then pause_game ()
@@ -212,10 +221,17 @@ let update (inpt: string) : unit =
       paused = !state.paused;
       last_ten = if inpt <> "beat" && (!state.scored_this_arrow = false) then 
           (update_last_ten (is_hit !state inpt) (!state.last_ten)) else
-          !state.last_ten
+          !state.last_ten;
+      length = !state.length;
+      beat = if inpt = "beat" then !state.beat + 1 else !state.beat
     } in 
 
     if new_state.lives_remaining = 0 then print_endline "Game Over.";
-    state := new_state;
-    update_graphics ()
+    match new_state.length with
+    | Some l -> if new_state.beat > l then print_endline "You won!" else begin
+        state := new_state;
+        update_graphics ()
+      end
+    | None -> state := new_state;
+      update_graphics ()
 
