@@ -122,7 +122,7 @@ let rec level_selection s =
                 | (b4x,b4y) -> let b4x1 = b4x in let b4x2 = b4x + 100 in 
                   let b4y1 = b4y in let b4y2 = b4y + 75 in 
                   if button_clicked b4x1 b4x2 b4y1 b4y2 click
-                  then "test_song_fast.json"
+                  then "endless"
                   else level_selection s
 
 (** [song_selection_loop ()] prompts the player to select the song they wish to 
