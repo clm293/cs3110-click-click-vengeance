@@ -2,5 +2,6 @@
   "song name": "test song",
   "bpm": 50.0,
   "difficulty": "easy",
-  "file": "test song file"
+  "file": "test song file",
+  "length": 100
 }
