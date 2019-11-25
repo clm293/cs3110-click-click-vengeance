@@ -18,7 +18,7 @@ let state = unwrap_state ()
     least one life left. *)
 let rec check_still_alive () = 
   if (Game.get_lives ()) = 0 
-  then (* insert restart screen*) (Graphic.restart ""; ())
+  then (Graphic.restart ""; ())
   else check_key_pressed (wait_next_event [Key_pressed])
 
 (** [check_key_pressed press] updates the game state on each player input. *)
@@ -122,41 +122,11 @@ let rec level_selection s =
                 | (b4x,b4y) -> let b4x1 = b4x in let b4x2 = b4x + 100 in 
                   let b4y1 = b4y in let b4y2 = b4y + 75 in 
                   if button_clicked b4x1 b4x2 b4y1 b4y2 click
-                  then "test_song_fast.json"
+                  then "endless"
                   else level_selection s
 
-(** [song_selection_loop ()] prompts the player to select the song they wish to 
-    play and returns the name of that song file.*)
-let rec song_selection_loop () = 
-  print_endline "Please enter the number of the song you wish to play\n";
-  print_endline "1: Song 1, Difficulty: Easy";
-  print_endline "2: Song 2, Difficulty: Medium";
-  print_endline "3: Song 3, Difficulty: Hard";
-  print_string  "> ";
-  match read_line () with
-  | "1" -> "coughSyrup.json"
-  | "2" -> "test_song.json" 
-  | "3" -> "test_song_fast.json"
-  | _ -> print_endline "Please enter a valid song number";
-    song_selection_loop ()
-
-(** [num_player_selection_loop ()] prompts the player to select the number of 
-    players they wish to play with and returns the number. *)
-let rec num_player_selection_loop () =
-  print_endline "Please enter the number of players you wish to play\n";
-  print_string  "> ";
-  match read_line () with
-  | "1" -> 1
-  | "2" -> 2
-  | _ -> print_endline "Please enter a valid number of players";
-    num_player_selection_loop ()
-
 let main () =
-  (* ANSITerminal.(print_string [red]
-                  "\n\nWelcome to Tap Tap Revenge.\n"); *)
   start_window "";
-  (* let num_players = num_player_selection_loop () in
-     let song = song_selection_loop () in *)
   let num_players = player_selection "" in 
   let song = level_selection "" in
   print_int num_players;
