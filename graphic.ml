@@ -1,4 +1,5 @@
 open Graphics 
+(* open Images *)
 
 (** [to_list arr] converts the 2D array [arr] to a 2D list. *)
 let to_list arr = 
@@ -227,6 +228,9 @@ let draw_logo s =
   set_color black;
   moveto 200 500;
   draw_string "Tap Tap Revenge";
+  (* let img = Png.load "logo.png" [] in
+     (* let g = Graphic_image.of_image img in *)
+     Graphics.draw_image img 0 0;; *)
   ()
 
 (** [draw_button s] draws the button at ([x],[y]) 
