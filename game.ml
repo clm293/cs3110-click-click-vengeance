@@ -24,7 +24,7 @@ type t = {
   paused: bool;
   length: int;
   beat: int;
-  players: player * player option;
+  players: player ref * (player ref) option;
 }
 
 let player_1_ref = ref {
@@ -55,7 +55,7 @@ let state = ref {
     paused = false;
     length = 0;
     beat = 0;
-    players = (player_1, None);
+    players = (player_1_ref, None);
   }
 
 let leaderboard = ref []
@@ -78,7 +78,7 @@ let init_state num bpm len =
     paused = false;
     length = len;
     beat = 0;
-    players = if num = 1 then (player_1, None) else (player_1, Some player_2);
+    players = if num = 1 then (player_1_ref, None) else (player_1_ref, Some player_2_ref);
   }
 (* some functions used for testing:*)
 let get_paused () = !state.paused
@@ -301,7 +301,7 @@ let resume_game () =
   state := new_state;
   update_graphics ()
 
-let rec update_player inpt (matrix:matrix) (p:player ref) = 
+let update_player inpt (matrix:matrix) (p:player ref) = 
   if inpt = "pause" then pause_game ()
   else if inpt = "resume" then resume_game ()
   else
@@ -311,17 +311,17 @@ let rec update_player inpt (matrix:matrix) (p:player ref) =
       score = new_score;
       scored_this_arrow = scored_this_arrow inpt new_score !p;
       lives_remaining = lives_remaining inpt matrix !p;
-      last_ten = if inpt <> "beat" && (!p.scored_this_arrow = false) 
-                    && not (List.mem (bottom_row matrix) double_rows && 
-                            !p.first_of_double = "") then 
+      last_ten = if (inpt <> "beat" && (!p.scored_this_arrow = false) 
+                     && not (List.mem (bottom_row matrix) double_rows && 
+                             !p.first_of_double = "")) then 
           (update_last_ten (is_hit inpt !p) (!p.last_ten)) else
-          !p.last_ten;
+          (!p.last_ten);
       first_of_double = if List.mem (bottom_row matrix) double_rows &&
                            inpt <> "beat" then inpt else "";
     } in 
     p := new_player_state
 
-let rec update (inpt: string) (player: int) : unit =
+let update (inpt: string) (player: int) : unit =
   if inpt = "pause"  then pause_game ();
   if inpt = "resume" then resume_game ();
   let new_matrix = if inpt = "beat" && (!state.paused = false) then 
