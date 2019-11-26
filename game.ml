@@ -303,7 +303,9 @@ let rec update (inpt: string) : unit =
       scored_this_arrow = scored_this_arrow inpt new_score;
       lives_remaining = lives_remaining inpt update new_matrix;
       paused = !state.paused;
-      last_ten = if inpt <> "beat" && (!state.scored_this_arrow = false) then 
+      last_ten = if inpt <> "beat" && (!state.scored_this_arrow = false) 
+                    && not (List.mem (bottom_row new_matrix) double_rows && 
+                            !state.first_of_double = "") then 
           (update_last_ten (is_hit !state inpt update) (!state.last_ten)) else
           !state.last_ten;
       first_of_double = if List.mem (bottom_row new_matrix) double_rows &&
