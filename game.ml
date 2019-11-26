@@ -319,4 +319,3 @@ let rec update (inpt: string) : unit =
       end
     | None -> state := new_state;
       update_graphics ()
-
