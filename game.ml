@@ -311,9 +311,10 @@ let rec update (inpt: string) : unit =
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat
     } in 
 
-    if new_state.lives_remaining = 0 then print_endline "Game Over.";
+    if new_state.lives_remaining = 0 
+    then print_endline "Game Over.";
     match new_state.length with
-    | Some l -> if new_state.beat > l then print_endline "You won!" else begin
+    | Some l -> if new_state.beat > l then print_endline "YOU WON!" else begin
         state := new_state;
         update_graphics ()
       end
