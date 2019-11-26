@@ -240,7 +240,7 @@ let update_graphics () =
   else if !state.paused = true then () 
   else Graphic.update_graphics_2 !state.matrix !state.score 
       !state.lives_remaining (is_hot (!state.last_ten )) 
-      !state.matrix !state.score 
+      !state.score 
       !state.lives_remaining (is_hot (!state.last_ten ))
 
 (*last_ten tracks the 10 most recent press results, with the most recent 
