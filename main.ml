@@ -12,31 +12,54 @@ let leaderboard = []
 let unwrap_state () = !Game.state
 
 (** [state] is the current game state. *)
-let state = unwrap_state ()
+let state () = unwrap_state ()
 
 (** [check_still_alive ()] continues the input loop if the player still has at 
     least one life left. *)
 let rec check_still_alive () = 
-  if (Game.get_lives ()) = 0 
-  then (Graphic.restart ""; ())
-  else check_key_pressed (wait_next_event [Key_pressed])
+  if (Game.get_lives 1) = 0 
+  then (print_endline "player 1 died"; Graphic.restart ""; ());
+  if (Game.get_lives 2) = 0 
+  then (print_endline "player 2 died"; Graphic.restart ""; ());
+  if Game.get_beat () > Game.get_length () then print_endline "You won!"; 
+  Graphic.restart ""; 
+  check_key_pressed (wait_next_event [Key_pressed]) 
 
 (** [check_key_pressed press] updates the game state on each player input. *)
 and check_key_pressed press = 
-  match press.key with
-  | 'i' -> print_endline "up"; Game.update "up"; check_still_alive ()
-  | 'j' -> print_endline "left"; Game.update "left"; check_still_alive ()
-  | 'k' -> print_endline "down"; Game.update "down"; check_still_alive ()
-  | 'l' -> print_endline "right"; Game.update "right"; check_still_alive ()
-  | 'q' -> print_endline "You quit the game :(";  Game.update "pause";
-    Graphic.quit(); 
-    if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
-    else Game.update "resume"; check_still_alive ()
-  | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause"; 
-    Graphic.pause ();
-    (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
-  | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
-
+  if Game.get_num_players () = 1 then begin
+    match press.key with
+    | 'i' -> print_endline "up1"; Game.update "up" 1; check_still_alive ()
+    | 'j' -> print_endline "left1"; Game.update "left" 1; check_still_alive ()
+    | 'k' -> print_endline "down1"; Game.update "down" 1; check_still_alive ()
+    | 'l' -> print_endline "right1"; Game.update "right" 1; check_still_alive ()
+    | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 1;
+      Graphic.quit(); 
+      if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+      else Game.update "resume" 1; check_still_alive ()
+    | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
+      Graphic.pause ();
+      (wait_next_event [Key_pressed]); Game.update "resume" 1; check_still_alive ()
+    | _ -> print_endline "bad"; Game.update ""; check_still_alive () end
+  else begin 
+    match press.key with
+    | 'w' -> print_endline "up1"; Game.update "up" 1; check_still_alive ()
+    | 'a' -> print_endline "left1"; Game.update "left" 1; check_still_alive ()
+    | 's' -> print_endline "down1"; Game.update "down" 1; check_still_alive ()
+    | 'd' -> print_endline "right1"; Game.update "right" 1; check_still_alive ()
+    | 'i' -> print_endline "up2"; Game.update "up" 2; check_still_alive ()
+    | 'j' -> print_endline "left2"; Game.update "left" 2; check_still_alive ()
+    | 'k' -> print_endline "down2"; Game.update "down" 2; check_still_alive ()
+    | 'l' -> print_endline "right2"; Game.update "right" 2; check_still_alive ()
+    | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 1;
+      Graphic.quit(); 
+      if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+      else Game.update "resume" 1; check_still_alive ()
+    | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
+      Graphic.pause ();
+      (wait_next_event [Key_pressed]); Game.update "resume" 1; check_still_alive ()
+    | _ -> print_endline "bad"; Game.update "" 1; check_still_alive ()
+  end
 and set_timer () =
   print_endline "in timer";
   let its = {it_interval = (Game.speed ());
@@ -46,14 +69,14 @@ and set_timer () =
 (** [call_update num] updates the game state for a beat. *)
 and call_update num = 
   set_timer ();
-  Game.update "beat"
+  Game.update "beat" 1
 
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
 and play_game mode num_players =
   begin match mode with
     | "endless" -> 
-      Game.init_state num_players 50.0 None;
+      Game.init_state num_players 50.0 max_int;
       Graphic.init_graphics "" num_players;
       set_timer ();
       Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
