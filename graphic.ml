@@ -422,7 +422,7 @@ let quit s =
         draw_string "Press any key to resume";
         ()
 
-(** [restart s] is the graphics screen when the one round ahs ended. *)
+(** [restart s] is the graphics screen when the player quits a round. *)
 let restart s = 
   resize_window 600 640;
   set_color black;
@@ -431,6 +431,30 @@ let restart s =
   moveto 200 300;
   (draw_button "Play Again" (400/3) 150 cyan black, 
    draw_button "Quit" (800/3 + 100) 150 magenta white)
+
+(** [lose s] is the graphics screen when the player loses a round. *)
+let lose s = 
+  resize_window 600 640;
+  set_color black;
+  fill_rect 0 0 600 640;
+  draw_logo s;
+  match text_size "YOU LOSE!" with 
+  | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU LOSE!";
+    moveto 200 300;
+    (draw_button "Play Again" (400/3) 150 cyan black, 
+     draw_button "Quit" (800/3 + 100) 150 magenta white)
+
+(** [win s] is the graphics screen when the player wins a round. *)
+let win s = 
+  resize_window 600 640;
+  set_color black;
+  fill_rect 0 0 600 640;
+  draw_logo s;
+  match text_size "YOU WIN!" with 
+  | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU WIN!";
+    moveto 200 300;
+    (draw_button "Play Again" (400/3) 150 cyan black, 
+     draw_button "Quit" (800/3 + 100) 150 magenta white)
 
 let leaderboard lst = 
   clear_graph ();

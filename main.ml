@@ -18,7 +18,7 @@ let state = unwrap_state ()
     least one life left. *)
 let rec check_still_alive () = 
   if (Game.get_lives ()) = 0 
-  then (* insert restart screen*) (Graphic.restart ""; ())
+  then (* insert restart screen*) (lose ""; ())
   else check_key_pressed (wait_next_event [Key_pressed])
 
 (** [check_key_pressed press] updates the game state on each player input. *)
@@ -30,7 +30,7 @@ and check_key_pressed press =
   | 'l' -> print_endline "right"; Game.update "right"; check_still_alive ()
   | 'q' -> print_endline "You quit the game :(";  Game.update "pause";
     Graphic.quit(); 
-    if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+    if (wait_next_event[Key_pressed]).key = 'q' then (restart ""; ())
     else Game.update "resume"; check_still_alive ()
   | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause"; 
     Graphic.pause ();
@@ -67,14 +67,46 @@ and play_game mode num_players =
       check_key_pressed (wait_next_event [Key_pressed]);()
   end
 
-let click_location click = 
+and click_location click = 
   (click.mouse_x,click.mouse_y)
 
-let button_clicked x1 x2 y1 y2 click = 
+and button_clicked x1 x2 y1 y2 click = 
   match click_location click with 
   | (x,y) -> if y < y2 && y > y1 && x < x2 && x > x1 then true else false
 
-let rec start_window s = 
+and restart s = 
+  match Graphic.restart s with
+  | (play_again, quit) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match play_again with 
+    | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
+      let b1y1 = b1y in let b1y2 = b1y + 75 in 
+      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
+      then main ()
+      else match quit with 
+        | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
+          let b2y1 = b2y in let b2y2 = b2y + 75 in 
+          if button_clicked b2x1 b2x2 b2y1 b2y2 click
+          then close_graph ()
+          else restart s
+
+and lose s = 
+  match Graphic.lose s with
+  | (play_again, quit) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match play_again with 
+    | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
+      let b1y1 = b1y in let b1y2 = b1y + 75 in 
+      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
+      then main ()
+      else match quit with 
+        | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
+          let b2y1 = b2y in let b2y2 = b2y + 75 in 
+          if button_clicked b2x1 b2x2 b2y1 b2y2 click
+          then close_graph ()
+          else lose s
+
+and start_window s = 
   match Graphic.start_window s with
   | (x,y) -> 
     let click = (wait_next_event [Button_down]) in 
@@ -83,7 +115,7 @@ let rec start_window s =
     then ()
     else start_window s
 
-let rec player_selection s =
+and player_selection s =
   match Graphic.player_selection s with
   | (b1, b2) ->  
     let click = (wait_next_event [Button_down]) in 
@@ -99,7 +131,7 @@ let rec player_selection s =
           then 2
           else player_selection s
 
-let rec level_selection s = 
+and level_selection s = 
   match Graphic.level_selection s with
   | (b1, b2, b3, b4) ->  
     let click = (wait_next_event [Button_down]) in 
@@ -127,7 +159,7 @@ let rec level_selection s =
 
 (** [song_selection_loop ()] prompts the player to select the song they wish to 
     play and returns the name of that song file.*)
-let rec song_selection_loop () = 
+and song_selection_loop () = 
   print_endline "Please enter the number of the song you wish to play\n";
   print_endline "1: Song 1, Difficulty: Easy";
   print_endline "2: Song 2, Difficulty: Medium";
@@ -142,7 +174,7 @@ let rec song_selection_loop () =
 
 (** [num_player_selection_loop ()] prompts the player to select the number of 
     players they wish to play with and returns the number. *)
-let rec num_player_selection_loop () =
+and num_player_selection_loop () =
   print_endline "Please enter the number of players you wish to play\n";
   print_string  "> ";
   match read_line () with
@@ -151,12 +183,8 @@ let rec num_player_selection_loop () =
   | _ -> print_endline "Please enter a valid number of players";
     num_player_selection_loop ()
 
-let main () =
-  (* ANSITerminal.(print_string [red]
-                  "\n\nWelcome to Tap Tap Revenge.\n"); *)
+and main () =
   start_window "";
-  (* let num_players = num_player_selection_loop () in
-     let song = song_selection_loop () in *)
   let num_players = player_selection "" in 
   let song = level_selection "" in
   print_int num_players;
