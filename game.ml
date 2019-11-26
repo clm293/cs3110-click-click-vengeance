@@ -326,24 +326,26 @@ let update (inpt: string) (player: int) : unit =
   if inpt = "resume" then resume_game ();
   let new_matrix = if inpt = "beat" && (!state.paused = false) then 
       update_matrix !state else !state.matrix in
-  let new_state = {
-    matrix = new_matrix;
-    num_players = !state.num_players;
-    speed = if inpt = "beat" then (increase_speed (!state.beat + 1)) else !state.speed; (* should add increase_speed here *)
-    paused = !state.paused;
-    length = !state.length;
-    beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
-    players = !state.players
-  } in 
-  state := new_state;
   if (inpt<>"beat" && !state.num_players = 1) then
     begin
       update_player inpt new_matrix player_1_ref
     end
   else if (inpt <> "beat") then begin
-    if player = 1 then update_player inpt new_matrix player_1_ref;
-    if player = 2 then update_player inpt new_matrix player_2_ref;
+    if player = 1 then update_player inpt new_matrix player_1_ref
+    else if player = 2 then update_player inpt new_matrix player_2_ref;
     print_endline "player 2 score";
     print_endline (string_of_int !player_2_ref.score)
   end;
+  let new_state = {
+    matrix = new_matrix;
+    num_players = !state.num_players;
+    speed = if inpt = "beat" then (increase_speed (!state.beat + 1)) else 
+        !state.speed; (* should add increase_speed here *)
+    paused = !state.paused;
+    length = !state.length;
+    beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
+    players = if !state.num_players = 1 then (player_1_ref, None) else 
+        (player_1_ref, Some player_2_ref)
+  } in 
+  state := new_state;
   update_graphics ()

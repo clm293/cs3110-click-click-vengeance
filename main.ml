@@ -73,20 +73,19 @@ and call_update num =
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
 and play_game mode num_players =
-  let num = Game.get_num_players () in 
   if mode = "endless" then begin
     Game.init_state num_players 50.0 max_int;
     Graphic.init_graphics "" num_players;
     set_timer ();
     Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-    check_key_pressed (wait_next_event [Key_pressed]) num; end
+    check_key_pressed (wait_next_event [Key_pressed]) num_players; end
   else begin
     let song = Song.from_json (Yojson.Basic.from_file mode) in
     Game.init_state num_players (Song.bpm song) (Song.length song);
     Graphic.init_graphics "" num_players;
     set_timer ();
     Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-    check_key_pressed (wait_next_event [Key_pressed]) num;
+    check_key_pressed (wait_next_event [Key_pressed]) num_players;
   end
 
 let click_location click = 
