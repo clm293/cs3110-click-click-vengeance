@@ -247,7 +247,8 @@ let help s =
   write_line "You can play alone or with a friend." 360;
   write_line "Player 1 will use I (up), J (left), K (down), L (right)." 330;
   write_line "Player 2 will use W (up), A (left), S (down), D (right)." 300;
-  write_line "There are 4 different modes: easy, medium, hard, and endless." 270;
+  write_line "There are 4 different modes: easy, medium, hard, and endless." 
+    270;
   write_line "In easy, medium, and hard, play until the game ends" 240;
   write_line "or you lose all your lives, whichever comes first." 210;
   write_line "In enless mode, play untl you lose all 5 lives." 180;
@@ -258,7 +259,8 @@ let help s =
      Player 1 will use I (up), J (left), K (down), L (right).
      Player 2 will use W (up), A (left), S (down), D (right).
      There are 4 different modes: easy, medium, hard, and endless.
-     In easy, medium, and hard, play until the game ends or you lose all your lives, whichever comes first.
+     In easy, medium, and hard, play until the game ends or you lose all your l
+     ives, whichever comes first.
      In enless mode, play untl you lose all 5 lives. *)
   (size_x () - 30, 0)
 
@@ -315,7 +317,8 @@ let player_selection st =
     moveto x_pos 300;
     draw_string "Select a Playing Mode";
     (draw_button "Single Player" (400/3) 150 cyan black, 
-     draw_button "Double Player" (800/3 + 100) 150 magenta white)
+     draw_button "Double Player" (800/3 + 100) 150 magenta white, 
+     draw_help "")
 
 (** [level_selection st] is where the player(s) chooses the difficulty. *)
 let level_selection st =
@@ -332,7 +335,8 @@ let level_selection st =
     (draw_button "Easy" (200/5) 150 yellow black, 
      draw_button "Medium" (400/5 + 100) 150 cyan white, 
      draw_button "Hard" (600/5 + 200) 150 green black,
-     draw_button "Endless" (800/5 + 300) 150 magenta white)
+     draw_button "Endless" (800/5 + 300) 150 magenta white, 
+     draw_help "")
 
 (** [init_graphics s num_players] is where the first screen 
     when the game officially begins. *)

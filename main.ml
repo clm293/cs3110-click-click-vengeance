@@ -146,10 +146,9 @@ and start_window s =
           then (help s; start_window s)
           else start_window s
 
-
 and player_selection s =
   match Graphic.player_selection s with
-  | (b1, b2) ->  
+  | (b1, b2, h) ->  
     let click = (wait_next_event [Button_down]) in 
     match b1 with 
     | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
@@ -161,11 +160,16 @@ and player_selection s =
           let b2y1 = b2y in let b2y2 = b2y + 75 in 
           if button_clicked b2x1 b2x2 b2y1 b2y2 click
           then 2
-          else player_selection s
+          else match h with 
+            | (hx,hy) -> let hx1 = hx in let hx2 = hx + 30 in 
+              let hy1 = hy in let hy2 = hy + 30 in 
+              if button_clicked hx1 hx2 hy1 hy2 click
+              then (help s; player_selection s)
+              else player_selection s
 
 and level_selection s = 
   match Graphic.level_selection s with
-  | (b1, b2, b3, b4) ->  
+  | (b1, b2, b3, b4, h) ->  
     let click = (wait_next_event [Button_down]) in 
     match b1 with 
     | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
@@ -187,7 +191,12 @@ and level_selection s =
                   let b4y1 = b4y in let b4y2 = b4y + 75 in 
                   if button_clicked b4x1 b4x2 b4y1 b4y2 click
                   then "endless"
-                  else level_selection s
+                  else match h with 
+                    | (hx,hy) -> let hx1 = hx in let hx2 = hx + 30 in 
+                      let hy1 = hy in let hy2 = hy + 30 in 
+                      if button_clicked hx1 hx2 hy1 hy2 click
+                      then (help s; level_selection s)
+                      else level_selection s
 
 (* (** [song_selection_loop ()] prompts the player to select the song they wish to 
     play and returns the name of that song file.*)
