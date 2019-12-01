@@ -1,5 +1,6 @@
 open Graphics 
-(* open Images *)
+open Images
+open Png
 
 (** [to_list arr] converts the 2D array [arr] to a 2D list. *)
 let to_list arr = 
@@ -223,12 +224,15 @@ let color_to_rgb color =
 
 (** [draw_logo s] draws the logo. *)
 let draw_logo s = 
-  set_color white;
-  fill_rect 125 250 350 350;
-  set_color black;
-  moveto 200 500;
-  draw_string "Tap Tap Revenge";
-  (* let img = Png.load "logo.png" [] in
+  (* set_color white;
+     fill_rect 125 250 350 350; *)
+  (* set_color black; *)
+  (* moveto 200 500;
+     draw_string "Tap Tap Revenge"; *)
+  let img = Png.load_as_rgb24 "logo.png" [] in
+  let g = Graphic_image.of_image img in
+  Graphics.draw_image g (125) (250);
+  (* let (img: image) = Png.load "logo.png" [] in
      (* let g = Graphic_image.of_image img in *)
      Graphics.draw_image img 0 0;; *)
   ()
