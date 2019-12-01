@@ -1,6 +1,7 @@
 open Graphics
 open Graphic
-(** Left is 0, Down is 1, Up is 2, Right is 3*)
+
+(** Left is 0, Down is 1, Up is 2, Right is 3 *)
 type arrow = Left | Down | Up | Right
 
 type cell = arrow option
@@ -22,6 +23,8 @@ type t = {
   length: int option;
   beat: int;
 }
+
+let leaderboard = ref []
 
 (** [state] is the reference pointing to the current state of the game. *)
 let state = ref {
@@ -62,9 +65,9 @@ let init_state num bpm len =
     length = len;
     beat = 0;
   }
+
 (* some functions used for testing:*)
 let get_paused () = !state.paused
-
 
 (** [speed ()] is the beats per second for the state's bpm *)
 let speed () = 
@@ -82,15 +85,19 @@ let get_lives () = !state.lives_remaining
 (** [get_curr_matrix] is the game matrix in state [t]. *)
 let get_curr_matrix () = !state.matrix
 
-let single_rows = [[Some Left; None; None; None]; [None; Some Down; None; None];
-                   [None; None; Some Up; None];[None; None; None; Some Right]]
+let single_rows = [
+  [Some Left; None; None; None]; [None; Some Down; None; None];
+  [None; None; Some Up; None];[None; None; None; Some Right]
+]
 
-let double_rows = [[Some Left; Some Down; None; None];
-                   [None; Some Down; Some Up; None];
-                   [None; None; Some Up; Some Right];
-                   [None; Some Down; None; Some Right];
-                   [Some Left; None; Some Up; None];
-                   [Some Left; None; None; Some Right]]
+let double_rows = [
+  [Some Left; Some Down; None; None];
+  [None; Some Down; Some Up; None];
+  [None; None; Some Up; Some Right];
+  [None; Some Down; None; Some Right];
+  [Some Left; None; Some Up; None];
+  [Some Left; None; None; Some Right]
+]
 
 
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
@@ -313,10 +320,17 @@ let rec update (inpt: string) : unit =
 
     if new_state.lives_remaining = 0 then print_endline "Game Over.";
     match new_state.length with
-    | Some l -> if new_state.beat > l then print_endline "You won!" else begin
-        state := new_state;
-        update_graphics ()
-      end
+    | Some l -> if new_state.beat > l then 
+        begin 
+          print_endline "You won!"; 
+          leaderboard := List.sort compare (new_score::!leaderboard);
+          print_endline (String.concat "\n" (List.map string_of_int !leaderboard))
+        end 
+      else 
+        begin
+          state := new_state;
+          update_graphics ()
+        end
     | None -> state := new_state;
       update_graphics ()
 
