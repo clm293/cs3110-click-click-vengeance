@@ -122,14 +122,30 @@ and win s =
           then close_graph ()
           else win s
 
-and start_window s = 
-  match Graphic.start_window s with
-  | (x,y) -> 
-    let click = (wait_next_event [Button_down]) in 
-    let x1 = x in let x2 = x + 100 in let y1 = y in let y2 = y + 75 in
+and help s = 
+  match Graphic.help s with 
+  | (x,y) -> let click = wait_next_event [Button_down] in 
+    let x1 = x in let x2 = x + 30 in let y1 = y in let y2 = y + 30 in
     if button_clicked x1 x2 y1 y2 click 
     then ()
-    else start_window s
+    else help s
+
+and start_window s = 
+  match Graphic.start_window s with
+  | (b, h) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match b with 
+    | (bx,by) -> let bx1 = bx in let bx2 = bx + 100 in 
+      let by1 = by in let by2 = by + 75 in 
+      if button_clicked bx1 bx2 by1 by2 click
+      then ()
+      else match h with 
+        | (hx,hy) -> let hx1 = hx in let hx2 = hx + 30 in 
+          let hy1 = hy in let hy2 = hy + 30 in 
+          if button_clicked hx1 hx2 hy1 hy2 click
+          then (help s; start_window s)
+          else start_window s
+
 
 and player_selection s =
   match Graphic.player_selection s with
@@ -173,31 +189,31 @@ and level_selection s =
                   then "endless"
                   else level_selection s
 
-(** [song_selection_loop ()] prompts the player to select the song they wish to 
+(* (** [song_selection_loop ()] prompts the player to select the song they wish to 
     play and returns the name of that song file.*)
-and song_selection_loop () = 
-  print_endline "Please enter the number of the song you wish to play\n";
-  print_endline "1: Song 1, Difficulty: Easy";
-  print_endline "2: Song 2, Difficulty: Medium";
-  print_endline "3: Song 3, Difficulty: Hard";
-  print_string  "> ";
-  match read_line () with
-  | "1" -> "coughSyrup.json"
-  | "2" -> "test_song.json" 
-  | "3" -> "test_song_fast.json"
-  | _ -> print_endline "Please enter a valid song number";
+   and song_selection_loop () = 
+   print_endline "Please enter the number of the song you wish to play\n";
+   print_endline "1: Song 1, Difficulty: Easy";
+   print_endline "2: Song 2, Difficulty: Medium";
+   print_endline "3: Song 3, Difficulty: Hard";
+   print_string  "> ";
+   match read_line () with
+   | "1" -> "coughSyrup.json"
+   | "2" -> "test_song.json" 
+   | "3" -> "test_song_fast.json"
+   | _ -> print_endline "Please enter a valid song number";
     song_selection_loop ()
 
-(** [num_player_selection_loop ()] prompts the player to select the number of 
+   (** [num_player_selection_loop ()] prompts the player to select the number of 
     players they wish to play with and returns the number. *)
-and num_player_selection_loop () =
-  print_endline "Please enter the number of players you wish to play\n";
-  print_string  "> ";
-  match read_line () with
-  | "1" -> 1
-  | "2" -> 2
-  | _ -> print_endline "Please enter a valid number of players";
-    num_player_selection_loop ()
+   and num_player_selection_loop () =
+   print_endline "Please enter the number of players you wish to play\n";
+   print_string  "> ";
+   match read_line () with
+   | "1" -> 1
+   | "2" -> 2
+   | _ -> print_endline "Please enter a valid number of players";
+    num_player_selection_loop () *)
 
 and main () =
   start_window "";

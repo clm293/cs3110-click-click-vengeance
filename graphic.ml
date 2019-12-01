@@ -222,19 +222,51 @@ let color_to_rgb color =
   and b = (color land 0x0000FF)
   in r, g, b
 
+let draw_help s = 
+  let img = Png.load_as_rgb24 "help.png" [] in
+  let g = Graphic_image.of_image img in
+  Graphics.draw_image g ((size_x ())-30) (0);
+  (size_x () - 30, 0)
+
+let write_line str y = 
+  match text_size str with
+  |(x_text,y_text) -> let x_pos = (size_x () - x_text)/2 in 
+    let y_pos = y in
+    moveto x_pos y_pos;
+    draw_string str;
+    ()
+
+let help s = 
+  set_color white;
+  fill_rect 100 100 400 440;
+  set_color magenta;
+  write_line "Click Click Vengence" 450;
+  set_color black;
+  write_line "The objective of Click CLick Vengence" 420;
+  write_line "is to get the highest score possible." 390;
+  write_line "You can play alone or with a friend." 360;
+  write_line "Player 1 will use I (up), J (left), K (down), L (right)." 330;
+  write_line "Player 2 will use W (up), A (left), S (down), D (right)." 300;
+  write_line "There are 4 different modes: easy, medium, hard, and endless." 270;
+  write_line "In easy, medium, and hard, play until the game ends" 240;
+  write_line "or you lose all your lives, whichever comes first." 210;
+  write_line "In enless mode, play untl you lose all 5 lives." 180;
+  set_color cyan;
+  write_line "GOOD LUCK!!!" 150;
+  (* The objective of Click CLick Vengence is to get the highest score possible.
+     You can play alone or with a friend.
+     Player 1 will use I (up), J (left), K (down), L (right).
+     Player 2 will use W (up), A (left), S (down), D (right).
+     There are 4 different modes: easy, medium, hard, and endless.
+     In easy, medium, and hard, play until the game ends or you lose all your lives, whichever comes first.
+     In enless mode, play untl you lose all 5 lives. *)
+  (size_x () - 30, 0)
+
 (** [draw_logo s] draws the logo. *)
 let draw_logo s = 
-  (* set_color white;
-     fill_rect 125 250 350 350; *)
-  (* set_color black; *)
-  (* moveto 200 500;
-     draw_string "Tap Tap Revenge"; *)
   let img = Png.load_as_rgb24 "logo.png" [] in
   let g = Graphic_image.of_image img in
   Graphics.draw_image g (125) (250);
-  (* let (img: image) = Png.load "logo.png" [] in
-     (* let g = Graphic_image.of_image img in *)
-     Graphics.draw_image img 0 0;; *)
   ()
 
 (** [draw_button s] draws the button at ([x],[y]) 
@@ -268,7 +300,7 @@ let start_window s =
   fill_rect 0 0 600 640;
   set_window_title "Tap Tap Revenge";
   draw_logo s;
-  draw_button "Start" 250 150 magenta white
+  (draw_button "Start" 250 150 magenta white, draw_help s)
 
 (** [player_selection st] is the where the player(s) chooses 
     the number of players in the game. *)
