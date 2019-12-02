@@ -237,6 +237,10 @@ let increase_speed beat =
   then begin print_endline "change speed"; !state.speed *. 1.1 end 
   else !state.speed
 
+let update_leaderboard score = 
+  leaderboard := List.sort compare (score::!leaderboard);
+  print_endline (String.concat "\n" (List.map string_of_int !leaderboard))
+
 let update_graphics () = 
   if is_hot (!state.last_ten)then 
     print_endline "hotstreak";
@@ -316,16 +320,15 @@ let rec update (inpt: string) : unit =
                            inpt <> "beat" then inpt else "";
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat
-    } in 
-
-    if new_state.lives_remaining = 0 then print_endline "Game Over.";
+    } 
+    in 
+    if new_state.lives_remaining = 0 then update_leaderboard new_score; print_endline "Game Over.";
     match new_state.length with
     | Some l -> if new_state.beat > l then 
-        begin 
-          print_endline "You won!"; 
-          leaderboard := List.sort compare (new_score::!leaderboard);
-          print_endline (String.concat "\n" (List.map string_of_int !leaderboard))
-        end 
+        begin
+          print_endline "You won!";
+          update_leaderboard new_score
+        end
       else 
         begin
           state := new_state;
