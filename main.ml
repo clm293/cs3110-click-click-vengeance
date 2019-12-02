@@ -66,7 +66,7 @@ let rec set_timer () =
   setitimer ITIMER_REAL its; ()
 
 (** [call_update num] updates the game state for a beat. *)
-and call_update num = 
+and call_update int = 
   set_timer ();
   Game.update "beat" 1
 
@@ -84,7 +84,7 @@ and play_game mode num_players =
     Game.init_state num_players (Song.bpm song) (Song.length song);
     Graphic.init_graphics "" num_players;
     set_timer ();
-    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
+    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update ));
     check_key_pressed (wait_next_event [Key_pressed]) num_players;
   end
 

@@ -43,9 +43,6 @@ let player_2_ref = ref {
     first_of_double = "";
   } 
 
-let player_1 = !player_1_ref
-
-let player_2 = !player_2_ref
 
 (** [state] is the reference pointing to the current state of the game. *)
 let state = ref {
@@ -94,11 +91,11 @@ let get_num_players () =
 let rec make_score_list n acc =
   if n > 0 then (make_score_list (n-1) (0::acc)) else acc
 
-let score player = if player = 1 then player_1.score else player_2.score
+let score player = if player = 1 then !player_1_ref.score else !player_2_ref.score
 
 (** [get_lives] is the number of lives remaining in state [t]. *)
-let get_lives player = if player = 1 then player_1.lives_remaining 
-  else player_2.lives_remaining
+let get_lives player = if player = 1 then !player_1_ref.lives_remaining 
+  else !player_2_ref.lives_remaining
 
 (** [get_beat] is the beat number of the game *)
 let get_beat () = !state.beat
@@ -257,14 +254,14 @@ let increase_speed beat =
 
 let update_graphics () = 
   if !state.num_players = 1 then (if !state.paused = true then ()
-                                  else Graphic.update_graphics_1 !state.matrix player_1.score 
-                                      player_1.lives_remaining (is_hot (player_1.last_ten)))
+                                  else Graphic.update_graphics_1 !state.matrix !player_1_ref.score 
+                                      !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)))
   else 
     (if !state.paused = true then () 
-     else Graphic.update_graphics_2 !state.matrix player_1.score 
-         player_1.lives_remaining (is_hot (player_1.last_ten)) 
-         player_2.score 
-         player_2.lives_remaining (is_hot (player_2.last_ten)))
+     else Graphic.update_graphics_2 !state.matrix !player_1_ref.score 
+         !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) 
+         !player_2_ref.score 
+         !player_2_ref.lives_remaining (is_hot (!player_2_ref.last_ten)))
 
 (*last_ten tracks the 10 most recent press results, with the most recent 
   being the last element of the list*)
@@ -301,51 +298,49 @@ let resume_game () =
   state := new_state;
   update_graphics ()
 
-let update_player inpt (matrix:matrix) (p:player ref) = 
+let update_player inpt (matrix:matrix) (p:int) = 
   if inpt = "pause" then pause_game ()
-  else if inpt = "resume" then resume_game ()
-  else
-    let new_score = if bottom_row !state.matrix <> [None;None;None;None]
-      then calc_score inpt !p else !p.score in
-    let new_player_state = {
-      score = new_score;
-      scored_this_arrow = scored_this_arrow inpt new_score !p;
-      lives_remaining = lives_remaining inpt matrix !p;
-      last_ten = if (inpt <> "beat" && (!p.scored_this_arrow = false) 
-                     && not (List.mem (bottom_row matrix) double_rows && 
-                             !p.first_of_double = "")) then 
-          (update_last_ten (is_hit inpt !p) (!p.last_ten)) else
-          (!p.last_ten);
-      first_of_double = if List.mem (bottom_row matrix) double_rows &&
-                           inpt <> "beat" then inpt else "";
-    } in 
-    p := new_player_state
+  else if inpt = "resume" then resume_game ();
+  let player = (if p = 1 then  player_1_ref else player_2_ref) in
+  let new_score = if bottom_row !state.matrix <> [None;None;None;None]
+    then calc_score inpt !player else !player.score in
+  let new_player_state = {
+    score = new_score;
+    scored_this_arrow = scored_this_arrow inpt new_score !player;
+    lives_remaining = lives_remaining inpt matrix !player;
+    last_ten = if (inpt <> "beat" && (!player.scored_this_arrow = false) 
+                   && not (List.mem (bottom_row matrix) double_rows && 
+                           !player.first_of_double = "")) then 
+        (update_last_ten (is_hit inpt !player) (!player.last_ten)) else
+        (!player.last_ten);
+    first_of_double = if List.mem (bottom_row matrix) double_rows &&
+                         inpt <> "beat" then inpt else "";
+  } in new_player_state
 
 let update (inpt: string) (player: int) : unit =
   if inpt = "pause"  then pause_game ();
   if inpt = "resume" then resume_game ();
   let new_matrix = if inpt = "beat" && (!state.paused = false) then 
       update_matrix !state else !state.matrix in
-  if (inpt<>"beat" && !state.num_players = 1) then
-    begin
-      update_player inpt new_matrix player_1_ref
-    end
-  else if (inpt <> "beat") then begin
-    if player = 1 then update_player inpt new_matrix player_1_ref
-    else if player = 2 then update_player inpt new_matrix player_2_ref;
-    print_endline "player 2 score";
-    print_endline (string_of_int !player_2_ref.score)
-  end;
+  print_endline "player 2 score";
+  print_endline (string_of_int !player_2_ref.score);
   let new_state = {
     matrix = new_matrix;
     num_players = !state.num_players;
     speed = if inpt = "beat" then (increase_speed (!state.beat + 1)) else 
-        !state.speed; (* should add increase_speed here *)
+        !state.speed; 
     paused = !state.paused;
     length = !state.length;
     beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
-    players = if !state.num_players = 1 then (player_1_ref, None) else 
-        (player_1_ref, Some player_2_ref)
-  } in 
+    players = if inpt = "beat" then !state.players else begin
+        if (!state.num_players = 1) then player_1_ref := (update_player inpt new_matrix 1)
+        else
+        if player = 1 then 
+          player_1_ref := update_player inpt new_matrix 1;
+        if player = 2 then
+          player_2_ref :=  update_player inpt new_matrix 2;
+        (player_1_ref, Some player_2_ref) end
+
+  } in print_endline "updating state";
   state := new_state;
   update_graphics ()
