@@ -12,7 +12,7 @@ type press = Hit | Miss | Other
 
 type t = {
   matrix: matrix;
-  score: int; (* changed this back to an int for single player*)
+  score: int; 
   num_players: int;
   speed: float;
   scored_this_arrow : bool;
@@ -198,11 +198,28 @@ let is_hit t inpt =
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
     shifted down and pops off the bottom row and adds a new random row to the 
     top. *)
-let update_matrix t : matrix =
-  match List.rev t.matrix with
+let update_matrix () =
+  match List.rev !state.matrix with
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
+let rec remove_last_three m = 
+  if List.length m = 5 then m else 
+    match m with
+    | h :: t -> remove_last_three t
+    | [] -> failwith "last_three error"
+
+let rec resume_matrix m acc = 
+  (* if List.length acc = 5 then  *)
+  List.rev_append (List.rev (remove_last_three m)) [[None;None;None;None];[None;None;None;None];[None;None;None;None]] 
+(* else match List.rev m with
+   | h :: t -> resume_matrix (List.rev t) (h::acc)
+   | [] -> failwith "resume matrix error" *)
+
+let countdown m = 
+  List.rev_append [[None;None;None;None]] (resume_matrix m [])
+  |> List.rev_append [[None;None;None;None]]
+  |> List.rev_append [[None;None;None;None]]
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt = 
@@ -281,7 +298,8 @@ let pause_game () =
 
 let resume_game () = 
   let new_state = {
-    matrix = !state.matrix;
+    matrix = resume_matrix !state.matrix [];
+    (* matrix = !state.matrix; *)
     score = !state.score;
     num_players = !state.num_players;
     speed = !state.speed;
@@ -304,7 +322,7 @@ let rec update (inpt: string) : unit =
     let new_score = if bottom_row !state.matrix <> [None;None;None;None]
       then calc_score inpt else !state.score in
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
-        update_matrix !state else !state.matrix in
+        update_matrix () else !state.matrix in
     let new_state = {
       matrix = new_matrix;
       score = new_score;
@@ -322,7 +340,7 @@ let rec update (inpt: string) : unit =
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat
     } 
     in 
-    if new_state.lives_remaining = 0 then update_leaderboard new_score; print_endline "Game Over.";
+    if new_state.lives_remaining = 0 then update_leaderboard new_score;
     match new_state.length with
     | Some l -> if new_state.beat > l then 
         begin
