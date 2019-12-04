@@ -1,6 +1,7 @@
 open Graphics
 open Graphic
-(** Left is 0, Down is 1, Up is 2, Right is 3*)
+
+(** Left is 0, Down is 1, Up is 2, Right is 3 *)
 type arrow = Left | Down | Up | Right
 
 type cell = arrow option
@@ -27,6 +28,9 @@ type t = {
   players: player * player option;
 }
 
+
+let leaderboard = ref []
+
 let player_1_ref = ref {
     score = 0;
     scored_this_arrow = false;
@@ -42,7 +46,6 @@ let player_2_ref = ref {
     last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
     first_of_double = "";
   } 
-
 
 (** [state] is the reference pointing to the current state of the game. *)
 let state = ref {
@@ -77,6 +80,7 @@ let init_state num bpm len =
     beat = 0;
     players = if num = 1 then (!player_1_ref, None) else (!player_1_ref, Some !player_2_ref);
   }
+
 (* some functions used for testing:*)
 let get_paused () = !state.paused
 
@@ -99,15 +103,19 @@ let get_length () = !state.length
 (** [get_curr_matrix] is the game matrix in state [t]. *)
 let get_curr_matrix () = !state.matrix
 
-let single_rows = [[Some Left; None; None; None]; [None; Some Down; None; None];
-                   [None; None; Some Up; None];[None; None; None; Some Right]]
+let single_rows = [
+  [Some Left; None; None; None]; [None; Some Down; None; None];
+  [None; None; Some Up; None];[None; None; None; Some Right]
+]
 
-let double_rows = [[Some Left; Some Down; None; None];
-                   [None; Some Down; Some Up; None];
-                   [None; None; Some Up; Some Right];
-                   [None; Some Down; None; Some Right];
-                   [Some Left; None; Some Up; None];
-                   [Some Left; None; None; Some Right]]
+let double_rows = [
+  [Some Left; Some Down; None; None];
+  [None; Some Down; Some Up; None];
+  [None; None; Some Up; Some Right];
+  [None; Some Down; None; Some Right];
+  [Some Left; None; Some Up; None];
+  [Some Left; None; None; Some Right]
+]
 
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
@@ -207,13 +215,23 @@ let is_hit inpt player=
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
     shifted down and pops off the bottom row and adds a new random row to the 
     top. *)
-let update_matrix t : matrix =
-  match List.rev t.matrix with
+let update_matrix () =
+  match List.rev !state.matrix with
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
-(** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 
+let rec remove_last_three m = 
+  if List.length m = 5 then m else 
+    match m with
+    | h :: t -> remove_last_three t
+    | [] -> failwith "last_three error"
+
+
+let rec resume_matrix m acc = 
+  List.rev_append (List.rev (remove_last_three m)) [[None;None;None;None];[None;None;None;None];[None;None;None;None]]
+
+(** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
   if !player.scored_this_arrow = true then !player.score 
   else if !state.paused = true then !player.score
@@ -245,6 +263,10 @@ let increase_speed beat =
   if (beat mod 20 = 0)
   then begin print_endline "change speed"; !state.speed *. 1.1 end 
   else !state.speed
+
+let update_leaderboard score = 
+  leaderboard := List.sort compare (score::!leaderboard);
+  print_endline (String.concat "\n" (List.map string_of_int !leaderboard))
 
 let update_graphics () = 
   if is_hot (!player_1_ref.last_ten)then 
@@ -283,7 +305,7 @@ let pause_game () =
 
 let resume_game () = 
   let new_state = {
-    matrix = !state.matrix;
+    matrix = resume_matrix !state.matrix [];
     num_players = !state.num_players;
     speed = !state.speed;
     paused = false;
@@ -318,8 +340,9 @@ let rec update (inpt: string) (plyr: int): unit =
   else if inpt = "resume" then resume_game ()
   else
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
-        update_matrix !state else !state.matrix in
+    update_matrix () else !state.matrix in
     update_player inpt new_matrix plyr;
+
     let new_state = {
       matrix = new_matrix;
       num_players = !state.num_players;
@@ -334,6 +357,4 @@ let rec update (inpt: string) (plyr: int): unit =
     print_endline (string_of_int !player_1_ref.score);
     state := new_state;
     update_graphics () 
-
-
 
