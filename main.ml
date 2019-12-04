@@ -57,7 +57,7 @@ and check_key_pressed press num_players=
     | 'd' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
     | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 2;
       Graphic.quit(); 
-      if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+      if (wait_next_event [Key_pressed]).key = 'q' then (Graphic.restart ""; ())
       else Game.update "resume" 2; check_still_alive num_players
     | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
       Graphic.pause ();
@@ -151,7 +151,7 @@ let rec level_selection s =
                   if button_clicked b4x1 b4x2 b4y1 b4y2 click
                   then "endless"
                   else level_selection s
-                  
+
 let main () =
   start_window "";
   let num_players = player_selection "" in 

@@ -194,7 +194,6 @@ let is_double_hit sec_inpt player =
     A tap is accurate if it is hit at the correct time and position. *)
 let is_hit inpt player= 
   if List.mem (bottom_row (!state.matrix)) double_rows then is_double_hit inpt player
-
   else 
     match inpt with
     | "up" -> if List.mem (Some Up) (bottom_row !state.matrix) then Hit else Miss
