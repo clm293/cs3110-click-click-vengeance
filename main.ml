@@ -16,26 +16,53 @@ let state = unwrap_state ()
 
 (** [check_still_alive ()] continues the input loop if the player still has at 
     least one life left. *)
-let rec check_still_alive () = 
-  if (Game.get_lives ()) = 0 
-  then (* insert restart screen*) (Graphic.restart ""; ())
-  else check_key_pressed (wait_next_event [Key_pressed])
+let rec check_still_alive num_players = 
+  if num_players = 2 then begin
+    if (Game.get_lives 1) = 0 or (Game.get_lives 2) = 0  
+    then (Graphic.restart "";  ())
+    else check_key_pressed (wait_next_event [Key_pressed]) 2
+  end
+  else begin
+    if (Game.get_lives 1) = 0 
+    then (Graphic.restart ""; ()) 
+    else if (Game.get_beat () >= Game.get_length ()) then (Graphic.restart ""; print_endline "you won"; ())
+    else check_key_pressed (wait_next_event [Key_pressed]) num_players
+  end
 
 (** [check_key_pressed press] updates the game state on each player input. *)
-and check_key_pressed press = 
-  match press.key with
-  | 'i' -> print_endline "up"; Game.update "up"; check_still_alive ()
-  | 'j' -> print_endline "left"; Game.update "left"; check_still_alive ()
-  | 'k' -> print_endline "down"; Game.update "down"; check_still_alive ()
-  | 'l' -> print_endline "right"; Game.update "right"; check_still_alive ()
-  | 'q' -> print_endline "You quit the game :(";  Game.update "pause";
-    Graphic.quit(); 
-    if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
-    else Game.update "resume"; check_still_alive ()
-  | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause"; 
-    Graphic.pause ();
-    (wait_next_event [Key_pressed]); Game.update "resume"; check_still_alive ()
-  | _ -> print_endline "bad"; Game.update ""; check_still_alive ()
+and check_key_pressed press num_players= 
+  if num_players = 1 then
+    match press.key with
+    | 'i' -> print_endline "up"; Game.update "up" 1; check_still_alive num_players
+    | 'j' -> print_endline "left"; Game.update "left" 1; check_still_alive num_players
+    | 'k' -> print_endline "down"; Game.update "down" 1; check_still_alive num_players
+    | 'l' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
+    | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 1;
+      Graphic.quit(); 
+      if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+      else Game.update "resume" 1; check_still_alive num_players
+    | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
+      Graphic.pause ();
+      (wait_next_event [Key_pressed]); Game.update "resume" 1; check_still_alive num_players
+    | _ -> print_endline "bad"; Game.update "" 1; check_still_alive num_players
+  else 
+    match press.key with
+    | 'i' -> print_endline "up"; Game.update "up" 2; check_still_alive num_players
+    | 'j' -> print_endline "left"; Game.update"left" 2; check_still_alive num_players
+    | 'k' -> print_endline "down"; Game.update "down" 2; check_still_alive num_players
+    | 'l' -> print_endline "right"; Game.update "right" 2; check_still_alive num_players
+    | 'w' -> print_endline "up"; Game.update "up" 1; check_still_alive num_players
+    | 'a' -> print_endline "left"; Game.update "left" 1; check_still_alive num_players
+    | 's' -> print_endline "down"; Game.update "down" 1; check_still_alive num_players
+    | 'd' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
+    | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 2;
+      Graphic.quit(); 
+      if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+      else Game.update "resume" 2; check_still_alive num_players
+    | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
+      Graphic.pause ();
+      (wait_next_event [Key_pressed]); Game.update "resume" 1; check_still_alive num_players
+    | _ -> print_endline "bad"; Game.update "" 1; check_still_alive num_players
 
 and set_timer () =
   print_endline "in timer";
@@ -44,27 +71,27 @@ and set_timer () =
   setitimer ITIMER_REAL its; ()
 
 (** [call_update num] updates the game state for a beat. *)
-and call_update num = 
+and call_update num_players num = 
   set_timer ();
-  Game.update "beat"
+  Game.update "beat" num_players
 
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
 and play_game mode num_players =
   begin match mode with
     | "endless" -> 
-      Game.init_state num_players 50.0 None;
+      Game.init_state num_players 50.0 max_int;
       Graphic.init_graphics "" num_players;
       set_timer ();
-      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-      check_key_pressed (wait_next_event [Key_pressed]);()
+      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
+      check_key_pressed (wait_next_event [Key_pressed]) num_players;()
     | _ -> 
       let song = Song.from_json (Yojson.Basic.from_file mode) in
       Game.init_state num_players (Song.bpm song) (Song.length song);
       Graphic.init_graphics "" num_players;
       set_timer ();
-      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update));
-      check_key_pressed (wait_next_event [Key_pressed]);()
+      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
+      check_key_pressed (wait_next_event [Key_pressed]) num_players;()
   end
 
 let click_location click = 
@@ -124,39 +151,9 @@ let rec level_selection s =
                   if button_clicked b4x1 b4x2 b4y1 b4y2 click
                   then "endless"
                   else level_selection s
-
-(** [song_selection_loop ()] prompts the player to select the song they wish to 
-    play and returns the name of that song file.*)
-let rec song_selection_loop () = 
-  print_endline "Please enter the number of the song you wish to play\n";
-  print_endline "1: Song 1, Difficulty: Easy";
-  print_endline "2: Song 2, Difficulty: Medium";
-  print_endline "3: Song 3, Difficulty: Hard";
-  print_string  "> ";
-  match read_line () with
-  | "1" -> "coughSyrup.json"
-  | "2" -> "test_song.json" 
-  | "3" -> "test_song_fast.json"
-  | _ -> print_endline "Please enter a valid song number";
-    song_selection_loop ()
-
-(** [num_player_selection_loop ()] prompts the player to select the number of 
-    players they wish to play with and returns the number. *)
-let rec num_player_selection_loop () =
-  print_endline "Please enter the number of players you wish to play\n";
-  print_string  "> ";
-  match read_line () with
-  | "1" -> 1
-  | "2" -> 2
-  | _ -> print_endline "Please enter a valid number of players";
-    num_player_selection_loop ()
-
+                  
 let main () =
-  (* ANSITerminal.(print_string [red]
-                  "\n\nWelcome to Tap Tap Revenge.\n"); *)
   start_window "";
-  (* let num_players = num_player_selection_loop () in
-     let song = song_selection_loop () in *)
   let num_players = player_selection "" in 
   let song = level_selection "" in
   print_int num_players;
