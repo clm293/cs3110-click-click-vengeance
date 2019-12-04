@@ -466,12 +466,43 @@ let quit s =
         draw_string "Press any key to resume";
         ()
 
+let leaderboard lst = 
+  (* clear_graph ();
+     resize_window 600 640;
+     set_color black;
+     fill_rect 0 0 600 640; *)
+  set_color magenta;
+  match text_size "Leaderboard" with
+  | (x,_) -> moveto ((600 - x)/2) 550; draw_string "Leaderboard";
+    let change_color n = 
+      match (n mod 5) with
+      | 1 -> set_color red;
+      | 2 -> set_color green;
+      | 3 -> set_color blue;
+      | 4 -> set_color yellow;
+      | 0 -> set_color cyan;
+      | _ -> (); in
+    let rec draw_lst lst n = 
+      change_color n;
+      if n > 10 then () else 
+        match lst with
+        | h :: t -> begin
+            let str = string_of_int n ^ ". " ^ string_of_int h in
+            match text_size str with
+            | (x,y) -> moveto ((600 - x)/2) (550-(30*n)); draw_string str; draw_lst t (n+1)
+          end
+        | [] -> ()
+    in
+    draw_lst lst 1;
+    ()
+
 (** [restart s] is the graphics screen when the player quits a round. *)
-let restart s = 
+let restart s lst = 
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;
-  draw_logo s;
+  (* draw_logo s; *)
+  leaderboard lst;
   moveto 200 300;
   (draw_button "Play Again" (400/3) 150 cyan black, 
    draw_button "Quit" (800/3 + 100) 150 magenta white)
@@ -500,32 +531,3 @@ let win s =
     (draw_button "Play Again" (400/3) 150 cyan black, 
      draw_button "Quit" (800/3 + 100) 150 magenta white)
 
-let leaderboard lst = 
-  clear_graph ();
-  resize_window 600 640;
-  set_color black;
-  fill_rect 0 0 600 640;
-  set_color magenta;
-  match text_size "Leaderboard" with
-  | (x,_) -> moveto ((600 - x)/2) 500; draw_string "Leaderboard";
-    let change_color n = 
-      match (n mod 5) with
-      | 1 -> set_color red;
-      | 2 -> set_color green;
-      | 3 -> set_color blue;
-      | 4 -> set_color yellow;
-      | 0 -> set_color cyan;
-      | _ -> (); in
-    let rec draw_lst lst n = 
-      change_color n;
-      if n > 10 then () else 
-        match lst with
-        | h :: t -> begin
-            let str = string_of_int n ^ ". " ^ string_of_int h in
-            match text_size str with
-            | (x,y) -> moveto ((600 - x)/2) (500-(30*n)); draw_string str; draw_lst t (n+1)
-          end
-        | [] -> ()
-    in
-    draw_lst lst 1;
-    ()
