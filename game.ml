@@ -57,6 +57,22 @@ let state = ref {
     players = (!player_1_ref, None);
   }
 
+let init_player p =
+  if p = 1 then player_1_ref := {
+      score = 0;
+      scored_this_arrow = false;
+      lives_remaining = 5;
+      last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
+      first_of_double = "";
+    }
+  else player_2_ref := {
+      score = 0;
+      scored_this_arrow = false;
+      lives_remaining = 5;
+      last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
+      first_of_double = "";
+    }
+
 (** [init_state num bpm len] is the initial state of the game. *)
 let init_state num bpm len = 
   state := {
@@ -75,8 +91,14 @@ let init_state num bpm len =
     paused = false;
     length = len;
     beat = 0;
-    players = if num = 1 then (!player_1_ref, None) else (!player_1_ref, Some !player_2_ref);
+    players = if num = 1 then begin init_player 1; (!player_1_ref, None) end 
+      else 
+        begin 
+          init_player 1; init_player 2; 
+          (!player_1_ref, Some !player_2_ref) 
+        end;
   }
+
 
 (* some functions used for testing:*)
 let get_paused () = !state.paused
@@ -264,8 +286,8 @@ let increase_speed beat =
   else !state.speed
 
 let update_leaderboard score = 
-  leaderboard := List.sort compare (score::!leaderboard);
-  print_endline (String.concat "\n" (List.map string_of_int !leaderboard))
+  leaderboard := List.sort compare (score::!leaderboard) 
+                 |> List.rev
 
 let update_graphics () = 
   if is_hot (!player_1_ref.last_ten)then 
