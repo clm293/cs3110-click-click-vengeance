@@ -24,8 +24,8 @@ let rec check_still_alive num_players =
   end
   else begin
     if (Game.get_lives 1) = 0 
-    then (Graphic.restart ""; ()) 
-    else if (Game.get_beat () >= Game.get_length ()) then (Graphic.restart ""; print_endline "you won"; ())
+    then (restart ""; ()) 
+    else if (Game.get_beat () >= Game.get_length ()) then (restart ""; print_endline "you won"; ())
     else check_key_pressed (wait_next_event [Key_pressed]) num_players
   end
 
@@ -39,7 +39,7 @@ and check_key_pressed press num_players=
     | 'l' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
     | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 1;
       Graphic.quit(); 
-      if (wait_next_event[Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+      if (wait_next_event[Key_pressed]).key = 'q' then (restart ""; ())
       else Game.update "resume" 1; check_still_alive num_players
     | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
       Graphic.pause ();
@@ -57,7 +57,7 @@ and check_key_pressed press num_players=
     | 'd' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
     | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 2;
       Graphic.quit(); 
-      if (wait_next_event [Key_pressed]).key = 'q' then (Graphic.restart ""; ())
+      if (wait_next_event [Key_pressed]).key = 'q' then (restart ""; ())
       else Game.update "resume" 2; check_still_alive num_players
     | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
       Graphic.pause ();
@@ -224,6 +224,7 @@ and level_selection s =
                       if button_clicked hx1 hx2 hy1 hy2 click
                       then (help s; level_selection s)
                       else level_selection s
+
 and main () =
   start_window "";
   let num_players = player_selection "" in 
