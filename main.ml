@@ -19,7 +19,7 @@ let state = unwrap_state ()
 let rec check_still_alive num_players = 
   if num_players = 2 then begin
     if (Game.get_lives 1) = 0 or (Game.get_lives 2) = 0  
-    then (Graphic.restart "";  ())
+    then (lose ""; ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
@@ -94,25 +94,88 @@ and play_game mode num_players =
       check_key_pressed (wait_next_event [Key_pressed]) num_players;()
   end
 
-let click_location click = 
+and click_location click = 
   (click.mouse_x,click.mouse_y)
 
-let button_clicked x1 x2 y1 y2 click = 
+and button_clicked x1 x2 y1 y2 click = 
   match click_location click with 
   | (x,y) -> if y < y2 && y > y1 && x < x2 && x > x1 then true else false
 
-let rec start_window s = 
-  match Graphic.start_window s with
-  | (x,y) -> 
+and restart s = 
+  match Graphic.restart s with
+  | (play_again, quit) ->  
     let click = (wait_next_event [Button_down]) in 
-    let x1 = x in let x2 = x + 100 in let y1 = y in let y2 = y + 75 in
+    match play_again with 
+    | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
+      let b1y1 = b1y in let b1y2 = b1y + 75 in 
+      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
+      then main ()
+      else match quit with 
+        | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
+          let b2y1 = b2y in let b2y2 = b2y + 75 in 
+          if button_clicked b2x1 b2x2 b2y1 b2y2 click
+          then close_graph ()
+          else restart s
+
+and lose s = 
+  match Graphic.lose s with
+  | (play_again, quit) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match play_again with 
+    | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
+      let b1y1 = b1y in let b1y2 = b1y + 75 in 
+      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
+      then main ()
+      else match quit with 
+        | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
+          let b2y1 = b2y in let b2y2 = b2y + 75 in 
+          if button_clicked b2x1 b2x2 b2y1 b2y2 click
+          then close_graph ()
+          else lose s
+
+and win s = 
+  match Graphic.win s with
+  | (play_again, quit) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match play_again with 
+    | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
+      let b1y1 = b1y in let b1y2 = b1y + 75 in 
+      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
+      then main ()
+      else match quit with 
+        | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
+          let b2y1 = b2y in let b2y2 = b2y + 75 in 
+          if button_clicked b2x1 b2x2 b2y1 b2y2 click
+          then close_graph ()
+          else win s
+
+and help s = 
+  match Graphic.help s with 
+  | (x,y) -> let click = wait_next_event [Button_down] in 
+    let x1 = x in let x2 = x + 30 in let y1 = y in let y2 = y + 30 in
     if button_clicked x1 x2 y1 y2 click 
     then ()
-    else start_window s
+    else help s
 
-let rec player_selection s =
+and start_window s = 
+  match Graphic.start_window s with
+  | (b, h) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match b with 
+    | (bx,by) -> let bx1 = bx in let bx2 = bx + 100 in 
+      let by1 = by in let by2 = by + 75 in 
+      if button_clicked bx1 bx2 by1 by2 click
+      then ()
+      else match h with 
+        | (hx,hy) -> let hx1 = hx in let hx2 = hx + 30 in 
+          let hy1 = hy in let hy2 = hy + 30 in 
+          if button_clicked hx1 hx2 hy1 hy2 click
+          then (help s; start_window s)
+          else start_window s
+
+and player_selection s =
   match Graphic.player_selection s with
-  | (b1, b2) ->  
+  | (b1, b2, h) ->  
     let click = (wait_next_event [Button_down]) in 
     match b1 with 
     | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
@@ -124,11 +187,16 @@ let rec player_selection s =
           let b2y1 = b2y in let b2y2 = b2y + 75 in 
           if button_clicked b2x1 b2x2 b2y1 b2y2 click
           then 2
-          else player_selection s
+          else match h with 
+            | (hx,hy) -> let hx1 = hx in let hx2 = hx + 30 in 
+              let hy1 = hy in let hy2 = hy + 30 in 
+              if button_clicked hx1 hx2 hy1 hy2 click
+              then (help s; player_selection s)
+              else player_selection s
 
-let rec level_selection s = 
+and level_selection s = 
   match Graphic.level_selection s with
-  | (b1, b2, b3, b4) ->  
+  | (b1, b2, b3, b4, h) ->  
     let click = (wait_next_event [Button_down]) in 
     match b1 with 
     | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
@@ -150,9 +218,13 @@ let rec level_selection s =
                   let b4y1 = b4y in let b4y2 = b4y + 75 in 
                   if button_clicked b4x1 b4x2 b4y1 b4y2 click
                   then "endless"
-                  else level_selection s
-
-let main () =
+                  else match h with 
+                    | (hx,hy) -> let hx1 = hx in let hx2 = hx + 30 in 
+                      let hy1 = hy in let hy2 = hy + 30 in 
+                      if button_clicked hx1 hx2 hy1 hy2 click
+                      then (help s; level_selection s)
+                      else level_selection s
+and main () =
   start_window "";
   let num_players = player_selection "" in 
   let song = level_selection "" in
