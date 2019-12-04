@@ -9,7 +9,6 @@ type inpt = keey option
 (** [check_still_alive ()] continues the input loop if the player still has at 
     least one life left. *)
 let rec check_still_alive num_players = 
-  if Game.get_beat () > Game.get_length () then (restart "" num_players) else
   if num_players = 2 then begin
     if (Game.get_lives 1) <= 0 || (Game.get_lives 2) <= 0  
     then (Game.update "pause" num_players; restart "" num_players; ())
@@ -65,8 +64,11 @@ and set_timer () =
 
 (** [call_update num] updates the game state for a beat. *)
 and call_update num_players num = 
-  set_timer ();
-  Game.update "beat" num_players
+  if Game.get_beat () > Game.get_length () then (restart "" num_players) else
+    begin
+      set_timer ();
+      Game.update "beat" num_players
+    end
 
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player and [song_file] *)
@@ -80,6 +82,7 @@ and play_game mode num_players =
       check_key_pressed (wait_next_event [Key_pressed]) num_players;()
     | _ -> 
       let song = Song.from_json (Yojson.Basic.from_file mode) in
+      print_endline (string_of_int (Song.length song));
       Game.init_state num_players (Song.bpm song) (Song.length song);
       Graphic.init_graphics "" num_players;
       set_timer ();

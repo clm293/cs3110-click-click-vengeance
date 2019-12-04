@@ -141,24 +141,24 @@ let double_rows = [
 let generate_random_row () = 
   if !state.beat < 10 then
     match Random.int 5 with
-    | 0 -> print_endline "0"; [Some Left; None; None; None]
-    | 1 -> print_endline "1"; [None; Some Down; None; None]
-    | 2 -> print_endline "2"; [None; None; Some Up; None]
-    | 3 -> print_endline "3"; [None; None; None; Some Right]
+    | 0 -> [Some Left; None; None; None]
+    | 1 -> [None; Some Down; None; None]
+    | 2 -> [None; None; Some Up; None]
+    | 3 -> [None; None; None; Some Right]
     | 4 -> [None;None;None;None]
     | _ -> failwith "random"
   else 
     match Random.int 11 with 
-    | 0 -> print_endline "0"; [Some Left; None; None; None]
-    | 1 -> print_endline "1"; [None; Some Down; None; None]
-    | 2 -> print_endline "2"; [None; None; Some Up; None]
-    | 3 -> print_endline "3"; [None; None; None; Some Right]
-    | 4 -> print_endline "4"; [Some Left; Some Down; None; None]
-    | 5 -> print_endline "5"; [None; Some Down; Some Up; None]
-    | 6 -> print_endline "6"; [None; None; Some Up; Some Right]
-    | 7 -> print_endline "7"; [None; Some Down; None; Some Right]
-    | 8 -> print_endline "8"; [Some Left; None; Some Up; None]
-    | 9 -> print_endline "9"; [Some Left; None; None; Some Right]
+    | 0 -> [Some Left; None; None; None]
+    | 1 -> [None; Some Down; None; None]
+    | 2 -> [None; None; Some Up; None]
+    | 3 -> [None; None; None; Some Right]
+    | 4 -> [Some Left; Some Down; None; None]
+    | 5 -> [None; Some Down; Some Up; None]
+    | 6 -> [None; None; Some Up; Some Right]
+    | 7 -> [None; Some Down; None; Some Right]
+    | 8 -> [Some Left; None; Some Up; None]
+    | 9 -> [Some Left; None; None; Some Right]
     | 10 -> [None;None;None;None]
     | _ -> failwith "random"
 
@@ -238,13 +238,11 @@ let update_matrix () =
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
-
 let rec remove_last_three m = 
   if List.length m = 5 then m else 
     match m with
     | h :: t -> remove_last_three t
     | [] -> failwith "last_three error"
-
 
 let rec resume_matrix m acc = 
   List.rev_append (List.rev (remove_last_three m)) [[None;None;None;None];[None;None;None;None];[None;None;None;None]]
@@ -376,6 +374,7 @@ let rec update (inpt: string) (plyr: int): unit =
       players = !state.players
     } 
     in 
+    print_endline (string_of_int new_state.length);
     print_endline (string_of_int new_state.beat);
     state := new_state;
     update_graphics () 
