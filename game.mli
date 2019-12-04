@@ -25,6 +25,8 @@ val get_beat : unit -> int
 
 val get_length : unit -> int
 
+val get_score : int -> int
+
 (** [score ()] is the score for current state. *)
 val score : int -> int
 
@@ -43,3 +45,5 @@ val update : string -> int -> unit
 val update_graphics : unit -> unit
 
 val increase_speed : int -> float
+
+val update_leaderboard : int -> unit

@@ -6,10 +6,6 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
-let unwrap_leaderboard () = !Game.leaderboard
-
-let leaderboard = unwrap_leaderboard ()
-
 (** [unwrap_state ()] is the current game state. *)
 let unwrap_state () = !Game.state
 
@@ -21,13 +17,13 @@ let state = unwrap_state ()
 let rec check_still_alive num_players = 
   if num_players = 2 then begin
     if (Game.get_lives 1) = 0 or (Game.get_lives 2) = 0  
-    then (lose ""; ())
+    then (restart "" num_players; ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
     if (Game.get_lives 1) = 0 
-    then (restart ""; ()) 
-    else if (Game.get_beat () >= Game.get_length ()) then (restart ""; print_endline "you won"; ())
+    then (restart "" num_players; ()) 
+    else if (Game.get_beat () >= Game.get_length ()) then (restart "" num_players; print_endline "you won"; ())
     else check_key_pressed (wait_next_event [Key_pressed]) num_players
   end
 
@@ -41,7 +37,7 @@ and check_key_pressed press num_players=
     | 'l' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
     | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 1;
       Graphic.quit(); 
-      if (wait_next_event[Key_pressed]).key = 'q' then (restart ""; ())
+      if (wait_next_event[Key_pressed]).key = 'q' then (restart "" num_players; ())
       else Game.update "resume" 1; check_still_alive num_players
     | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
       Graphic.pause ();
@@ -59,7 +55,7 @@ and check_key_pressed press num_players=
     | 'd' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
     | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 2;
       Graphic.quit(); 
-      if (wait_next_event [Key_pressed]).key = 'q' then (restart ""; ())
+      if (wait_next_event [Key_pressed]).key = 'q' then (restart "" num_players; ())
       else Game.update "resume" 2; check_still_alive num_players
     | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
       Graphic.pause ();
@@ -103,8 +99,10 @@ and button_clicked x1 x2 y1 y2 click =
   match click_location click with 
   | (x,y) -> if y < y2 && y > y1 && x < x2 && x > x1 then true else false
 
-and restart s = 
-  match Graphic.restart s leaderboard with
+and restart s num_players = 
+  Game.update_leaderboard (Game.get_score 1);
+  if num_players = 2 then Game.update_leaderboard (Game.get_score 2);
+  match Graphic.restart s !Game.leaderboard with
   | (play_again, quit) ->  
     let click = (wait_next_event [Button_down]) in 
     match play_again with 
@@ -117,9 +115,11 @@ and restart s =
           let b2y1 = b2y in let b2y2 = b2y + 75 in 
           if button_clicked b2x1 b2x2 b2y1 b2y2 click
           then close_graph ()
-          else restart s
+          else restart s num_players
 
-and lose s = 
+and lose s num_players = 
+  Game.update_leaderboard (Game.get_score 1);
+  if num_players = 2 then Game.update_leaderboard (Game.get_score 2);
   match Graphic.lose s with
   | (play_again, quit) ->  
     let click = (wait_next_event [Button_down]) in 
@@ -133,7 +133,7 @@ and lose s =
           let b2y1 = b2y in let b2y2 = b2y + 75 in 
           if button_clicked b2x1 b2x2 b2y1 b2y2 click
           then close_graph ()
-          else lose s
+          else lose s num_players
 
 and win s = 
   match Graphic.win s with

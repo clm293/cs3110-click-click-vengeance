@@ -28,7 +28,6 @@ type t = {
   players: player * player option;
 }
 
-
 let leaderboard = ref []
 
 let player_1_ref = ref {
@@ -100,6 +99,9 @@ let get_length () = !state.length
 
 (** [get_curr_matrix] is the game matrix in state [t]. *)
 let get_curr_matrix () = !state.matrix
+
+let get_score player =
+  if player = 1 then !player_1_ref.score else !player_2_ref.score
 
 let single_rows = [
   [Some Left; None; None; None]; [None; Some Down; None; None];
