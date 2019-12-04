@@ -10,15 +10,13 @@ type inpt = keey option
     least one life left. *)
 let rec check_still_alive num_players = 
   if num_players = 2 then begin
-    if (Game.get_lives 1) <= 0 || (Game.get_lives 2) <= 0  
+    if (((Game.get_lives 1) <= 0) || ((Game.get_lives 2) <= 0)  || (Game.get_beat () >= Game.get_length ()))
     then (Game.update "pause" num_players; restart "" num_players; ())
-    else if (Game.get_beat () >= Game.get_length ()) then (restart "" num_players; print_endline "you won"; ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
-    if (Game.get_lives 1) <= 0 
+    if (((Game.get_lives 1) <= 0) || (Game.get_beat () >= Game.get_length ()))
     then (Game.update "pause" num_players; restart "" num_players; ()) 
-    else if (Game.get_beat () >= Game.get_length ()) then (restart "" num_players; print_endline "you won"; ())
     else check_key_pressed (wait_next_event [Key_pressed]) num_players
   end
 
@@ -100,20 +98,22 @@ and button_clicked x1 x2 y1 y2 click =
 and restart s num_players = 
   Game.update_leaderboard (Game.get_score 1);
   if num_players = 2 then Game.update_leaderboard (Game.get_score 2);
-  match Graphic.restart s !Game.leaderboard with
-  | (play_again, quit) ->  
-    let click = (wait_next_event [Button_down]) in 
-    match play_again with 
-    | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
-      let b1y1 = b1y in let b1y2 = b1y + 75 in 
-      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
-      then main ()
-      else match quit with 
-        | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
-          let b2y1 = b2y in let b2y2 = b2y + 75 in 
-          if button_clicked b2x1 b2x2 b2y1 b2y2 click
-          then close_graph ()
-          else restart s num_players
+  let rec helper s = 
+    match Graphic.restart s !Game.leaderboard with
+    | (play_again, quit) ->  
+      let click = (wait_next_event [Button_down]) in 
+      match play_again with 
+      | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
+        let b1y1 = b1y in let b1y2 = b1y + 75 in 
+        if button_clicked b1x1 b1x2 b1y1 b1y2 click 
+        then main ()
+        else match quit with 
+          | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
+            let b2y1 = b2y in let b2y2 = b2y + 75 in 
+            if button_clicked b2x1 b2x2 b2y1 b2y2 click
+            then close_graph ()
+            else helper s in
+  helper s
 
 and lose s num_players = 
   Game.update_leaderboard (Game.get_score 1);
