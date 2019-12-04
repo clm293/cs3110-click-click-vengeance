@@ -33,4 +33,6 @@ let song_name s = s.song_name
 
 let music_file s = s.file
 
-let length s = Some s.length
+let length s =  s.length
+
+
