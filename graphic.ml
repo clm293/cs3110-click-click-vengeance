@@ -495,25 +495,23 @@ let leaderboard lst =
     draw_lst lst 1;
     ()
 
-(** [restart s] is the graphics screen when the player quits a round. *)
+(** [restart s lst] is the graphics screen when the player quits/loses/wins 
+    where [s] gives the quit/lose/win message to display. *)
 let restart s lst = 
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;
   (* draw_logo s; *)
   leaderboard lst;
-  moveto 200 300;
-  (draw_button "Play Again" (400/3) 150 cyan black, 
-   draw_button "Quit" (800/3 + 100) 150 magenta white)
-
-(** [lose s] is the graphics screen when the player loses a round. *)
-let lose s = 
-  resize_window 600 640;
-  set_color black;
-  fill_rect 0 0 600 640;
-  draw_logo s;
-  match text_size "YOU LOSE!" with 
-  | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU LOSE!";
+  let change_color s = 
+    match s with 
+    | "YOU LOSE!" -> red
+    | "YOU QUIT!" -> red
+    | "YOU WIN!" -> green
+    | _ -> black in
+  set_color (change_color s);
+  match text_size s with 
+  | (x,_) -> moveto ((600-x)/2) 250; draw_string s;
     moveto 200 300;
     (draw_button "Play Again" (400/3) 150 cyan black, 
      draw_button "Quit" (800/3 + 100) 150 magenta white)

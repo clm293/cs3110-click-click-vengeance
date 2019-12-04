@@ -10,13 +10,17 @@ type inpt = keey option
     least one life left. *)
 let rec check_still_alive num_players = 
   if num_players = 2 then begin
-    if (((Game.get_lives 1) <= 0) || ((Game.get_lives 2) <= 0)  || (Game.get_beat () >= Game.get_length ()))
-    then (Game.update "pause" num_players; restart "" num_players; ())
+    if (((Game.get_lives 1) <= 0) || ((Game.get_lives 2) <= 0))
+    then (Game.update "pause" num_players; restart "YOU LOSE!" num_players; ())
+    else if (Game.get_beat () >= Game.get_length ())
+    then (Game.update "pause" num_players; restart "YOU WIN!" num_players; ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
-    if (((Game.get_lives 1) <= 0) || (Game.get_beat () >= Game.get_length ()))
-    then (Game.update "pause" num_players; restart "" num_players; ()) 
+    if ((Game.get_lives 1) <= 0)
+    then (Game.update "pause" num_players; restart "YOU LOSE!" num_players; ()) 
+    else if (Game.get_beat () >= Game.get_length ())
+    then (Game.update "pause" num_players; restart "YOU WIN!" num_players; ())
     else check_key_pressed (wait_next_event [Key_pressed]) num_players
   end
 
@@ -30,7 +34,7 @@ and check_key_pressed press num_players=
     | 'l' -> print_endline "right"; Game.update "right" 1; check_still_alive num_players
     | 'q' -> print_endline "You quit the game :(";  Game.update "pause" 1;
       Graphic.quit(); 
-      if (wait_next_event[Key_pressed]).key = 'q' then (restart "" num_players; ())
+      if (wait_next_event[Key_pressed]).key = 'q' then (restart "YOU QUIT!" num_players; ())
       else Game.update "resume" 1; check_still_alive num_players
     | ' ' -> print_endline "Paused. Press any key to resume."; Game.update "pause" 1; 
       Graphic.pause ();
@@ -114,24 +118,6 @@ and restart s num_players =
             then close_graph ()
             else helper s in
   helper s
-
-and lose s num_players = 
-  Game.update_leaderboard (Game.get_score 1);
-  if num_players = 2 then Game.update_leaderboard (Game.get_score 2);
-  match Graphic.lose s with
-  | (play_again, quit) ->  
-    let click = (wait_next_event [Button_down]) in 
-    match play_again with 
-    | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
-      let b1y1 = b1y in let b1y2 = b1y + 75 in 
-      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
-      then main ()
-      else match quit with 
-        | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
-          let b2y1 = b2y in let b2y2 = b2y + 75 in 
-          if button_clicked b2x1 b2x2 b2y1 b2y2 click
-          then close_graph ()
-          else lose s num_players
 
 and win s = 
   match Graphic.win s with
