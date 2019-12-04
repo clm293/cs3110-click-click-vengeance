@@ -2,21 +2,20 @@
    Controls all game functions.
    This module handles all scoring, music, and game data.
 *)
-type arrow
-type cell 
-(** The type of values representing the positions of the icons. *)
-type matrix
 
-type press
-
-(** The abstact type of values representing game state. *)
+(** The abstract type of values representing game state. *)
 type t 
 
+(** [leaderboard] is the leaderboard of scores from players who have played 
+    during the open game session *)
 val leaderboard : int list ref
 
+(** [state] is the reference pointing to the current state of the game. *)
 val state : t ref
 
+(** [get_paused ()] is true if the game is paused and false otherwise *)
 val get_paused : unit -> bool
+
 (** [get_lives ()] is the number of lives remaining for the player in the current
     state *)
 val get_lives : int -> int
@@ -26,12 +25,6 @@ val get_beat : unit -> int
 val get_length : unit -> int
 
 val get_score : int -> int
-
-(** [score ()] is the score for current state. *)
-val score : int -> int
-
-(** [get_curr_matrix ()] is the game matrix in state [t]. *)
-val get_curr_matrix : unit -> matrix
 
 (** [init_state num bpm] is the initial state of the game before play has started. *)
 val init_state : int -> float -> int -> unit

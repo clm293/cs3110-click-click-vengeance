@@ -1,15 +1,21 @@
 open Graphics
 open Graphic
 
-(** Left is 0, Down is 1, Up is 2, Right is 3 *)
+(** [arrow] is the type of values representing an arrow on the screen. *)
 type arrow = Left | Down | Up | Right
 
+
+(** The type of values representing a cell in the game matrix. *)
 type cell = arrow option
 
+(** The type of values representing the game matrix that stores data
+    about the arrows on the screen. *)
 type matrix = cell list list
 
+(** The type of values representing a player key press. *)
 type press = Hit | Miss | Other
 
+(** The type of values representing a player. *)
 type player = {
   score: int;
   scored_this_arrow : bool;
@@ -30,6 +36,7 @@ type t = {
 
 let leaderboard = ref []
 
+(** [player_1_ref] is the reference to the state of player 1. *)
 let player_1_ref = ref {
     score = 0;
     scored_this_arrow = false;
@@ -38,6 +45,7 @@ let player_1_ref = ref {
     first_of_double = "";
   }
 
+(** [player_2_ref] is the reference to the state of player 2 *)
 let player_2_ref = ref {
     score = 0;
     scored_this_arrow = false;
@@ -46,7 +54,6 @@ let player_2_ref = ref {
     first_of_double = "";
   } 
 
-(** [state] is the reference pointing to the current state of the game. *)
 let state = ref {
     matrix = [];
     num_players = 0;
@@ -99,18 +106,11 @@ let init_state num bpm len =
         end;
   }
 
-
-(* some functions used for testing:*)
 let get_paused () = !state.paused
 
 (** [speed ()] is the beats per second for the state's bpm *)
 let speed () = 
   1.0 /. (!state.speed /. 60.0)
-
-let rec make_score_list n acc =
-  if n > 0 then (make_score_list (n-1) (0::acc)) else acc
-
-let score player = if player = 1 then !player_1_ref.score else !player_2_ref.score
 
 (** [get_lives] is the number of lives remaining in state [t]. *)
 let get_lives player = if player = 1 then !player_1_ref.lives_remaining else !player_2_ref.lives_remaining
@@ -118,9 +118,6 @@ let get_lives player = if player = 1 then !player_1_ref.lives_remaining else !pl
 let get_beat () = !state.beat
 
 let get_length () = !state.length
-
-(** [get_curr_matrix] is the game matrix in state [t]. *)
-let get_curr_matrix () = !state.matrix
 
 let get_score player =
   if player = 1 then !player_1_ref.score else !player_2_ref.score
@@ -180,8 +177,8 @@ let is_double_hit sec_inpt player =
     let fst_inpt = !player.first_of_double in 
     match fst_inpt, sec_inpt with 
     | "up", "left" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Left )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                         List.mem (Some Left )(bottom_row t.matrix) then Hit
+      else Miss
     | "left", "up" -> if List.mem (Some Up)(bottom_row t.matrix) && 
                          List.mem (Some Left )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
         (print_endline "double miss"; Miss)
@@ -362,11 +359,13 @@ let rec update (inpt: string) (plyr: int): unit =
   else
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
         update_matrix () else !state.matrix in
-    if inpt = "beat" then begin update_player inpt new_matrix 1; update_player inpt new_matrix 2 end
+    if inpt = "beat" then 
+      begin 
+        update_player inpt new_matrix 1; 
+        update_player inpt new_matrix 2 
+      end
     else
       update_player inpt new_matrix plyr;
-
-
     let new_state = {
       matrix = new_matrix;
       num_players = !state.num_players;
@@ -375,11 +374,8 @@ let rec update (inpt: string) (plyr: int): unit =
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
       players = !state.players
-
-    } in 
-    print_endline "player1 score";
-    print_endline (string_of_int !player_2_ref.score);
-    print_endline "scored this arrow player 1";
-    print_endline (string_of_bool !player_2_ref.scored_this_arrow);
+    } 
+    in 
+    print_endline (string_of_int new_state.beat);
     state := new_state;
     update_graphics () 
