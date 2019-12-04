@@ -200,7 +200,7 @@ let is_double_hit sec_inpt player =
 
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
-let is_hit inpt player= 
+let is_hit inpt player = 
   if List.mem (bottom_row (!state.matrix)) double_rows then is_double_hit inpt player
   else 
     match inpt with
@@ -232,8 +232,8 @@ let rec resume_matrix m acc =
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
-  if !player.scored_this_arrow = true then !player.score 
-  else if !state.paused = true then !player.score
+  if !player.scored_this_arrow  then !player.score 
+  else if !state.paused then !player.score
   else begin
     match is_hit inpt player with
     | Hit -> (if is_hot (!player.last_ten )
@@ -245,7 +245,7 @@ let calc_score inpt player =
 (** [scored_this_arrow inpt new_score] is true if the player already scored 
     during this beat and false otherwise. *)
 let scored_this_arrow inpt new_score player = 
-  if inpt = "beat" then  false 
+  if inpt = "beat" then false 
   else  (if player.scored_this_arrow = true then true else 
          if (new_score <> player.score) then true else false)
 
@@ -339,8 +339,11 @@ let rec update (inpt: string) (plyr: int): unit =
   else if inpt = "resume" then resume_game ()
   else
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
-    update_matrix () else !state.matrix in
-    update_player inpt new_matrix plyr;
+        update_matrix () else !state.matrix in
+    if inpt = "beat" then begin update_player inpt new_matrix 1; update_player inpt new_matrix 2 end
+    else
+      update_player inpt new_matrix plyr;
+
 
     let new_state = {
       matrix = new_matrix;
@@ -353,6 +356,8 @@ let rec update (inpt: string) (plyr: int): unit =
 
     } in 
     print_endline "player1 score";
-    print_endline (string_of_int !player_1_ref.score);
+    print_endline (string_of_int !player_2_ref.score);
+    print_endline "scored this arrow player 1";
+    print_endline (string_of_bool !player_2_ref.scored_this_arrow);
     state := new_state;
     update_graphics () 
