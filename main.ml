@@ -20,7 +20,7 @@ let rec check_still_alive num_players =
   if num_players = 2 then begin
     if (Game.get_lives 1) = 0 or (Game.get_lives 2) = 0  
     then (Graphic.restart "";  ())
-    else check_key_pressed (wait_next_event [Key_pressed]) num_players
+    else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
     if (Game.get_lives 1) = 0 

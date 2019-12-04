@@ -212,8 +212,7 @@ let update_matrix t : matrix =
   | _ -> failwith "bad matrix"
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
-let calc_score inpt p = 
-  let player = if p = 1 then player_1_ref else player_2_ref in
+let calc_score inpt player = 
   if !player.scored_this_arrow = true then !player.score 
   else if !state.paused = true then !player.score
   else begin
@@ -226,8 +225,7 @@ let calc_score inpt p =
 
 (** [scored_this_arrow inpt new_score] is true if the player already scored 
     during this beat and false otherwise. *)
-let scored_this_arrow inpt new_score p = 
-  let player = if p = 1 then !player_1_ref else !player_2_ref in
+let scored_this_arrow inpt new_score player = 
   if inpt = "beat" then  false 
   else  (if player.scored_this_arrow = true then true else 
          if (new_score <> player.score) then true else false)
@@ -247,6 +245,10 @@ let increase_speed beat =
   else !state.speed
 
 let update_graphics () = 
+  if is_hot (!player_1_ref.last_ten)then 
+    print_endline "hotstreak1";
+  if is_hot (!player_2_ref.last_ten)then 
+    print_endline "hotstreak2";
   if !state.num_players = 1 
   then begin if !state.paused = true then ()
     else Graphic.update_graphics_1 !state.matrix !player_1_ref.score 
@@ -293,22 +295,21 @@ let resume_game () =
 
 let rec update_player inpt matrix p = 
   let player = (if p = 1 then player_1_ref else player_2_ref) in
-  if inpt = "pause" then pause_game ()
-  else if inpt = "resume" then resume_game ()
-  else
-    let new_score = if bottom_row !state.matrix <> [None;None;None;None]
-      then calc_score inpt p else !player.score in
-    let new_player_state = {
-      score = new_score;
-      scored_this_arrow = scored_this_arrow inpt new_score p;
-      lives_remaining = lives_remaining inpt matrix p;
-      last_ten = if inpt <> "beat" && (!player.scored_this_arrow = false) then 
-          (update_last_ten (is_hit inpt player) (!player.last_ten)) else
-          !player.last_ten;
-      first_of_double = if List.mem (bottom_row matrix) double_rows &&
-                           inpt <> "beat" then inpt else "";
-    } in 
-    if p = 1 then player_1_ref := new_player_state else player_2_ref := new_player_state
+  let new_score = if bottom_row !state.matrix <> [None;None;None;None]
+    then calc_score inpt player else !player.score in
+  let new_player_state = {
+    score = new_score;
+    scored_this_arrow = scored_this_arrow inpt new_score !player;
+    lives_remaining = lives_remaining inpt matrix p;
+    last_ten = if inpt <> "beat" && (!player.scored_this_arrow = false) 
+                  && not (List.mem (bottom_row matrix) double_rows && 
+                          !player.first_of_double = "") then 
+        (update_last_ten (is_hit inpt player) (!player.last_ten)) else
+        !player.last_ten;
+    first_of_double = if List.mem (bottom_row matrix) double_rows &&
+                         inpt <> "beat" then inpt else "";
+  } in 
+  player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
   if inpt = "pause" then pause_game ()
@@ -316,6 +317,7 @@ let rec update (inpt: string) (plyr: int): unit =
   else
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
         update_matrix !state else !state.matrix in
+    update_player inpt new_matrix plyr;
     let new_state = {
       matrix = new_matrix;
       num_players = !state.num_players;
@@ -325,7 +327,8 @@ let rec update (inpt: string) (plyr: int): unit =
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
       players = !state.players
     } in 
-    update_player inpt new_matrix plyr;
+    print_endline "player1 score";
+    print_endline (string_of_int !player_1_ref.score);
     state := new_state;
     update_graphics () 
 
