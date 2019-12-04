@@ -340,7 +340,7 @@ let update_graphics_1 matrix score lives hs =
 
 (** [update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2] 
     is the updated graphics for double player. *)
-let update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2 = 
+let update_graphics_2 matrix score1 lives1 hs1 score2 lives2 hs2 = 
   let rec draw_row_1 row i j = 
     match row with 
     | [] -> ()
@@ -376,8 +376,8 @@ let update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2 =
   clear_graph ();
   draw_background_2 magenta green cyan yellow score1 lives1 hs1 
     score2 lives2 hs2;
-  helper_1 matrix1 0;
-  helper_2 matrix2 0;
+  helper_1 matrix 0;
+  helper_2 matrix 0;
   ()
 
 (** [pause s] is the graphics screen when the game is paused. *)

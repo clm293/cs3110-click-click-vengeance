@@ -26,4 +26,4 @@ val song_name : t -> string
 (** [music_file t] is the file that has the music. *)
 val music_file : t -> string
 
-val length : t -> int option
+val length : t -> int 
