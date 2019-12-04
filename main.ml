@@ -6,7 +6,9 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
-let leaderboard = []
+let unwrap_leaderboard () = !Game.leaderboard
+
+let leaderboard = unwrap_leaderboard ()
 
 (** [unwrap_state ()] is the current game state. *)
 let unwrap_state () = !Game.state
@@ -102,7 +104,7 @@ and button_clicked x1 x2 y1 y2 click =
   | (x,y) -> if y < y2 && y > y1 && x < x2 && x > x1 then true else false
 
 and restart s = 
-  match Graphic.restart s with
+  match Graphic.restart s leaderboard with
   | (play_again, quit) ->  
     let click = (wait_next_event [Button_down]) in 
     match play_again with 

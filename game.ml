@@ -58,8 +58,6 @@ let state = ref {
     players = (!player_1_ref, None);
   }
 
-let leaderboard = ref []
-
 (** [init_state num bpm len] is the initial state of the game. *)
 let init_state num bpm len = 
   state := {

@@ -7,13 +7,12 @@ type cell
 (** The type of values representing the positions of the icons. *)
 type matrix
 
-
-
-
 type press
 
 (** The abstact type of values representing game state. *)
 type t 
+
+val leaderboard : int list ref
 
 val state : t ref
 
