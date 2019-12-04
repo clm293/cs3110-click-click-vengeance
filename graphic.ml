@@ -216,18 +216,15 @@ let draw_right_arrow x y =
   draw_image (make_image (create_right_arrow_matrix black transp)) x y;
   ()
 
-let color_to_rgb color =
-  let r = (color land 0xFF0000) asr 0x10
-  and g = (color land 0x00FF00) asr 0x8
-  and b = (color land 0x0000FF)
-  in r, g, b
-
+(** [draw_help s] draws the help button on the bottom of the screen. *)
 let draw_help s = 
   let img = Png.load_as_rgb24 "help.png" [] in
   let g = Graphic_image.of_image img in
   Graphics.draw_image g ((size_x ())-30) (0);
   (size_x () - 30, 0)
 
+(** [write_line str y] writes the line [str] in the center of the screen at 
+    height [y]. *)
 let write_line str y = 
   match text_size str with
   |(x_text,y_text) -> let x_pos = (size_x () - x_text)/2 in 
@@ -236,6 +233,7 @@ let write_line str y =
     draw_string str;
     ()
 
+(** [help s] draws the help screen with the instructions. *)
 let help s = 
   set_color white;
   fill_rect 100 100 400 440;
@@ -489,7 +487,8 @@ let leaderboard lst =
         | h :: t -> begin
             let str = string_of_int n ^ ". " ^ string_of_int h in
             match text_size str with
-            | (x,y) -> moveto ((600 - x)/2) (550-(30*n)); draw_string str; draw_lst t (n+1)
+            | (x,y) -> moveto ((600 - x)/2) (550-(30*n)); draw_string str; 
+              draw_lst t (n+1)
           end
         | [] -> ()
     in
