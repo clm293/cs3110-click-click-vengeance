@@ -209,17 +209,9 @@ let rec remove_last_three m =
     | h :: t -> remove_last_three t
     | [] -> failwith "last_three error"
 
-let rec resume_matrix m acc = 
-  (* if List.length acc = 5 then  *)
-  List.rev_append (List.rev (remove_last_three m)) [[None;None;None;None];[None;None;None;None];[None;None;None;None]] 
-(* else match List.rev m with
-   | h :: t -> resume_matrix (List.rev t) (h::acc)
-   | [] -> failwith "resume matrix error" *)
 
-let countdown m = 
-  List.rev_append [[None;None;None;None]] (resume_matrix m [])
-  |> List.rev_append [[None;None;None;None]]
-  |> List.rev_append [[None;None;None;None]]
+let rec resume_matrix m acc = 
+  List.rev_append (List.rev (remove_last_three m)) [[None;None;None;None];[None;None;None;None];[None;None;None;None]]
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt = 
@@ -299,7 +291,6 @@ let pause_game () =
 let resume_game () = 
   let new_state = {
     matrix = resume_matrix !state.matrix [];
-    (* matrix = !state.matrix; *)
     score = !state.score;
     num_players = !state.num_players;
     speed = !state.speed;
