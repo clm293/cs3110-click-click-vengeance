@@ -16,13 +16,14 @@ let state = unwrap_state ()
     least one life left. *)
 let rec check_still_alive num_players = 
   if num_players = 2 then begin
-    if (Game.get_lives 1) = 0 or (Game.get_lives 2) = 0  
-    then (restart "" num_players; ())
+    if (Game.get_lives 1) <= 0 || (Game.get_lives 2) <= 0  
+    then (Game.update "pause" num_players; restart "" num_players; ())
+    else if (Game.get_beat () >= Game.get_length ()) then (restart "" num_players; print_endline "you won"; ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
-    if (Game.get_lives 1) = 0 
-    then (restart "" num_players; ()) 
+    if (Game.get_lives 1) <= 0 
+    then (Game.update "pause" num_players; restart "" num_players; ()) 
     else if (Game.get_beat () >= Game.get_length ()) then (restart "" num_players; print_endline "you won"; ())
     else check_key_pressed (wait_next_event [Key_pressed]) num_players
   end
