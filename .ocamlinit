@@ -2,7 +2,11 @@
 #require "yojson";;
 #require "ANSITerminal";;
 #require "graphics";;
+#require "camlimages";;
+#require "camlimages.png";;
+#require "camlimages.graphics";;
 #directory "_build";;
 #load "game.cmo";;
 #load "song.cmo";;
 #load "view.cmo";;
+

@@ -3,3 +3,6 @@ PKG oUnit
 PKG yojson
 PKG ANSITerminal
 PKG graphics
+PKG camlimages
+PKG camlimages.png
+PKG camlimages.graphics

@@ -1,4 +1,6 @@
 open Graphics 
+open Images
+open Png
 
 (** [to_list arr] converts the 2D array [arr] to a 2D list. *)
 let to_list arr = 
@@ -214,13 +216,59 @@ let draw_right_arrow x y =
   draw_image (make_image (create_right_arrow_matrix black transp)) x y;
   ()
 
+let color_to_rgb color =
+  let r = (color land 0xFF0000) asr 0x10
+  and g = (color land 0x00FF00) asr 0x8
+  and b = (color land 0x0000FF)
+  in r, g, b
+
+let draw_help s = 
+  let img = Png.load_as_rgb24 "help.png" [] in
+  let g = Graphic_image.of_image img in
+  Graphics.draw_image g ((size_x ())-30) (0);
+  (size_x () - 30, 0)
+
+let write_line str y = 
+  match text_size str with
+  |(x_text,y_text) -> let x_pos = (size_x () - x_text)/2 in 
+    let y_pos = y in
+    moveto x_pos y_pos;
+    draw_string str;
+    ()
+
+let help s = 
+  set_color white;
+  fill_rect 100 100 400 440;
+  set_color magenta;
+  write_line "Click Click Vengence" 450;
+  set_color black;
+  write_line "The objective of Click CLick Vengence" 420;
+  write_line "is to get the highest score possible." 390;
+  write_line "You can play alone or with a friend." 360;
+  write_line "Player 1 will use I (up), J (left), K (down), L (right)." 330;
+  write_line "Player 2 will use W (up), A (left), S (down), D (right)." 300;
+  write_line "There are 4 different modes: easy, medium, hard, and endless." 
+    270;
+  write_line "In easy, medium, and hard, play until the game ends" 240;
+  write_line "or you lose all your lives, whichever comes first." 210;
+  write_line "In enless mode, play untl you lose all 5 lives." 180;
+  set_color cyan;
+  write_line "GOOD LUCK!!!" 150;
+  (* The objective of Click CLick Vengence is to get the highest score possible.
+     You can play alone or with a friend.
+     Player 1 will use I (up), J (left), K (down), L (right).
+     Player 2 will use W (up), A (left), S (down), D (right).
+     There are 4 different modes: easy, medium, hard, and endless.
+     In easy, medium, and hard, play until the game ends or you lose all your l
+     ives, whichever comes first.
+     In enless mode, play untl you lose all 5 lives. *)
+  (size_x () - 30, 0)
+
 (** [draw_logo s] draws the logo. *)
 let draw_logo s = 
-  set_color white;
-  fill_rect 125 250 350 350;
-  set_color black;
-  moveto 200 500;
-  draw_string "Tap Tap Revenge";
+  let img = Png.load_as_rgb24 "logo.png" [] in
+  let g = Graphic_image.of_image img in
+  Graphics.draw_image g (125) (250);
   ()
 
 (** [draw_button s] draws the button at ([x],[y]) 
@@ -254,7 +302,7 @@ let start_window s =
   fill_rect 0 0 600 640;
   set_window_title "Tap Tap Revenge";
   draw_logo s;
-  draw_button "Start" 250 150 magenta white
+  (draw_button "Start" 250 150 magenta white, draw_help s)
 
 (** [player_selection st] is the where the player(s) chooses 
     the number of players in the game. *)
@@ -269,7 +317,8 @@ let player_selection st =
     moveto x_pos 300;
     draw_string "Select a Playing Mode";
     (draw_button "Single Player" (400/3) 150 cyan black, 
-     draw_button "Double Player" (800/3 + 100) 150 magenta white)
+     draw_button "Double Player" (800/3 + 100) 150 magenta white, 
+     draw_help "")
 
 (** [level_selection st] is where the player(s) chooses the difficulty. *)
 let level_selection st =
@@ -286,7 +335,8 @@ let level_selection st =
     (draw_button "Easy" (200/5) 150 yellow black, 
      draw_button "Medium" (400/5 + 100) 150 cyan white, 
      draw_button "Hard" (600/5 + 200) 150 green black,
-     draw_button "Endless" (800/5 + 300) 150 magenta white)
+     draw_button "Endless" (800/5 + 300) 150 magenta white, 
+     draw_help "")
 
 (** [init_graphics s num_players] is where the first screen 
     when the game officially begins. *)
@@ -382,10 +432,10 @@ let update_graphics_2 matrix score1 lives1 hs1 score2 lives2 hs2 =
 
 (** [pause s] is the graphics screen when the game is paused. *)
 let pause s = 
-  set_color white;
+  set_color black;
   let x = ((size_x ()) - 200)/2 in let y = ((640-200)/2) in
   fill_rect x y 200 200;
-  set_color black;
+  set_color white;
   match text_size "Paused" with
   | (a,b) -> let xp = x + (200-a)/2 in let yp = y + (200-b)/2 + 15 in 
     moveto xp yp;
@@ -398,10 +448,10 @@ let pause s =
 
 (** [quit s] is the graphics screen when the game is quit. *)
 let quit s = 
-  set_color white;
+  set_color black;
   let x = ((size_x ()) - 200)/2 in let y = ((640-200)/2) in
   fill_rect x y 200 200;
-  set_color black;
+  set_color white;
   match text_size "Quit?" with
   | (a,b) -> let xp = x + (200-a)/2 in let yp = y + (200-b)/2 + 30 in 
     moveto xp yp;
@@ -416,7 +466,7 @@ let quit s =
         draw_string "Press any key to resume";
         ()
 
-(** [restart s] is the graphics screen when the one round ahs ended. *)
+(** [restart s] is the graphics screen when the player quits a round. *)
 let restart s = 
   resize_window 600 640;
   set_color black;
@@ -425,3 +475,57 @@ let restart s =
   moveto 200 300;
   (draw_button "Play Again" (400/3) 150 cyan black, 
    draw_button "Quit" (800/3 + 100) 150 magenta white)
+
+(** [lose s] is the graphics screen when the player loses a round. *)
+let lose s = 
+  resize_window 600 640;
+  set_color black;
+  fill_rect 0 0 600 640;
+  draw_logo s;
+  match text_size "YOU LOSE!" with 
+  | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU LOSE!";
+    moveto 200 300;
+    (draw_button "Play Again" (400/3) 150 cyan black, 
+     draw_button "Quit" (800/3 + 100) 150 magenta white)
+
+(** [win s] is the graphics screen when the player wins a round. *)
+let win s = 
+  resize_window 600 640;
+  set_color black;
+  fill_rect 0 0 600 640;
+  draw_logo s;
+  match text_size "YOU WIN!" with 
+  | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU WIN!";
+    moveto 200 300;
+    (draw_button "Play Again" (400/3) 150 cyan black, 
+     draw_button "Quit" (800/3 + 100) 150 magenta white)
+
+let leaderboard lst = 
+  clear_graph ();
+  resize_window 600 640;
+  set_color black;
+  fill_rect 0 0 600 640;
+  set_color magenta;
+  match text_size "Leaderboard" with
+  | (x,_) -> moveto ((600 - x)/2) 500; draw_string "Leaderboard";
+    let change_color n = 
+      match (n mod 5) with
+      | 1 -> set_color red;
+      | 2 -> set_color green;
+      | 3 -> set_color blue;
+      | 4 -> set_color yellow;
+      | 0 -> set_color cyan;
+      | _ -> (); in
+    let rec draw_lst lst n = 
+      change_color n;
+      if n > 10 then () else 
+        match lst with
+        | h :: t -> begin
+            let str = string_of_int n ^ ". " ^ string_of_int h in
+            match text_size str with
+            | (x,y) -> moveto ((600 - x)/2) (500-(30*n)); draw_string str; draw_lst t (n+1)
+          end
+        | [] -> ()
+    in
+    draw_lst lst 1;
+    ()

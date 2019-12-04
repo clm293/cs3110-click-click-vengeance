@@ -357,4 +357,3 @@ let rec update (inpt: string) (plyr: int): unit =
     print_endline (string_of_int !player_1_ref.score);
     state := new_state;
     update_graphics () 
-
