@@ -510,6 +510,17 @@ let restart s lst =
     | "YOU WIN!" -> green
     | _ -> black in
   set_color (change_color s);
+  let s = begin match List.length lst with
+    | 1 -> s 
+    | 2 -> let score1 = (List.nth lst 0) in 
+      let score2 = (List.nth lst 1) in if score1 = score2 then  "Tie Game!" 
+      else 
+        begin match max score1 score2 with
+          | score1 -> "Player 1 won"
+          | score2 -> "Player 2 won" 
+          | _ -> "error" end
+    | _ -> "error" end in
+
   match text_size s with 
   | (x,_) -> moveto ((600-x)/2) 250; draw_string s;
     moveto 200 300;
