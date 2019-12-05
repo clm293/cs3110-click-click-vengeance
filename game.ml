@@ -64,6 +64,7 @@ let state = ref {
     players = (!player_1_ref, None);
   }
 
+(** [init_player p] is the initial state of a player. *)
 let init_player p =
   if p = 1 then player_1_ref := {
       score = 0;
@@ -80,7 +81,6 @@ let init_player p =
       first_of_double = "";
     }
 
-(** [init_state num bpm len] is the initial state of the game. *)
 let init_state num bpm len = 
   state := {
     matrix = [
@@ -108,11 +108,9 @@ let init_state num bpm len =
 
 let get_paused () = !state.paused
 
-(** [speed ()] is the beats per second for the state's bpm *)
 let speed () = 
   1.0 /. (!state.speed /. 60.0)
 
-(** [get_lives] is the number of lives remaining in state [t]. *)
 let get_lives player = if player = 1 then !player_1_ref.lives_remaining else !player_2_ref.lives_remaining
 
 let get_beat () = !state.beat
@@ -122,11 +120,15 @@ let get_length () = !state.length
 let get_score player =
   if player = 1 then !player_1_ref.score else !player_2_ref.score
 
+(** [single_rows] is a list of the possibilities of rows with a single arrow. *)
 let single_rows = [
-  [Some Left; None; None; None]; [None; Some Down; None; None];
-  [None; None; Some Up; None];[None; None; None; Some Right]
+  [Some Left; None; None; None];
+  [None; Some Down; None; None];
+  [None; None; Some Up; None];
+  [None; None; None; Some Right]
 ]
 
+(** [single_rows] is a list of the possibilities of rows with two arrows. *)
 let double_rows = [
   [Some Left; Some Down; None; None];
   [None; Some Down; Some Up; None];
@@ -162,6 +164,7 @@ let generate_random_row () =
     | 10 -> [None;None;None;None]
     | _ -> failwith "random"
 
+(** [is_hot lst] is true if the previous 10 presses were hits. *)
 let is_hot lst = 
   lst = [Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit]
 
@@ -171,47 +174,49 @@ let bottom_row m =
   | h :: t -> h
   | _ -> failwith "bad matrix"
 
+(** [is_double_hit sec_inpt player] is true if a hit for a double key press was
+    made. *)
 let is_double_hit sec_inpt player = 
   let t = !state in
   if not (List.mem (!player.first_of_double) ["right";"left";"up";"down"]) then Miss else
     let fst_inpt = !player.first_of_double in 
     match fst_inpt, sec_inpt with 
     | "up", "left" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Left )(bottom_row t.matrix) then Hit
-      else Miss
+                         List.mem (Some Left )(bottom_row t.matrix) 
+      then Hit else Miss
     | "left", "up" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Left )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                         List.mem (Some Left )(bottom_row t.matrix) 
+      then Hit else Miss
     | "up", "right" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                          List.mem (Some Right )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                          List.mem (Some Right )(bottom_row t.matrix) 
+      then Hit else Miss
     | "right", "up" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                          List.mem (Some Right )(bottom_row t.matrix) then  (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                          List.mem (Some Right )(bottom_row t.matrix) 
+      then Hit else Miss
     | "up", "down" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Down )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                         List.mem (Some Down )(bottom_row t.matrix) 
+      then Hit else Miss
     | "down", "up" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Down )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                         List.mem (Some Down )(bottom_row t.matrix) 
+      then Hit else Miss
     | "left", "down" -> if List.mem (Some Left)(bottom_row t.matrix) && 
-                           List.mem (Some Down )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                           List.mem (Some Down )(bottom_row t.matrix) 
+      then Hit else Miss
     | "down", "left" -> if List.mem (Some Left)(bottom_row t.matrix) && 
-                           List.mem (Some Down )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                           List.mem (Some Down )(bottom_row t.matrix) 
+      then Hit else Miss
     | "right", "down" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Down )(bottom_row t.matrix) then (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                            List.mem (Some Down )(bottom_row t.matrix) 
+      then Hit else Miss
     | "down", "right" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Down )(bottom_row t.matrix) then  (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                            List.mem (Some Down )(bottom_row t.matrix) 
+      then Hit else Miss
     | "left", "right" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Left )(bottom_row t.matrix) then  (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                            List.mem (Some Left )(bottom_row t.matrix) 
+      then Hit else  Miss
     | "right", "left" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Left )(bottom_row t.matrix) then  (print_endline "double hit"; Hit) else 
-        (print_endline "double miss"; Miss)
+                            List.mem (Some Left )(bottom_row t.matrix) 
+      then Hit else Miss
     | "", _ -> Other
     | _, "" -> Other
     | _ -> Miss
@@ -238,14 +243,22 @@ let update_matrix () =
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
 
+(** [remove_last_three m] removes the last rows of the matrix [m]. *)
 let rec remove_last_three m = 
   if List.length m = 5 then m else 
     match m with
     | h :: t -> remove_last_three t
     | [] -> failwith "last_three error"
 
+(** [resume_matrix m acc] is the game matrix after a player resumes from
+    pause.*)
 let rec resume_matrix m acc = 
-  List.rev_append (List.rev (remove_last_three m)) [[None;None;None;None];[None;None;None;None];[None;None;None;None]]
+  remove_last_three m 
+  |> List.rev 
+  |> List.rev_append [
+    [None;None;None;None];
+    [None;None;None;None];
+    [None;None;None;None]]
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
@@ -274,7 +287,6 @@ let lives_remaining inpt new_matrix p =
     (if inpt <> "beat" && (is_hit inpt player = Miss) then
        (print_endline !player.first_of_double; !player.lives_remaining - 1) else !player.lives_remaining)
 
-(** [increase_speed score] is the increased speed. *)
 let increase_speed beat = 
   if (beat mod 20 = 0)
   then begin print_endline "change speed"; !state.speed *. 1.1 end 
@@ -305,6 +317,7 @@ let update_last_ten (p:press) (lst: press list) =
   | h::t -> List.concat [t; [p]]
   | _ -> failwith "somethings very wrong"
 
+(** [pause_game ()] pauses the game. *)
 let pause_game () = 
   let new_state = {
     matrix = !state.matrix;
@@ -319,6 +332,7 @@ let pause_game () =
   state := new_state;
   update_graphics ()
 
+(** [resume_game ()] resumes the game after being paused. *)
 let resume_game () = 
   let new_state = {
     matrix = resume_matrix !state.matrix [];
@@ -333,6 +347,7 @@ let resume_game () =
   state := new_state;
   update_graphics ()
 
+(** [update_player i m p] updates the player state. *)
 let rec update_player inpt matrix p = 
   let player = (if p = 1 then player_1_ref else player_2_ref) in
   let new_score = if bottom_row !state.matrix <> [None;None;None;None]
