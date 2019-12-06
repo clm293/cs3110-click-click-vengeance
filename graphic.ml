@@ -243,15 +243,16 @@ let help s =
   write_line "The objective of Click CLick Vengence" 420;
   write_line "is to get the highest score possible." 390;
   write_line "You can play alone or with a friend." 360;
-  write_line "Player 1 will use I (up), J (left), K (down), L (right)." 330;
-  write_line "Player 2 will use W (up), A (left), S (down), D (right)." 300;
+  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 300;
+  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 330;
   write_line "There are 4 different modes: easy, medium, hard, and endless." 
     270;
   write_line "In easy, medium, and hard, play until the game ends" 240;
   write_line "or you lose all your lives, whichever comes first." 210;
   write_line "In enless mode, play untl you lose all 5 lives." 180;
+  write_line "Press space to pause, press 'q' to quit." 150;
   set_color cyan;
-  write_line "GOOD LUCK!!!" 150;
+  write_line "GOOD LUCK!!!" 120;
   (* The objective of Click CLick Vengence is to get the highest score possible.
      You can play alone or with a friend.
      Player 1 will use I (up), J (left), K (down), L (right).
@@ -300,7 +301,7 @@ let start_window s =
   fill_rect 0 0 600 640;
   set_window_title "Tap Tap Revenge";
   draw_logo s;
-  (draw_button "Start" 250 150 magenta white, draw_help s)
+  (draw_button "Start" 250 150 magenta black, draw_help s)
 
 (** [player_selection st] is the where the player(s) chooses 
     the number of players in the game. *)
@@ -315,7 +316,7 @@ let player_selection st =
     moveto x_pos 300;
     draw_string "Select a Playing Mode";
     (draw_button "Single Player" (400/3) 150 cyan black, 
-     draw_button "Double Player" (800/3 + 100) 150 magenta white, 
+     draw_button "Double Player" (800/3 + 100) 150 magenta black, 
      draw_help "")
 
 (** [level_selection st] is where the player(s) chooses the difficulty. *)
@@ -331,9 +332,9 @@ let level_selection st =
     moveto x_pos 300;
     draw_string "Select a Level";
     (draw_button "Easy" (200/5) 150 yellow black, 
-     draw_button "Medium" (400/5 + 100) 150 cyan white, 
+     draw_button "Medium" (400/5 + 100) 150 cyan black, 
      draw_button "Hard" (600/5 + 200) 150 green black,
-     draw_button "Endless" (800/5 + 300) 150 magenta white, 
+     draw_button "Endless" (800/5 + 300) 150 magenta black, 
      draw_help "")
 
 (** [init_graphics s num_players] is where the first screen 
@@ -506,26 +507,30 @@ let restart s lst =
   let change_color s = 
     match s with 
     | "YOU LOSE!" -> red
+    | "BOTH PLAYERS LOSE!" -> red
+    | "PLAYER 1 LOSES!" -> red
+    | "PLAYER 2 LOSES!" -> red
     | "YOU QUIT!" -> red
     | "YOU WIN!" -> green
+    | "BOTH PLAYERS WIN!" -> green
     | _ -> black in
   set_color (change_color s);
-  let s = begin match List.length lst with
-    | 1 -> s 
-    | 2 -> let score1 = (List.nth lst 0) in 
+  (* let s = begin match List.length lst with
+     | 1 -> s 
+     | 2 -> let score1 = (List.nth lst 0) in 
       let score2 = (List.nth lst 1) in if score1 = score2 then  "Tie Game!" 
       else 
         begin match max score1 score2 with
-          | score1 -> "Player 1 won"
-          | score2 -> "Player 2 won" 
+          | score1 -> "Player 1 Won"
+          | score2 -> "Player 2 Won" 
           | _ -> "error" end
-    | _ -> "error" end in
+     | _ -> "error" end in *)
 
   match text_size s with 
   | (x,_) -> moveto ((600-x)/2) 250; draw_string s;
     moveto 200 300;
     (draw_button "Play Again" (400/3) 150 cyan black, 
-     draw_button "Quit" (800/3 + 100) 150 magenta white)
+     draw_button "Quit" (800/3 + 100) 150 magenta black)
 
 (** [win s] is the graphics screen when the player wins a round. *)
 let win s = 
@@ -537,5 +542,5 @@ let win s =
   | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU WIN!";
     moveto 200 300;
     (draw_button "Play Again" (400/3) 150 cyan black, 
-     draw_button "Quit" (800/3 + 100) 150 magenta white)
+     draw_button "Quit" (800/3 + 100) 150 magenta black)
 

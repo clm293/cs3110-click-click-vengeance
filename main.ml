@@ -10,10 +10,14 @@ type inpt = keey option
     least one life left. *)
 let rec check_still_alive num_players = 
   if num_players = 2 then begin
-    if (((Game.get_lives 1) <= 0) || ((Game.get_lives 2) <= 0))
-    then (Game.update "pause" num_players; restart "YOU LOSE!" num_players; ())
+    if (((Game.get_lives 1) <= 0) && ((Game.get_lives 2) <= 0))
+    then (Game.update "pause" num_players; restart "BOTH PLAYERS LOSE!" num_players; ())
+    else if ((Game.get_lives 1) <= 0) 
+    then (Game.update "pause" num_players; restart "PLAYER 1 LOSES!" num_players; ())
+    else if ((Game.get_lives 2) <= 0) 
+    then (Game.update "pause" num_players; restart "PLAYER 2 LOSES!" num_players; ())
     else if (Game.get_beat () >= Game.get_length ())
-    then (Game.update "pause" num_players; restart "YOU WIN!" num_players; ())
+    then (Game.update "pause" num_players; restart "BOTH PLAYERS WIN!" num_players; ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
