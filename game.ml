@@ -111,7 +111,8 @@ let get_paused () = !state.paused
 let speed () = 
   1.0 /. (!state.speed /. 60.0)
 
-let get_lives player = if player = 1 then !player_1_ref.lives_remaining else !player_2_ref.lives_remaining
+let get_lives player = if player = 1 then !player_1_ref.lives_remaining 
+  else !player_2_ref.lives_remaining
 
 let get_beat () = !state.beat
 
@@ -178,7 +179,8 @@ let bottom_row m =
     made. *)
 let is_double_hit sec_inpt player = 
   let t = !state in
-  if not (List.mem (!player.first_of_double) ["right";"left";"up";"down"]) then Miss else
+  if not (List.mem (!player.first_of_double) ["right";"left";"up";"down"]) 
+  then Miss else
     let fst_inpt = !player.first_of_double in 
     match fst_inpt, sec_inpt with 
     | "up", "left" -> if List.mem (Some Up)(bottom_row t.matrix) && 
@@ -225,13 +227,17 @@ let is_double_hit sec_inpt player =
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
 let is_hit inpt player = 
-  if List.mem (bottom_row (!state.matrix)) double_rows then is_double_hit inpt player
-  else 
+  if List.mem (bottom_row (!state.matrix)) double_rows 
+  then is_double_hit inpt player else 
     match inpt with
-    | "up" -> if List.mem (Some Up) (bottom_row !state.matrix) then Hit else Miss
-    | "down" -> if List.mem (Some Down) (bottom_row !state.matrix) then Hit else Miss
-    | "left" -> if List.mem (Some Left) (bottom_row !state.matrix) then Hit else Miss
-    | "right" -> if List.mem (Some Right) (bottom_row !state.matrix) then Hit else Miss
+    | "up" -> if List.mem (Some Up) (bottom_row !state.matrix) 
+      then Hit else Miss
+    | "down" -> if List.mem (Some Down) (bottom_row !state.matrix) 
+      then Hit else Miss
+    | "left" -> if List.mem (Some Left) (bottom_row !state.matrix) 
+      then Hit else Miss
+    | "right" -> if List.mem (Some Right) (bottom_row !state.matrix) 
+      then Hit else Miss
     | "" -> Other
     | _ -> Miss
 
@@ -276,39 +282,40 @@ let calc_score inpt player =
     during this beat and false otherwise. *)
 let scored_this_arrow inpt new_score player = 
   if inpt = "beat" then false 
-  else  (if player.scored_this_arrow = true then true else 
-         if (new_score <> player.score) then true else false)
+  else (if player.scored_this_arrow = true then true else 
+        if (new_score <> player.score) then true else false)
 
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
 let lives_remaining inpt new_matrix p = 
   let player = if p = 1 then player_1_ref else player_2_ref in
   if (List.mem (bottom_row new_matrix) double_rows) &&
-     !player.first_of_double = "" then !player.lives_remaining else
-    (if inpt <> "beat" && (is_hit inpt player = Miss) then
-       (print_endline !player.first_of_double; !player.lives_remaining - 1) else !player.lives_remaining)
+     !player.first_of_double = "" then !player.lives_remaining 
+  else (if inpt <> "beat" && (is_hit inpt player = Miss) then
+          !player.lives_remaining - 1 else !player.lives_remaining)
 
 let increase_speed beat = 
-  if (beat mod 20 = 0)
-  then begin print_endline "change speed"; !state.speed *. 1.1 end 
-  else !state.speed
+  if (beat mod 20 = 0) then !state.speed *. 1.1 else !state.speed
 
 let update_leaderboard score = 
-  leaderboard := List.sort compare (score::!leaderboard) 
+  leaderboard := (score::!leaderboard) 
+                 |> List.sort compare 
                  |> List.rev
 
 let update_graphics () = 
-  if is_hot (!player_1_ref.last_ten)then 
-    print_endline "hotstreak1";
-  if is_hot (!player_2_ref.last_ten)then 
-    print_endline "hotstreak2";
-  if !state.num_players = 1 
-  then begin if !state.paused = true then ()
-    else Graphic.update_graphics_1 !state.matrix !player_1_ref.score 
-        !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) end
+  if !state.num_players = 1 then 
+    begin 
+      if !state.paused = true then ()
+      else Graphic.update_graphics_1 !state.matrix !player_1_ref.score 
+          !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) 
+    end
   else if !state.paused = true then () 
-  else begin Graphic.update_graphics_2 !state.matrix !player_1_ref.score 
-      !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) !player_2_ref.score 
-      !player_2_ref.lives_remaining (is_hot (!player_2_ref.last_ten)) end
+  else 
+    begin 
+      Graphic.update_graphics_2 !state.matrix !player_1_ref.score 
+        !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) 
+        !player_2_ref.score 
+        !player_2_ref.lives_remaining (is_hot (!player_2_ref.last_ten)) 
+    end
 
 (*last_ten tracks the 10 most recent press results, with the most recent 
   being the last element of the list*)
@@ -382,14 +389,13 @@ let rec update (inpt: string) (plyr: int): unit =
     let new_state = {
       matrix = new_matrix;
       num_players = !state.num_players;
-      speed = if inpt = "beat" then (increase_speed (!state.beat + 1)) else !state.speed; (* should add increase_speed here *)
+      speed = if inpt = "beat" then increase_speed (!state.beat + 1) 
+        else !state.speed;
       paused = !state.paused;
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
       players = !state.players
     } 
     in 
-    print_endline (string_of_int new_state.length);
-    print_endline (string_of_int new_state.beat);
     state := new_state;
     update_graphics () 

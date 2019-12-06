@@ -29,7 +29,7 @@ val get_length : unit -> int
 (** [get_score p] is the score of player [p]. *)
 val get_score : int -> int
 
-(** [init_state num bpm len] is the initial state of the game. *)
+(** [init_state num bpm len] is the initial state of a new game. *)
 val init_state : int -> float -> int -> unit
 
 (** [speed ()] is the beats per second for the state's bpm *)
