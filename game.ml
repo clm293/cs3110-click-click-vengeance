@@ -289,7 +289,7 @@ let lives_remaining inpt new_matrix p =
 
 let increase_speed beat = 
   if (beat mod 20 = 0)
-  then begin print_endline "change speed"; !state.speed *. 1.1 end 
+  then begin print_endline "change speed"; !state.speed *. 1.3 end 
   else !state.speed
 
 let update_leaderboard score = 
