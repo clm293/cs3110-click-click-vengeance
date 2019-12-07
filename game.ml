@@ -32,6 +32,7 @@ type t = {
   beat: int;
   players: player * player option;
   base_increase: float;
+  health_beat: int
 }
 
 let leaderboard = ref []
@@ -63,6 +64,7 @@ let state = ref {
     beat = 0;
     players = (!player_1_ref, None);
     base_increase = 1.0;
+    health_beat = 0;
   }
 
 (** [init_player p] is the initial state of a player. *)
@@ -106,6 +108,7 @@ let init_state num bpm len =
           (!player_1_ref, Some !player_2_ref) 
         end;
     base_increase = 1.0;
+    health_beat = Random.int 50
   }
 
 let get_paused () = !state.paused
@@ -144,7 +147,7 @@ let double_rows = [
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
-  if !state.beat mod 50 = 0 then 
+  if !state.beat = !state.health_beat then 
     match Random.int 5 with
     | 0 -> [Some Health; None; None; None]
     | 1 -> [None; Some Health; None; None]
@@ -153,28 +156,29 @@ let generate_random_row () =
     | 4 -> [None; None ; None; None]
     | _ -> failwith "generate random row error"
   else
-  if !state.beat < 10 then
-    match Random.int 5 with
-    | 0 -> [Some Left; None; None; None]
-    | 1 -> [None; Some Down; None; None]
-    | 2 -> [None; None; Some Up; None]
-    | 3 -> [None; None; None; Some Right]
-    | 4 -> [None; None ; None; None]
-    | _ -> failwith "generate random row error"
-  else 
-    match Random.int 11 with 
-    | 0 -> [Some Left; None; None; None]
-    | 1 -> [None; Some Down; None; None]
-    | 2 -> [None; None; Some Up; None]
-    | 3 -> [None; None; None; Some Right]
-    | 4 -> [Some Left; Some Down; None; None]
-    | 5 -> [None; Some Down; Some Up; None]
-    | 6 -> [None; None; Some Up; Some Right]
-    | 7 -> [None; Some Down; None; Some Right]
-    | 8 -> [Some Left; None; Some Up; None]
-    | 9 -> [Some Left; None; None; Some Right]
-    | 10 -> [None; None; None; None]
-    | _ -> failwith "generate random row error"
+    let len = if get_length () = max_int then 30 else get_length () in
+    if !state.beat < len then 
+      match Random.int 5 with
+      | 0 -> [Some Left; None; None; None]
+      | 1 -> [None; Some Down; None; None]
+      | 2 -> [None; None; Some Up; None]
+      | 3 -> [None; None; None; Some Right]
+      | 4 -> [None; None ; None; None]
+      | _ -> failwith "generate random row error"
+    else 
+      match Random.int 11 with 
+      | 0 -> [Some Left; None; None; None]
+      | 1 -> [None; Some Down; None; None]
+      | 2 -> [None; None; Some Up; None]
+      | 3 -> [None; None; None; Some Right]
+      | 4 -> [Some Left; Some Down; None; None]
+      | 5 -> [None; Some Down; Some Up; None]
+      | 6 -> [None; None; Some Up; Some Right]
+      | 7 -> [None; Some Down; None; Some Right]
+      | 8 -> [Some Left; None; Some Up; None]
+      | 9 -> [Some Left; None; None; Some Right]
+      | 10 -> [None; None; None; None]
+      | _ -> failwith "generate random row error"
 
 (** [is_hot lst] is true if the previous 10 presses were hits. *)
 let is_hot lst = 
@@ -366,7 +370,8 @@ let pause_game () =
     length = !state.length;
     beat = !state.beat;
     players = !state.players;
-    base_increase = !state.base_increase
+    base_increase = !state.base_increase;
+    health_beat =  !state.health_beat
   } 
   in 
   state := new_state;
@@ -382,7 +387,8 @@ let resume_game () =
     length = !state.length;
     beat = !state.beat;
     players = !state.players;
-    base_increase = !state.base_increase
+    base_increase = !state.base_increase;
+    health_beat =  !state.health_beat
   } 
   in 
   state := new_state;
@@ -429,7 +435,10 @@ let rec update (inpt: string) (plyr: int): unit =
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
       players = !state.players;
-      base_increase = !state.base_increase
+      base_increase = !state.base_increase;
+      health_beat = if (!state.beat mod 50 = 1) then
+          (!state.beat + Random.int 50) else
+          !state.health_beat
     } 
     in 
     state := new_state;
