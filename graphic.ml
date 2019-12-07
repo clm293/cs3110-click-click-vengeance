@@ -122,6 +122,12 @@ let create_up_arrow_matrix c1 c2 =
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
+let draw_heart x y = 
+  let img = Png.load_as_rgb24 "heart.png" [] in
+  let g = Graphic_image.of_image img in
+  Graphics.draw_image g x y;
+  ()
+
 (** [draw_background_1 c1 c2 c3 c4 score lives hotstreak] draws the background 
     in the single player mode. *)
 let draw_background_1 c1 c2 c3 c4 (score:float) lives (hotstreak:bool) = 
@@ -143,12 +149,19 @@ let draw_background_1 c1 c2 c3 c4 (score:float) lives (hotstreak:bool) =
   moveto 500 610;
   draw_string ("Score: " ^ (string_of_float score));
   moveto 500 580;
-  draw_string ("Lives");
-  moveto 500 560;
-  draw_string  ("remaining: " ^ (string_of_int lives));
-  moveto 500 530;
   if hotstreak then draw_string  ("HOTSTREAK!") else ();
-  ()
+  match lives with 
+  | 0 -> ()
+  | 1 -> draw_heart 500 550
+  | 2 -> draw_heart 500 550; draw_heart 500 530
+  | 3 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510
+  | 4 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+    draw_heart 500 490
+  | 5 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+    draw_heart 500 490; draw_heart 500 470
+  | _ -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+    draw_heart 500 490; draw_heart 500 470; draw_heart 500 450;
+    ()
 
 (** [draw_background_2 c1 c2 c3 c4 score1 lives1 hotstreak1 
     score2 lives2 hotstreak2] draws the background in the double player mode. *)
@@ -183,10 +196,6 @@ let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool)
   draw_string "Player 1";
   moveto 500 580;
   draw_string ("Score: " ^ (string_of_float score1));
-  moveto 500 550;
-  draw_string ("Lives");
-  moveto 500 530;
-  draw_string  ("remaining: " ^ (string_of_int lives1));
   moveto 500 500;
   if hotstreak1 then draw_string  ("HOTSTREAK!") else ();
 
@@ -194,12 +203,35 @@ let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool)
   draw_string "Player 2";
   moveto 1100 580;
   draw_string ("Score: " ^ (string_of_float score2));
-  moveto 1100 550;
-  draw_string ("Lives");
-  moveto 1100 530;
-  draw_string  ("remaining: " ^ (string_of_int lives2));
-  moveto 1100 500;
+  moveto 1100 580;
   if hotstreak2 then draw_string  ("HOTSTREAK!") else ();
+
+  let draw_lives_1 lives1 = 
+    match lives1 with 
+    | 1 -> draw_heart 500 550
+    | 2 -> draw_heart 500 550; draw_heart 500 530
+    | 3 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510
+    | 4 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+      draw_heart 500 490
+    | 5 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+      draw_heart 500 490; draw_heart 500 470
+    | _ -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+      draw_heart 500 490; draw_heart 500 470; draw_heart 500 450; in 
+
+  let draw_lives_2 lives2 = 
+    match lives2 with 
+    | 1 -> draw_heart 1100 550
+    | 2 -> draw_heart 1100 550; draw_heart 1100 530
+    | 3 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510
+    | 4 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510; 
+      draw_heart 1100 490
+    | 5 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510; 
+      draw_heart 1100 490; draw_heart 1100 470
+    | _ -> draw_heart 500 550; draw_heart 1100 530; draw_heart 1100 510; 
+      draw_heart 1100 490; draw_heart 1100 470; draw_heart 1100 450; in
+
+  draw_lives_1 lives1;
+  draw_lives_2 lives2;
   ()
 
 (** [draw_left_arrow x y] draws the left arrow with at ([x],[y]). *)
