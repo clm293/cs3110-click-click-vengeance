@@ -81,6 +81,7 @@ let init_player p =
     }
 
 let init_state num bpm len = 
+  print_endline "init_state";
   state := {
     matrix = [
       [None; None; None; None];
@@ -322,14 +323,14 @@ let update_last_ten (p:press) (lst: press list) =
   | _ -> failwith "invalid list"
 
 (** [pause_game ()] pauses the game. *)
-let pause_game () = 
+let pause_game beat = 
   let new_state = {
     matrix = !state.matrix;
     num_players = !state.num_players;
     speed = !state.speed;
     paused = true;
     length = !state.length;
-    beat = !state.beat;
+    beat = beat;
     players = !state.players;
   } 
   in 
@@ -337,14 +338,14 @@ let pause_game () =
   update_graphics ()
 
 (** [resume_game ()] resumes the game after being paused. *)
-let resume_game () = 
+let resume_game beat = 
   let new_state = {
     matrix = resume_matrix !state.matrix [];
     num_players = !state.num_players;
     speed = !state.speed;
     paused = false;
     length = !state.length;
-    beat = !state.beat;
+    beat = beat;
     players = !state.players;
   } 
   in 
@@ -371,9 +372,10 @@ let rec update_player inpt matrix p =
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
-  if inpt = "pause" then pause_game ()
-  else if inpt = "resume" then resume_game ()
+  if !state.paused = true then 
+    if inpt = "resume" then resume_game !state.beat else pause_game !state.beat 
   else
+  if inpt = "pause" then pause_game !state.beat else
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
         update_matrix () else !state.matrix in
     if inpt = "beat" then 
@@ -394,5 +396,6 @@ let rec update (inpt: string) (plyr: int): unit =
       players = !state.players
     } 
     in 
+    print_endline (string_of_int new_state.beat);
     state := new_state;
     update_graphics () 

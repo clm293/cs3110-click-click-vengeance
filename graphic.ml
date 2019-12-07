@@ -282,16 +282,13 @@ let draw_logo s =
 let draw_button str x y bkg_color txt_color= 
   set_color bkg_color;
   fill_rect x y 100 75;
-
   set_color black;
   draw_image (make_image [|[|black|]|])x y;
   draw_image (make_image [|[|black|]|])(x+100) y;
   draw_image (make_image [|[|black|]|])x (y+75);
   draw_image (make_image [|[|black|]|])(x+100) (y+75);
-
   set_color black;
   draw_rect (x+2) (y+2) 96 71;
-
   set_color txt_color;
   match text_size str with
   |(x_text,y_text) -> let x_pos = x + (100-x_text)/2 in 
