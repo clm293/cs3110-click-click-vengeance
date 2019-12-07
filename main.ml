@@ -9,18 +9,12 @@ type inpt = keey option
     in the game state signal to do so.  Else continues the game with num_players. *)
 let rec check_still_alive num_players = 
   if num_players = 2 then begin
-    if Game.get_lives 1 <= 0 && (Game.get_lives 2) <= 0
-    then (Game.update "pause" num_players; 
-          restart "BOTH PLAYERS LOSE!" num_players; ())
-    else if Game.get_lives 1 <= 0
-    then (Game.update "pause" num_players; 
-          restart "PLAYER 1 LOSES!" num_players; ())
-    else if Game.get_lives 2 <= 0
-    then (Game.update "pause" num_players; 
-          restart "PLAYER 2 LOSES!" num_players; ())
-    else if Game.get_beat () >= Game.get_length ()
-    then (Game.update "pause" num_players;
-          restart "BOTH PLAYERS WIN!" num_players; ())
+    if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) && (Game.get_score 1 > Game.get_score 2) 
+    then (Game.update "pause" num_players; restart "PLAYER 1 WINS!" num_players; ())
+    else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) && (Game.get_score 1 < Game.get_score 2) 
+    then (Game.update "pause" num_players; restart "PLAYER 2 WINS!" num_players; ())
+    else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) && (Game.get_score 1 = Game.get_score 2)
+    then (Game.update "pause" num_players; restart "IT'S A TIE!" num_players; ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin

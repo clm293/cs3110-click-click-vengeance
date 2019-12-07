@@ -519,17 +519,8 @@ let restart s (lst:float list) =
   fill_rect 0 0 600 640;
   (* draw_logo s; *)
   leaderboard lst;
-  let change_color s = 
-    match s with 
-    | "YOU LOSE!" -> red
-    | "BOTH PLAYERS LOSE!" -> red
-    | "PLAYER 1 LOSES!" -> red
-    | "PLAYER 2 LOSES!" -> red
-    | "YOU QUIT!" -> red
-    | "YOU WIN!" -> green
-    | "BOTH PLAYERS WIN!" -> green
-    | _ -> black in
-  set_color (change_color s);
+
+  set_color red;
   (* let s = begin match List.length lst with
      | 1 -> s 
      | 2 -> let score1 = (List.nth lst 0) in 
