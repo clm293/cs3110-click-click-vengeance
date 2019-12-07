@@ -1,7 +1,7 @@
 open OUnit2
 open Game
 open Main
-open Song
+open Level
 
 (** Our approach to testing:
  *unit tests for function

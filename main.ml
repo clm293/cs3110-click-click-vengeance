@@ -1,7 +1,6 @@
 open Graphics
 open Unix
 
-
 type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
@@ -210,17 +209,17 @@ and level_selection s =
     | (b1x,b1y) -> let b1x1 = b1x in let b1x2 = b1x + 100 in 
       let b1y1 = b1y in let b1y2 = b1y + 75 in 
       if button_clicked b1x1 b1x2 b1y1 b1y2 click 
-      then "test_song.json"
+      then "easy.json"
       else match b2 with 
         | (b2x,b2y) -> let b2x1 = b2x in let b2x2 = b2x + 100 in 
           let b2y1 = b2y in let b2y2 = b2y + 75 in 
           if button_clicked b2x1 b2x2 b2y1 b2y2 click
-          then "test_song_fast.json"
+          then "med.json"
           else match b3 with 
             | (b3x,b3y) -> let b3x1 = b3x in let b3x2 = b3x + 100 in 
               let b3y1 = b3y in let b3y2 = b3y + 75 in 
               if button_clicked b3x1 b3x2 b3y1 b3y2 click
-              then "coughSyrup.json"
+              then "hard.json"
               else match b4 with 
                 | (b4x,b4y) -> let b4x1 = b4x in let b4x2 = b4x + 100 in 
                   let b4y1 = b4y in let b4y2 = b4y + 75 in 
