@@ -31,22 +31,18 @@ let rec check_still_alive num_players =
     else check_key_pressed (wait_next_event [Key_pressed]) num_players
   end
 
-and check_beat num_players = 
-  if Game.get_beat () >= Game.get_length ()
-  then (Game.update "pause" num_players;
-        restart "BOTH PLAYERS WIN!" num_players; ())
-
 (** [check_key_pressed press num_players] calls a function to update
     the game state on each player input. Then calls a function continue or end
     the game as indicated by the game state. *)
 and check_key_pressed press num_players= 
+  print_endline "at check key press";
   if num_players = 1 then
     match press.key with
     | 'i' -> Game.update "up" 1; check_still_alive num_players
     | 'j' -> Game.update "left" 1; check_still_alive num_players
     | 'k' -> Game.update "down" 1; check_still_alive num_players
     | 'l' -> Game.update "right" 1; check_still_alive num_players
-    | 'q' -> Game.update "pause" 1; Graphic.quit(); 
+    | 'q' -> Game.update "quit" 1; Graphic.quit(); 
       if (wait_next_event[Key_pressed]).key = 'q' 
       then (restart "YOU QUIT!" num_players; ())
       else Game.update "resume" 1; check_still_alive num_players
@@ -82,16 +78,11 @@ and set_timer () =
 (** [call_update num] updates the game state for a beat. *)
 and call_update num_players num = 
   set_timer ();
-  print_endline (string_of_int (Game.get_beat ()));
-  if Game.get_beat () >= Game.get_length ()
-  then (Game.update "pause" num_players;
-        restart "BOTH PLAYERS WIN!" num_players) 
-  else
-    (* if Game.get_beat () > Game.get_length () then (restart "" num_players) else *)
-    begin
-
-      Game.update "beat" num_players
-    end
+  if Game.get_beat () = Game.get_length ()
+  then (Game.update "quit" num_players;
+        if num_players = 1 then restart "YOU WIN!" num_players else
+          restart "BOTH PLAYERS WIN!" num_players)
+  else Game.update "beat" num_players
 
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player via [mode] and [num_players] *)
@@ -114,6 +105,7 @@ and play_game mode num_players =
       set_timer ();
       print_endline "after set timeer";
       Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
+      print_endline "after set signal";
       check_key_pressed (wait_next_event [Key_pressed]) num_players;
       ()
   end
@@ -156,7 +148,7 @@ and restart s num_players =
             else helper s in
   helper s
 
-(**  [win s] calls funtions to respond to a user's choice of actino after 
+(** [win s] calls funtions to respond to a user's choice of actino after 
      a game has ended. *)
 and win s = 
   match Graphic.win s with
