@@ -4,7 +4,6 @@ open Graphic
 (** [arrow] is the type of values representing an arrow on the screen. *)
 type arrow = Left | Down | Up | Right
 
-
 (** The type of values representing a cell in the game matrix. *)
 type cell = arrow option
 
@@ -77,7 +76,7 @@ let init_player p =
       score = 0;
       scored_this_arrow = false;
       lives_remaining = 5;
-      last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
+      last_ten = [Miss; Miss; Miss; Miss; Miss; Miss; Miss; Miss; Miss; Miss];
       first_of_double = "";
     }
 
@@ -148,8 +147,8 @@ let generate_random_row () =
     | 1 -> [None; Some Down; None; None]
     | 2 -> [None; None; Some Up; None]
     | 3 -> [None; None; None; Some Right]
-    | 4 -> [None;None;None;None]
-    | _ -> failwith "random"
+    | 4 -> [None; None ; None; None]
+    | _ -> failwith "generate random row error"
   else 
     match Random.int 11 with 
     | 0 -> [Some Left; None; None; None]
@@ -162,18 +161,18 @@ let generate_random_row () =
     | 7 -> [None; Some Down; None; Some Right]
     | 8 -> [Some Left; None; Some Up; None]
     | 9 -> [Some Left; None; None; Some Right]
-    | 10 -> [None;None;None;None]
-    | _ -> failwith "random"
+    | 10 -> [None; None; None; None]
+    | _ -> failwith "generate random row error"
 
 (** [is_hot lst] is true if the previous 10 presses were hits. *)
 let is_hot lst = 
-  lst = [Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit;Hit]
+  lst = [Hit; Hit; Hit; Hit; Hit; Hit; Hit; Hit; Hit; Hit]
 
 (** [bottom_row m] is the bottom row of the matrix [m] *)
 let bottom_row m = 
   match List.rev m with
   | h :: t -> h
-  | _ -> failwith "bad matrix"
+  | _ -> failwith "invalid matrix"
 
 (** [is_double_hit sec_inpt player] is true if a hit for a double key press was
     made. *)
@@ -254,7 +253,7 @@ let rec remove_last_three m =
   if List.length m = 5 then m else 
     match m with
     | h :: t -> remove_last_three t
-    | [] -> failwith "last_three error"
+    | _ -> failwith "invalid matrix"
 
 (** [resume_matrix m acc] is the game matrix after a player resumes from
     pause.*)
@@ -317,12 +316,12 @@ let update_graphics () =
         !player_2_ref.lives_remaining (is_hot (!player_2_ref.last_ten)) 
     end
 
-(*last_ten tracks the 10 most recent press results, with the most recent 
-  being the last element of the list*)
+(* [update_last_ten p lst] is the 10 most recent press results, with the most 
+   recent being the last element of the list*)
 let update_last_ten (p:press) (lst: press list) = 
   match lst with
   | h::t -> List.concat [t; [p]]
-  | _ -> failwith "somethings very wrong"
+  | _ -> failwith "invalid list"
 
 (** [pause_game ()] pauses the game. *)
 let pause_game () = 

@@ -16,8 +16,8 @@ val state : t ref
 (** [get_paused ()] is true if the game is paused and false otherwise *)
 val get_paused : unit -> bool
 
-(** [get_lives ()] is the number of lives remaining for the player in the current
-    state *)
+(** [get_lives p] is the number of lives remaining for the player [p] in the 
+    current state *)
 val get_lives : int -> int
 
 (** [get_beat ()] is the current beat number of the game. *)
@@ -35,7 +35,7 @@ val init_state : int -> float -> int -> unit
 (** [speed ()] is the beats per second for the state's bpm *)
 val speed : unit -> float
 
-(** [update t i] is the updated game state at this beat. *)
+(** [update s i] is the updated game state at this beat. *)
 val update : string -> int -> unit 
 
 (** [update_graphics ()] updates the graphics on the screen. *)
