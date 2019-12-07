@@ -2,7 +2,7 @@ open Graphics
 open Graphic
 
 (** [arrow] is the type of values representing an arrow on the screen. *)
-type arrow = Left | Down | Up | Right
+type arrow = Left | Down | Up | Right | Health
 
 (** The type of values representing a cell in the game matrix. *)
 type cell = arrow option
@@ -12,11 +12,11 @@ type cell = arrow option
 type matrix = cell list list
 
 (** The type of values representing a player key press. *)
-type press = Hit | Miss | Other
+type press = Hit | Miss | Other | HealthHit
 
 (** The type of values representing a player. *)
 type player = {
-  score: int;
+  score: float;
   scored_this_arrow : bool;
   lives_remaining: int;
   last_ten: press list;
@@ -31,13 +31,14 @@ type t = {
   length: int;
   beat: int;
   players: player * player option;
+  base_increase: float;
 }
 
 let leaderboard = ref []
 
 (** [player_1_ref] is the reference to the state of player 1. *)
 let player_1_ref = ref {
-    score = 0;
+    score = 0.0;
     scored_this_arrow = false;
     lives_remaining = 5;
     last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
@@ -46,7 +47,7 @@ let player_1_ref = ref {
 
 (** [player_2_ref] is the reference to the state of player 2 *)
 let player_2_ref = ref {
-    score = 0;
+    score = 0.0;
     scored_this_arrow = false;
     lives_remaining = 5;
     last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
@@ -61,19 +62,20 @@ let state = ref {
     length = 0;
     beat = 0;
     players = (!player_1_ref, None);
+    base_increase = 1.0;
   }
 
 (** [init_player p] is the initial state of a player. *)
 let init_player p =
   if p = 1 then player_1_ref := {
-      score = 0;
+      score = 0.0;
       scored_this_arrow = false;
       lives_remaining = 5;
       last_ten = [Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss;Miss];
       first_of_double = "";
     }
   else player_2_ref := {
-      score = 0;
+      score = 0.0;
       scored_this_arrow = false;
       lives_remaining = 5;
       last_ten = [Miss; Miss; Miss; Miss; Miss; Miss; Miss; Miss; Miss; Miss];
@@ -103,6 +105,7 @@ let init_state num bpm len =
           init_player 1; init_player 2; 
           (!player_1_ref, Some !player_2_ref) 
         end;
+    base_increase = 1.0;
   }
 
 let get_paused () = !state.paused
@@ -141,6 +144,15 @@ let double_rows = [
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
+  if !state.beat mod 50 = 0 then 
+    match Random.int 5 with
+    | 0 -> [Some Health; None; None; None]
+    | 1 -> [None; Some Health; None; None]
+    | 2 -> [None; None; Some Health; None]
+    | 3 -> [None; None; None; Some Health]
+    | 4 -> [None; None ; None; None]
+    | _ -> failwith "generate random row error"
+  else
   if !state.beat < 10 then
     match Random.int 5 with
     | 0 -> [Some Left; None; None; None]
@@ -227,6 +239,19 @@ let is_double_hit sec_inpt player =
 let is_hit inpt player = 
   if List.mem (bottom_row (!state.matrix)) double_rows 
   then is_double_hit inpt player else 
+  if List.mem (Some Health) (bottom_row (!state.matrix)) then 
+    match inpt with
+    | "up" -> if [None; None; Some Health; None] = (bottom_row !state.matrix) 
+      then HealthHit else Miss
+    | "down" -> if [None; Some Health; None; None] = (bottom_row !state.matrix) 
+      then HealthHit else Miss
+    | "left" -> if [Some Health; None; None; None] = (bottom_row (!state.matrix))
+      then HealthHit else Miss
+    | "right" -> if [None; None; None; Some Health] = (bottom_row !state.matrix) 
+      then HealthHit else Miss
+    | "" -> Other
+    | _ -> Miss
+  else
     match inpt with
     | "up" -> if List.mem (Some Up) (bottom_row !state.matrix) 
       then Hit else Miss
@@ -271,8 +296,14 @@ let calc_score inpt player =
   else 
     begin
       match is_hit inpt player with
-      | Hit -> (if is_hot (!player.last_ten )
-                then !player.score + 2 else !player.score + 1)
+      | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
+        then (if is_hot (!player.last_ten )
+              then !player.score +. (1.5 *. 2.0 *. !state.base_increase) 
+              else !player.score +. (!state.base_increase *. 1.5))
+        else (if is_hot (!player.last_ten)
+              then !player.score +. (2.0 *. !state.base_increase) 
+              else !player.score +. !state.base_increase)
+      | HealthHit -> !player.score
       | Miss -> !player.score
       | Other -> !player.score
     end
@@ -287,15 +318,17 @@ let scored_this_arrow inpt new_score player =
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
 let lives_remaining inpt new_matrix p = 
   let player = if p = 1 then player_1_ref else player_2_ref in
+  let addlife = if (is_hit inpt player) = HealthHit then 1 else 0 in
   if (List.mem (bottom_row new_matrix) double_rows) &&
      !player.first_of_double = "" then !player.lives_remaining 
   else (if inpt <> "beat" && (is_hit inpt player = Miss) then
-          !player.lives_remaining - 1 else !player.lives_remaining)
+          !player.lives_remaining - 1 + addlife
+        else !player.lives_remaining + addlife)
 
 let increase_speed beat = 
-  if (beat mod 20 = 0) then !state.speed *. 1.1 else !state.speed
+  if (beat mod 20 = 0) then !state.speed *. 1.3 else !state.speed
 
-let update_leaderboard score = 
+let update_leaderboard (score:float) = 
   leaderboard := (score::!leaderboard) 
                  |> List.sort compare
                  |> List.rev
@@ -333,6 +366,7 @@ let pause_game () =
     length = !state.length;
     beat = !state.beat;
     players = !state.players;
+    base_increase = !state.base_increase
   } 
   in 
   state := new_state;
@@ -348,6 +382,7 @@ let resume_game () =
     length = !state.length;
     beat = !state.beat;
     players = !state.players;
+    base_increase = !state.base_increase
   } 
   in 
   state := new_state;
@@ -393,7 +428,8 @@ let rec update (inpt: string) (plyr: int): unit =
       paused = !state.paused;
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
-      players = !state.players
+      players = !state.players;
+      base_increase = !state.base_increase
     } 
     in 
     state := new_state;

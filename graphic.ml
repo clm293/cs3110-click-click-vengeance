@@ -118,7 +118,7 @@ let create_down_arrow_matrix c1 c2 =
 
 (** [draw_background_1 c1 c2 c3 c4 score lives hotstreak] draws the background 
     in the single player mode. *)
-let draw_background_1 c1 c2 c3 c4 score lives (hotstreak:bool) = 
+let draw_background_1 c1 c2 c3 c4 (score:float) lives (hotstreak:bool) = 
   set_color black;
   fill_rect 0 0 600 640;
   set_color c1;
@@ -135,7 +135,7 @@ let draw_background_1 c1 c2 c3 c4 score lives (hotstreak:bool) =
   fill_rect 135 20 115 75;
   set_color white;
   moveto 500 610;
-  draw_string ("Score: " ^ (string_of_int score));
+  draw_string ("Score: " ^ (string_of_float score));
   moveto 500 580;
   draw_string ("Lives");
   moveto 500 560;
@@ -146,8 +146,8 @@ let draw_background_1 c1 c2 c3 c4 score lives (hotstreak:bool) =
 
 (** [draw_background_2 c1 c2 c3 c4 score1 lives1 hotstreak1 
     score2 lives2 hotstreak2] draws the background in the double player mode. *)
-let draw_background_2 c1 c2 c3 c4 score1 lives1 (hotstreak1:bool) 
-    score2 lives2 (hotstreak2:bool) = 
+let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool) 
+    (score2:float) (lives2:int) (hotstreak2:bool) = 
   set_color black;
   fill_rect 0 0 1200 640;
   set_color c1;
@@ -176,7 +176,7 @@ let draw_background_2 c1 c2 c3 c4 score1 lives1 (hotstreak1:bool)
   moveto 500 610;
   draw_string "Player 1";
   moveto 500 580;
-  draw_string ("Score: " ^ (string_of_int score1));
+  draw_string ("Score: " ^ (string_of_float score1));
   moveto 500 550;
   draw_string ("Lives");
   moveto 500 530;
@@ -187,7 +187,7 @@ let draw_background_2 c1 c2 c3 c4 score1 lives1 (hotstreak1:bool)
   moveto 1100 610;
   draw_string "Player 2";
   moveto 1100 580;
-  draw_string ("Score: " ^ (string_of_int score2));
+  draw_string ("Score: " ^ (string_of_float score2));
   moveto 1100 550;
   draw_string ("Lives");
   moveto 1100 530;
@@ -345,7 +345,7 @@ let init_graphics s num_players =
   match num_players with 
   | 1 -> begin
       resize_window 600 640;
-      draw_background_1 magenta green cyan yellow 0 5 false;
+      draw_background_1 magenta green cyan yellow 0.0 5 false;
       draw_left_arrow 40 545;
       draw_down_arrow 155 545;
       draw_up_arrow 270 545;
@@ -354,7 +354,7 @@ let init_graphics s num_players =
     end
   | 2 -> begin 
       resize_window 1200 640;
-      draw_background_2 magenta green cyan yellow 0 5 false 0 5 false;
+      draw_background_2 magenta green cyan yellow 0.0 5 false 0.0 5 false;
       draw_left_arrow 40 545;
       draw_down_arrow 155 545;
       draw_up_arrow 270 545;
@@ -368,7 +368,7 @@ let init_graphics s num_players =
 
 (** [update_graphics_1 matrix score lives hs] is the updated graphics 
     for single player. *)
-let update_graphics_1 matrix score lives hs = 
+let update_graphics_1 matrix (score: float) lives hs = 
   let rec draw_row row i j = 
     match row with 
     | [] -> ()
@@ -466,7 +466,7 @@ let quit s =
         draw_string "Press any key to resume";
         ()
 
-let leaderboard lst = 
+let leaderboard (lst:float list) = 
   (* clear_graph ();
      resize_window 600 640;
      set_color black;
@@ -482,12 +482,12 @@ let leaderboard lst =
       | 4 -> set_color yellow;
       | 0 -> set_color cyan;
       | _ -> (); in
-    let rec draw_lst lst n = 
+    let rec draw_lst (lst: float list) n = 
       change_color n;
       if n > 10 then () else 
         match lst with
         | h :: t -> begin
-            let str = string_of_int n ^ ". " ^ string_of_int h in
+            let str = string_of_int n ^ ". " ^ string_of_float h in
             match text_size str with
             | (x,y) -> moveto ((600 - x)/2) (550-(30*n)); draw_string str; 
               draw_lst t (n+1)
@@ -499,7 +499,7 @@ let leaderboard lst =
 
 (** [restart s lst] is the graphics screen when the player quits/loses/wins 
     where [s] gives the quit/lose/win message to display. *)
-let restart s lst = 
+let restart s (lst:float list) = 
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;

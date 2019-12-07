@@ -8,7 +8,7 @@ type t
 
 (** [leaderboard] is the leaderboard of scores from players who have played 
     during the open game session *)
-val leaderboard : int list ref
+val leaderboard : float list ref
 
 (** [state] is the reference pointing to the current state of the game. *)
 val state : t ref
@@ -27,7 +27,7 @@ val get_beat : unit -> int
 val get_length : unit -> int
 
 (** [get_score p] is the score of player [p]. *)
-val get_score : int -> int
+val get_score : int -> float
 
 (** [init_state num bpm len] is the initial state of a new game. *)
 val init_state : int -> float -> int -> unit
@@ -45,4 +45,4 @@ val update_graphics : unit -> unit
 val increase_speed : int -> float
 
 (** [update_leaderboard score] is the new leaderboard with [score] added on. *)
-val update_leaderboard : int -> unit
+val update_leaderboard : float -> unit
