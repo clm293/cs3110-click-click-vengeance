@@ -238,13 +238,14 @@ let help s =
   set_color white;
   fill_rect 100 100 400 440;
   set_color magenta;
-  write_line "Click Click Vengence" 450;
+  write_line "Click Click Vengence" 480;
   set_color black;
-  write_line "The objective of Click CLick Vengence" 420;
-  write_line "is to get the highest score possible." 390;
-  write_line "You can play alone or with a friend." 360;
-  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 300;
-  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 330;
+  write_line "The objective of Click CLick Vengence" 450;
+  write_line "is to get the highest score possible." 420;
+  write_line "You can play alone or with a friend." 390;
+  write_line "Tap the corresponding key when the arrows reach the bottom row." 360;
+  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 330;
+  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 300;
   write_line "There are 4 different modes: easy, medium, hard, and endless." 
     270;
   write_line "In easy, medium, and hard, play until the game ends" 240;
