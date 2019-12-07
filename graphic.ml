@@ -366,27 +366,31 @@ let init_graphics s num_players =
     end
   | _ -> failwith "Invalid number of players"
 
-(** [update_graphics_1 matrix score lives hs] is the updated graphics 
-    for single player. *)
-let update_graphics_1 matrix (score: float) lives hs = 
-  let rec draw_row row i j = 
-    match row with 
-    | [] -> ()
-    | h :: t -> if h = None then draw_row t i (j+1) else begin
-        match j with
-        | 0 -> draw_left_arrow 40 (545-(75*i)); draw_row t i (j+1)
-        | 1 -> draw_down_arrow 155 (545-(75*i)); draw_row t i (j+1)
-        | 2 -> draw_up_arrow 270 (545-(75*i)); draw_row t i (j+1)
-        | 3 -> draw_right_arrow 385 (545-(75*i)); draw_row t i (j+1)
-        | _ -> ()
-      end in
-  let rec helper matrix i = 
-    match matrix with 
-    | [] -> ()
-    | h :: t -> draw_row h i 0; helper t (i+1); in 
-  clear_graph ();
-  draw_background_1 magenta green cyan yellow score lives hs;
-  helper matrix 0
+let draw_health () = 
+
+  (** [update_graphics_1 matrix score lives hs] is the updated graphics 
+      for single player. *)
+  let update_graphics_1 matrix (score: float) lives hs = 
+    let rec draw_row row i j = 
+      match row with 
+      | [] -> ()
+      | [Some _; Some _; Some _; Some _] -> draw_health ()
+      | h :: t -> if h = None then draw_row t i (j+1) else begin
+          match j with
+          | 0 -> draw_left_arrow 40 (545-(75*i)); draw_row t i (j+1)
+          | 1 -> draw_down_arrow 155 (545-(75*i)); draw_row t i (j+1)
+          | 2 -> draw_up_arrow 270 (545-(75*i)); draw_row t i (j+1)
+          | 3 -> draw_right_arrow 385 (545-(75*i)); draw_row t i (j+1)
+          | _ -> ()
+
+        end in
+    let rec helper matrix i = 
+      match matrix with 
+      | [] -> ()
+      | h :: t -> draw_row h i 0; helper t (i+1); in 
+    clear_graph ();
+    draw_background_1 magenta green cyan yellow score lives hs;
+    helper matrix 0
 
 (** [update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2] 
     is the updated graphics for double player. *)
