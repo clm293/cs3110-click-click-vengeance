@@ -517,36 +517,10 @@ let restart s (lst:float list) =
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;
-  (* draw_logo s; *)
   leaderboard lst;
-
   set_color red;
-  (* let s = begin match List.length lst with
-     | 1 -> s 
-     | 2 -> let score1 = (List.nth lst 0) in 
-      let score2 = (List.nth lst 1) in if score1 = score2 then  "Tie Game!" 
-      else 
-        begin match max score1 score2 with
-          | score1 -> "Player 1 Won"
-          | score2 -> "Player 2 Won" 
-          | _ -> "error" end
-     | _ -> "error" end in *)
-
   match text_size s with 
   | (x,_) -> moveto ((600-x)/2) 250; draw_string s;
     moveto 200 300;
     (draw_button "Play Again" (400/3) 150 cyan black, 
      draw_button "Quit" (800/3 + 100) 150 magenta black)
-
-(** [win s] is the graphics screen when the player wins a round. *)
-let win s = 
-  resize_window 600 640;
-  set_color black;
-  fill_rect 0 0 600 640;
-  draw_logo s;
-  match text_size "YOU WIN!" with 
-  | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU WIN!";
-    moveto 200 300;
-    (draw_button "Play Again" (400/3) 150 cyan black, 
-     draw_button "Quit" (800/3 + 100) 150 magenta black)
-

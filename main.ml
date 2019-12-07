@@ -142,30 +142,6 @@ and restart s num_players =
             else helper s in
   helper s
 
-(** [win s] calls funtions to respond to a user's choice of actino after 
-     a game has ended. *)
-and win s = 
-  match Graphic.win s with
-  | (play_again, quit) ->  
-    let click = (wait_next_event [Button_down]) in 
-    match play_again with 
-    | (b1x,b1y) -> 
-      let b1x1 = b1x in 
-      let b1x2 = b1x + 100 in 
-      let b1y1 = b1y in 
-      let b1y2 = b1y + 75 in 
-      if button_clicked b1x1 b1x2 b1y1 b1y2 click 
-      then main ()
-      else match quit with 
-        | (b2x,b2y) -> 
-          let b2x1 = b2x in 
-          let b2x2 = b2x + 100 in 
-          let b2y1 = b2y in 
-          let b2y2 = b2y + 75 in 
-          if button_clicked b2x1 b2x2 b2y1 b2y2 click
-          then close_graph ()
-          else win s
-
 (** [help s] calls the graphcis functions for the help screen. *)
 and help s = 
   match Graphic.help s with 
