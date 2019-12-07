@@ -147,13 +147,12 @@ let double_rows = [
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
-  if !state.beat = !state.health_beat then 
-    match Random.int 5 with
-    | 0 -> [Some Health; None; None; None]
-    | 1 -> [None; Some Health; None; None]
-    | 2 -> [None; None; Some Health; None]
-    | 3 -> [None; None; None; Some Health]
-    | 4 -> [None; None ; None; None]
+  if !state.beat mod 3 = 0 then 
+    match Random.int 4 with
+    | 0 -> [None; Some Health; Some Health; Some Health]
+    | 1 -> [Some Health; None; Some Health; Some Health]
+    | 2 -> [Some Health; Some Health; None; Some Health]
+    | 3 -> [Some Health; Some Health; Some Health; None]
     | _ -> failwith "generate random row error"
   else
     let len = if get_length () = max_int then 30 else get_length () in
@@ -245,13 +244,13 @@ let is_hit inpt player =
   then is_double_hit inpt player else 
   if List.mem (Some Health) (bottom_row (!state.matrix)) then 
     match inpt with
-    | "up" -> if [None; None; Some Health; None] = (bottom_row !state.matrix) 
+    | "up" -> if  None = List.nth (bottom_row !state.matrix) 0
       then HealthHit else Miss
-    | "down" -> if [None; Some Health; None; None] = (bottom_row !state.matrix) 
+    | "down" -> if None = List.nth (bottom_row !state.matrix) 1
       then HealthHit else Miss
-    | "left" -> if [Some Health; None; None; None] = (bottom_row (!state.matrix))
+    | "left" -> if None = List.nth (bottom_row !state.matrix) 2
       then HealthHit else Miss
-    | "right" -> if [None; None; None; Some Health] = (bottom_row !state.matrix) 
+    | "right" -> if None = List.nth (bottom_row !state.matrix) 3
       then HealthHit else Miss
     | "" -> Other
     | _ -> Miss
