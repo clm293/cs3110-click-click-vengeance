@@ -369,7 +369,7 @@ let pause_game beat =
     beat = beat;
     players = !state.players;
     base_increase = !state.base_increase;
-    health_beat =  !state.health_beat
+    health_beat = !state.health_beat
   } 
   in 
   state := new_state;
@@ -385,6 +385,8 @@ let resume_game beat =
     length = !state.length;
     beat = beat;
     players = !state.players;
+    base_increase = !state.base_increase;
+    health_beat = !state.health_beat
   } 
   in 
   state := new_state;
