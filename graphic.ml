@@ -484,7 +484,7 @@ let leaderboard (lst:float list) =
      fill_rect 0 0 600 640; *)
   set_color magenta;
   match text_size "Leaderboard" with
-  | (x,_) -> moveto ((600 - x)/2) 550; draw_string "Leaderboard";
+  | (x,_) -> moveto ((600 - x)/2) 580; draw_string "Leaderboard";
     let change_color n = 
       match (n mod 5) with
       | 1 -> set_color red;
@@ -500,7 +500,7 @@ let leaderboard (lst:float list) =
         | h :: t -> begin
             let str = string_of_int n ^ ". " ^ string_of_float h in
             match text_size str with
-            | (x,y) -> moveto ((600 - x)/2) (550-(30*n)); draw_string str; 
+            | (x,y) -> moveto ((600 - x)/2) (580-(30*n)); draw_string str; 
               draw_lst t (n+1)
           end
         | [] -> ()
