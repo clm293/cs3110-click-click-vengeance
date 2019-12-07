@@ -36,7 +36,7 @@ and check_key_pressed press num_players=
     | 'j' -> Game.update "left" 1; check_still_alive num_players
     | 'k' -> Game.update "down" 1; check_still_alive num_players
     | 'l' -> Game.update "right" 1; check_still_alive num_players
-    | 'q' -> Game.update "quit" 1; Graphic.quit(); 
+    | 'q' -> Game.update "quit" 1; Game.update "pause" 1; Graphic.quit(); 
       if (wait_next_event[Key_pressed]).key = 'q' 
       then (restart "YOU QUIT!" num_players; ())
       else Game.update "resume" 1; check_still_alive num_players
