@@ -222,7 +222,6 @@ let is_double_hit sec_inpt player =
     | _, "" -> Other
     | _ -> Miss
 
-
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
 let is_hit inpt player = 
@@ -269,13 +268,14 @@ let rec resume_matrix m acc =
 let calc_score inpt player = 
   if !player.scored_this_arrow  then !player.score 
   else if !state.paused then !player.score
-  else begin
-    match is_hit inpt player with
-    | Hit -> (if is_hot (!player.last_ten )
-              then !player.score + 2 else !player.score + 1)
-    | Miss -> !player.score
-    | Other -> !player.score
-  end
+  else 
+    begin
+      match is_hit inpt player with
+      | Hit -> (if is_hot (!player.last_ten )
+                then !player.score + 2 else !player.score + 1)
+      | Miss -> !player.score
+      | Other -> !player.score
+    end
 
 (** [scored_this_arrow inpt new_score] is true if the player already scored 
     during this beat and false otherwise. *)
@@ -297,7 +297,7 @@ let increase_speed beat =
 
 let update_leaderboard score = 
   leaderboard := (score::!leaderboard) 
-                 |> List.sort compare 
+                 |> List.sort compare
                  |> List.rev
 
 let update_graphics () = 

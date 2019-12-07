@@ -7,6 +7,8 @@
 #require "camlimages.graphics";;
 #directory "_build";;
 #load "game.cmo";;
-#load "song.cmo";;
-#load "view.cmo";;
+#load "level.cmo";;
+#load "graphic.cmo";;
+#load "main.cmo";;
+
 

@@ -1,4 +1,4 @@
-MODULES=game view main song
+MODULES=game graphic main level
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
