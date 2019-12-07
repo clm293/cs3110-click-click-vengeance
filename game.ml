@@ -85,6 +85,7 @@ let init_player p =
     }
 
 let init_state num bpm len = 
+  print_endline "init_state";
   state := {
     matrix = [
       [None; None; None; None];
@@ -302,12 +303,10 @@ let rec remove_last_three m =
 (** [resume_matrix m acc] is the game matrix after a player resumes from
     pause.*)
 let rec resume_matrix m acc = 
-  remove_last_three m 
-  |> List.rev_append [
-    [None;None;None;None];
-    [None;None;None;None];
-    [None;None;None;None]]
-  |> List.rev 
+  [[None;None;None;None];
+   [None;None;None;None];
+   [None;None;None;None]] 
+  |> List.rev_append (List.rev (remove_last_three m)) 
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
@@ -376,32 +375,57 @@ let update_last_ten (p:press) (lst: press list) =
   | h::t -> List.concat [t; [p]]
   | _ -> failwith "invalid list"
 
-(** [pause_game ()] pauses the game. *)
-let pause_game () = 
+(** [pause_game beat] pauses the game. *)
+let pause_game beat = 
   let new_state = {
     matrix = !state.matrix;
     num_players = !state.num_players;
     speed = !state.speed;
     paused = true;
     length = !state.length;
-    beat = !state.beat;
+    beat = beat;
     players = !state.players;
     base_increase = !state.base_increase;
-    health_beat =  !state.health_beat
+    health_beat = !state.health_beat
   } 
   in 
   state := new_state;
   update_graphics ()
 
-(** [resume_game ()] resumes the game after being paused. *)
-let resume_game () = 
+(** [resume_game beat] resumes the game after being paused. *)
+let resume_game beat = 
   let new_state = {
     matrix = resume_matrix !state.matrix [];
     num_players = !state.num_players;
     speed = !state.speed;
     paused = false;
     length = !state.length;
-    beat = !state.beat;
+    beat = beat;
+    players = !state.players;
+    base_increase = !state.base_increase;
+    health_beat = !state.health_beat
+  } 
+  in 
+  state := new_state;
+  update_graphics ()
+
+let quit_game () = 
+  let new_state = {
+    matrix = [
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None]; 
+      [None; None; None; None];
+      [None; None; None; None];
+      [None; None; None; None];
+    ];
+    num_players = !state.num_players;
+    speed = !state.speed;
+    paused = false;
+    length = !state.length;
+    beat = 0;
     players = !state.players;
     base_increase = !state.base_increase;
     health_beat =  !state.health_beat
@@ -419,20 +443,23 @@ let rec update_player inpt matrix p =
     score = new_score;
     scored_this_arrow = scored_this_arrow inpt new_score !player;
     lives_remaining = lives_remaining inpt matrix p;
-    last_ten = if inpt <> "beat" && (!player.scored_this_arrow = false) 
-                  && not (List.mem (bottom_row matrix) double_rows && 
-                          !player.first_of_double = "") then 
-        (update_last_ten (is_hit inpt player) (!player.last_ten)) else
-        !player.last_ten;
+    last_ten = if inpt <> "beat" 
+               && (!player.scored_this_arrow = false) 
+               && not (List.mem (bottom_row matrix) double_rows 
+                       && !player.first_of_double = "") 
+      then (update_last_ten (is_hit inpt player) (!player.last_ten)) 
+      else !player.last_ten;
     first_of_double = if List.mem (bottom_row matrix) double_rows &&
                          inpt <> "beat" then inpt else "";
   } in 
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
-  if inpt = "pause" then pause_game ()
-  else if inpt = "resume" then resume_game ()
+  if inpt = "quit" then begin print_endline "quitted!"; quit_game () end else 
+  if !state.paused = true then 
+    if inpt = "resume" then resume_game (!state.beat-3) else pause_game !state.beat 
   else
+  if inpt = "pause" then pause_game (!state.beat-3) else
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 
         update_matrix () else !state.matrix in
     if inpt = "beat" then 
@@ -457,6 +484,7 @@ let rec update (inpt: string) (plyr: int): unit =
           !state.health_beat
     } 
     in 
+    print_endline (string_of_int new_state.beat);
     state := new_state;
     update_graphics ();
     if !player_1_ref.scored_this_arrow = true then

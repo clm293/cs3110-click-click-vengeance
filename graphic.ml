@@ -28,18 +28,24 @@ let make3 arr =
 let create_right_arrow_matrix c1 c2 = 
   let empty = Array.make 75 c2 in 
   let emptysec = Array.make 21 empty in
-  let line8  = Array.append (Array.append (Array.make 51 c2) (Array.make 3 c1)) 
-      (Array.make 21 c2) in
-  let line9  = Array.append (Array.append (Array.make 51 c2) (Array.make 6 c1)) 
-      (Array.make 18 c2) in
-  let line10 = Array.append (Array.append (Array.make 54 c2) (Array.make 6 c1)) 
-      (Array.make 15 c2) in
-  let line11 = Array.append (Array.append (Array.make 57 c2) (Array.make 6 c1)) 
-      (Array.make 12 c2) in
-  let line12 = Array.append (Array.append (Array.make 60 c2) (Array.make 6 c1)) 
-      (Array.make 9 c2) in
-  let line13 = Array.append (Array.append (Array.make 6 c2) (Array.make 63 c1)) 
-      (Array.make 6 c2) in
+  let line8 = (Array.make 21 c2)
+              |> Array.append 
+                (Array.append (Array.make 51 c2) (Array.make 3 c1)) in
+  let line9 = (Array.make 18 c2)
+              |> Array.append
+                (Array.append (Array.make 51 c2) (Array.make 6 c1)) in
+  let line10 = (Array.make 15 c2)
+               |> Array.append 
+                 (Array.append (Array.make 54 c2) (Array.make 6 c1)) in
+  let line11 = (Array.make 12 c2)
+               |> Array.append 
+                 (Array.append (Array.make 57 c2) (Array.make 6 c1)) in
+  let line12 = (Array.make 9 c2)
+               |> Array.append 
+                 (Array.append (Array.make 60 c2) (Array.make 6 c1)) in
+  let line13 = (Array.make 6 c2)
+               |> Array.append 
+                 (Array.append (Array.make 6 c2) (Array.make 63 c1)) in
   let middlesec = (make3 line8) 
                   |> Array.append (make3 line9) 
                   |> Array.append (make3 line10) 
@@ -116,6 +122,12 @@ let create_up_arrow_matrix c1 c2 =
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
+let draw_heart x y = 
+  let img = Png.load_as_rgb24 "heart.png" [] in
+  let g = Graphic_image.of_image img in
+  Graphics.draw_image g x y;
+  ()
+
 (** [draw_background_1 c1 c2 c3 c4 score lives hotstreak] draws the background 
     in the single player mode. *)
 let draw_background_1 c1 c2 c3 c4 (score:float) lives (hotstreak:bool) = 
@@ -137,12 +149,19 @@ let draw_background_1 c1 c2 c3 c4 (score:float) lives (hotstreak:bool) =
   moveto 500 610;
   draw_string ("Score: " ^ (string_of_float score));
   moveto 500 580;
-  draw_string ("Lives");
-  moveto 500 560;
-  draw_string  ("remaining: " ^ (string_of_int lives));
-  moveto 500 530;
   if hotstreak then draw_string  ("HOTSTREAK!") else ();
-  ()
+  match lives with 
+  | 0 -> ()
+  | 1 -> draw_heart 500 550
+  | 2 -> draw_heart 500 550; draw_heart 500 530
+  | 3 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510
+  | 4 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+    draw_heart 500 490
+  | 5 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+    draw_heart 500 490; draw_heart 500 470
+  | _ -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+    draw_heart 500 490; draw_heart 500 470; draw_heart 500 450;
+    ()
 
 (** [draw_background_2 c1 c2 c3 c4 score1 lives1 hotstreak1 
     score2 lives2 hotstreak2] draws the background in the double player mode. *)
@@ -177,10 +196,6 @@ let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool)
   draw_string "Player 1";
   moveto 500 580;
   draw_string ("Score: " ^ (string_of_float score1));
-  moveto 500 550;
-  draw_string ("Lives");
-  moveto 500 530;
-  draw_string  ("remaining: " ^ (string_of_int lives1));
   moveto 500 500;
   if hotstreak1 then draw_string  ("HOTSTREAK!") else ();
 
@@ -188,12 +203,35 @@ let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool)
   draw_string "Player 2";
   moveto 1100 580;
   draw_string ("Score: " ^ (string_of_float score2));
-  moveto 1100 550;
-  draw_string ("Lives");
-  moveto 1100 530;
-  draw_string  ("remaining: " ^ (string_of_int lives2));
-  moveto 1100 500;
+  moveto 1100 580;
   if hotstreak2 then draw_string  ("HOTSTREAK!") else ();
+
+  let draw_lives_1 lives1 = 
+    match lives1 with 
+    | 1 -> draw_heart 500 550
+    | 2 -> draw_heart 500 550; draw_heart 500 530
+    | 3 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510
+    | 4 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+      draw_heart 500 490
+    | 5 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+      draw_heart 500 490; draw_heart 500 470
+    | _ -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
+      draw_heart 500 490; draw_heart 500 470; draw_heart 500 450; in 
+
+  let draw_lives_2 lives2 = 
+    match lives2 with 
+    | 1 -> draw_heart 1100 550
+    | 2 -> draw_heart 1100 550; draw_heart 1100 530
+    | 3 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510
+    | 4 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510; 
+      draw_heart 1100 490
+    | 5 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510; 
+      draw_heart 1100 490; draw_heart 1100 470
+    | _ -> draw_heart 500 550; draw_heart 1100 530; draw_heart 1100 510; 
+      draw_heart 1100 490; draw_heart 1100 470; draw_heart 1100 450; in
+
+  draw_lives_1 lives1;
+  draw_lives_2 lives2;
   ()
 
 (** [draw_left_arrow x y] draws the left arrow with at ([x],[y]). *)
@@ -282,16 +320,13 @@ let draw_logo s =
 let draw_button str x y bkg_color txt_color= 
   set_color bkg_color;
   fill_rect x y 100 75;
-
   set_color black;
   draw_image (make_image [|[|black|]|])x y;
   draw_image (make_image [|[|black|]|])(x+100) y;
   draw_image (make_image [|[|black|]|])x (y+75);
   draw_image (make_image [|[|black|]|])(x+100) (y+75);
-
   set_color black;
   draw_rect (x+2) (y+2) 96 71;
-
   set_color txt_color;
   match text_size str with
   |(x_text,y_text) -> let x_pos = x + (100-x_text)/2 in 
@@ -484,7 +519,7 @@ let leaderboard (lst:float list) =
      fill_rect 0 0 600 640; *)
   set_color magenta;
   match text_size "Leaderboard" with
-  | (x,_) -> moveto ((600 - x)/2) 550; draw_string "Leaderboard";
+  | (x,_) -> moveto ((600 - x)/2) 580; draw_string "Leaderboard";
     let change_color n = 
       match (n mod 5) with
       | 1 -> set_color red;
@@ -500,7 +535,7 @@ let leaderboard (lst:float list) =
         | h :: t -> begin
             let str = string_of_int n ^ ". " ^ string_of_float h in
             match text_size str with
-            | (x,y) -> moveto ((600 - x)/2) (550-(30*n)); draw_string str; 
+            | (x,y) -> moveto ((600 - x)/2) (580-(30*n)); draw_string str; 
               draw_lst t (n+1)
           end
         | [] -> ()
@@ -514,45 +549,10 @@ let restart s (lst:float list) =
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;
-  (* draw_logo s; *)
   leaderboard lst;
-  let change_color s = 
-    match s with 
-    | "YOU LOSE!" -> red
-    | "BOTH PLAYERS LOSE!" -> red
-    | "PLAYER 1 LOSES!" -> red
-    | "PLAYER 2 LOSES!" -> red
-    | "YOU QUIT!" -> red
-    | "YOU WIN!" -> green
-    | "BOTH PLAYERS WIN!" -> green
-    | _ -> black in
-  set_color (change_color s);
-  (* let s = begin match List.length lst with
-     | 1 -> s 
-     | 2 -> let score1 = (List.nth lst 0) in 
-      let score2 = (List.nth lst 1) in if score1 = score2 then  "Tie Game!" 
-      else 
-        begin match max score1 score2 with
-          | score1 -> "Player 1 Won"
-          | score2 -> "Player 2 Won" 
-          | _ -> "error" end
-     | _ -> "error" end in *)
-
+  set_color red;
   match text_size s with 
   | (x,_) -> moveto ((600-x)/2) 250; draw_string s;
     moveto 200 300;
     (draw_button "Play Again" (400/3) 150 cyan black, 
      draw_button "Quit" (800/3 + 100) 150 magenta black)
-
-(** [win s] is the graphics screen when the player wins a round. *)
-let win s = 
-  resize_window 600 640;
-  set_color black;
-  fill_rect 0 0 600 640;
-  draw_logo s;
-  match text_size "YOU WIN!" with 
-  | (x,_) -> moveto ((600-x)/2) 250; draw_string "YOU WIN!";
-    moveto 200 300;
-    (draw_button "Play Again" (400/3) 150 cyan black, 
-     draw_button "Quit" (800/3 + 100) 150 magenta black)
-
