@@ -28,18 +28,24 @@ let make3 arr =
 let create_right_arrow_matrix c1 c2 = 
   let empty = Array.make 75 c2 in 
   let emptysec = Array.make 21 empty in
-  let line8  = Array.append (Array.append (Array.make 51 c2) (Array.make 3 c1)) 
-      (Array.make 21 c2) in
-  let line9  = Array.append (Array.append (Array.make 51 c2) (Array.make 6 c1)) 
-      (Array.make 18 c2) in
-  let line10 = Array.append (Array.append (Array.make 54 c2) (Array.make 6 c1)) 
-      (Array.make 15 c2) in
-  let line11 = Array.append (Array.append (Array.make 57 c2) (Array.make 6 c1)) 
-      (Array.make 12 c2) in
-  let line12 = Array.append (Array.append (Array.make 60 c2) (Array.make 6 c1)) 
-      (Array.make 9 c2) in
-  let line13 = Array.append (Array.append (Array.make 6 c2) (Array.make 63 c1)) 
-      (Array.make 6 c2) in
+  let line8 = (Array.make 21 c2)
+              |> Array.append 
+                (Array.append (Array.make 51 c2) (Array.make 3 c1)) in
+  let line9 = (Array.make 18 c2)
+              |> Array.append
+                (Array.append (Array.make 51 c2) (Array.make 6 c1)) in
+  let line10 = (Array.make 15 c2)
+               |> Array.append 
+                 (Array.append (Array.make 54 c2) (Array.make 6 c1)) in
+  let line11 = (Array.make 12 c2)
+               |> Array.append 
+                 (Array.append (Array.make 57 c2) (Array.make 6 c1)) in
+  let line12 = (Array.make 9 c2)
+               |> Array.append 
+                 (Array.append (Array.make 60 c2) (Array.make 6 c1)) in
+  let line13 = (Array.make 6 c2)
+               |> Array.append 
+                 (Array.append (Array.make 6 c2) (Array.make 63 c1)) in
   let middlesec = (make3 line8) 
                   |> Array.append (make3 line9) 
                   |> Array.append (make3 line10) 

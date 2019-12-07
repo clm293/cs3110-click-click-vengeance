@@ -257,12 +257,10 @@ let rec remove_last_three m =
 (** [resume_matrix m acc] is the game matrix after a player resumes from
     pause.*)
 let rec resume_matrix m acc = 
-  remove_last_three m 
-  |> List.rev_append [
-    [None;None;None;None];
-    [None;None;None;None];
-    [None;None;None;None]]
-  |> List.rev 
+  [[None;None;None;None];
+   [None;None;None;None];
+   [None;None;None;None]] 
+  |> List.rev_append (List.rev (remove_last_three m)) 
 
 (** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
