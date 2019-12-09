@@ -39,9 +39,9 @@ and check_key_one press num_players =
   | 'j' -> Game.update "left" 1; check_still_alive num_players
   | 'k' -> Game.update "down" 1; check_still_alive num_players
   | 'l' -> Game.update "right" 1; check_still_alive num_players
-  | 'q' -> Game.update "quit" 1; Graphic.quit(); 
+  | 'q' -> Game.update "quit" 1; Game.update "pause" 1; Graphic.quit(); 
     if (wait_next_event[Key_pressed]).key = 'q' 
-    then (restart "YOU QUIT!" num_players; ())
+    then (restart "YOU QUIT!" 1; ())
     else Game.update "resume" 1; check_still_alive num_players
   | ' ' -> Game.update "pause" 1; Graphic.pause ();
     (wait_next_event [Key_pressed]); Game.update "resume" 1; 
@@ -60,9 +60,9 @@ and check_key_two press num_players =
   | 'a' -> Game.update "left" 1; check_still_alive num_players
   | 's' -> Game.update "down" 1; check_still_alive num_players
   | 'd' -> Game.update "right" 1; check_still_alive num_players
-  | 'q' -> Game.update "pause" 2; Graphic.quit(); 
-    if (wait_next_event [Key_pressed]).key = 'q' 
-    then (restart "" num_players; ())
+  | 'q' -> Game.update "quit" 2; Game.update "pause" 2; Graphic.quit(); 
+    if (wait_next_event[Key_pressed]).key = 'q' 
+    then (restart "YOU QUIT!" 2; ())
     else Game.update "resume" 2; check_still_alive num_players
   | ' ' -> Game.update "pause" 1; Graphic.pause ();
     (wait_next_event [Key_pressed]); Game.update "resume" 1; 
