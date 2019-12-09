@@ -91,12 +91,11 @@ and set_timer () =
 
 (** [call_update num] updates the game state for a beat. *)
 and call_update num_players num = 
-  set_timer ();
   if Game.get_beat () = Game.get_length ()
   then (Game.update "quit" num_players;
         if num_players = 1 then restart "YOU WIN!" num_players else
           restart "BOTH PLAYERS WIN!" num_players)
-  else Game.update "beat" num_players
+  else  Game.update "beat" num_players; set_timer ()
 
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player via [mode] and [num_players] *)
