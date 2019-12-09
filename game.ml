@@ -398,7 +398,8 @@ let scored_this_arrow inpt new_score player =
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
 let lives_remaining inpt new_matrix p = 
   let player = if p = 1 then player_1_ref else player_2_ref in
-  let addlife = if (is_hit inpt player) = HealthHit then 1 else 0 in
+  let addlife = if (is_hit inpt player) = HealthHit && 
+                   !player.lives_remaining < 6 then 1 else 0 in
   if (List.mem (bottom_row new_matrix) double_rows) &&
      !player.first_of_double = "" then !player.lives_remaining 
   else (if inpt <> "beat" && (is_hit inpt player = Miss) then
