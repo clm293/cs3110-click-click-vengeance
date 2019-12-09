@@ -59,8 +59,13 @@ val update_leaderboard : float -> unit
     This function is used for testing. *)
 val set_state : matrix -> int -> float -> bool -> int -> unit
 
+(** [empty_matrix] is the empty game matrix. *)
 val empty_matrix : matrix
 
+(** [test_matrix1] is a test matrix with a left arrow in the bottom row. 
+    Used only for testing*)
 val test_matrix1 : matrix
 
+(** [test_health_matrix] is a test matrix with a health icon in the left 
+    position of the bottom row. Used only for testing. *)
 val test_health_matrix : matrix

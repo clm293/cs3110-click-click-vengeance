@@ -5,6 +5,12 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
+(** [check_win_string ()] is a string that says which player won for the game.*)
+let check_win_string () = 
+  if Game.get_score 1 > Game.get_score 2 then "PLAYER 1 WINS" 
+  else if Game.get_score 1 < Game.get_score 2 then "PLAYER 2 WINS!" 
+  else "BOTH PLAYERS TIED!"
+
 (** [check_still_alive_1 np] checks if the player is still alive in a single
     player game. *)
 let rec check_still_alive_1 num_players = 
@@ -18,17 +24,8 @@ let rec check_still_alive_1 num_players =
     multiplayer game.*)
 and check_still_alive_2 num_players = 
   if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-  && (Game.get_score 1 > Game.get_score 2) 
-  then (Game.update "pause" num_players; restart "PLAYER 1 WINS!" num_players; 
-        ())
-  else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-       && (Game.get_score 1 < Game.get_score 2) 
-  then (Game.update "pause" num_players; restart "PLAYER 2 WINS!" num_players; 
-        ())
-  else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-       && (Game.get_score 1 = Game.get_score 2)
-  then (Game.update "pause" num_players; restart "IT'S A TIE!" num_players; 
-        ())
+  then (Game.update "pause" num_players; restart (check_win_string ()) 
+          num_players; ())
   else check_key_pressed (wait_next_event [Key_pressed]) 2
 
 (** [check_still_alive num_players] calls an end to the game if the conditions 
@@ -95,7 +92,7 @@ and call_update num_players num =
   if Game.get_beat () = Game.get_length ()
   then (Game.update "quit" num_players;
         if num_players = 1 then restart "YOU WIN!" num_players else
-          restart "BOTH PLAYERS WIN!" num_players)
+          restart (check_win_string ()) num_players)
   else  Game.update "beat" num_players; set_timer ()
 
 (** [play_game mode num_players] initializes the game with the appropriate 

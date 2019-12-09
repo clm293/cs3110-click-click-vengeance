@@ -244,8 +244,8 @@ let bottom_row m =
   | h :: t -> h
   | _ -> failwith "invalid matrix"
 
-(** [is_double_hit sec_inpt player] is true if a hit for a double key press was
-    made. *)
+(** [is_double_hit sec_inpt player] is [Hit] if a hit for a double key press was
+    made and [Miss] otherwise. *)
 let is_double_hit sec_inpt player = 
   let t = !state in
   if not (List.mem (!player.first_of_double) ["right"; "left"; "up"; "down"]) 
@@ -292,6 +292,8 @@ let is_double_hit sec_inpt player =
     | _, "" -> Other
     | _ -> Miss
 
+(** [is_health_hit i] is a [HealthHit] if there is a hit in the bottom row when 
+    there is a health icon and [Miss] otherwise.*)
 let is_health_hit inpt = 
   match inpt with
   | "up" -> if  None = List.nth (bottom_row !state.matrix) 2
@@ -305,6 +307,8 @@ let is_health_hit inpt =
   | "" -> Other
   | _ -> Miss
 
+(** [is_single_hit i] is a [Hit] if there is a hit in the bottom row when there 
+    is just one icon and [Miss] otherwise.*)
 let is_single_hit inpt = 
   match inpt with
   | "up" -> if List.mem (Some Up) (bottom_row !state.matrix) 
@@ -318,6 +322,8 @@ let is_single_hit inpt =
   | "" -> Other
   | _ -> Miss
 
+(** [clear_bottom_row_graphics m p] clears the bottom row when a play hits the 
+    correct icon. *)
 let clear_bottom_row_graphics (matrix: cell list list) (player: player ref) = 
   let new_matrix = match List.rev matrix with
     | h :: t -> List.rev_append t [[None; None; None; None]]
