@@ -94,9 +94,9 @@ let hotstreak_end_tests = [
 ]
 
 let add_life_tests = [
-  "p1 lives +1" >:: (fun _ -> assert_equal 5 (get_lives 1)~printer:string_of_int);
-  "p1 score doesn't change" >:: (fun _ -> assert_equal 13.0 (get_score 1)
-                                    ~printer:string_of_float);
+  "p1 lives +2" >:: (fun _ -> assert_equal 6 (get_lives 1)
+                        ~printer:string_of_int);
+  "p1 score doesn't change" >:: (fun _ -> assert_equal (string_of_float 15.6) (string_of_float (get_score 1)));
 ]
 
 let suite_one = "test suite one player" >::: one_player_tests 
@@ -153,10 +153,13 @@ let _ =
   update "beat" 1;
   run_test_tt_main suite_hotstreak_end;
   print_endline "done hotstreak miss";
-  (* set_state test_health_matrix 2 (get_bpm ()) false (get_beat ());
-     update "left" 1;
-     update "beat" 1;
-     run_test_tt_main suite_life; *)
+  set_state test_health_matrix 2 (get_bpm ()) false (get_beat ());
+  update "left" 1;
+  update "beat" 1;
+  set_state test_health_matrix 2 (get_bpm ()) false (get_beat ());
+  update "left" 1;
+  update "beat" 1;
+  run_test_tt_main suite_life;
 
 
 
