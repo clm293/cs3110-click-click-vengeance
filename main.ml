@@ -11,25 +11,16 @@ let rec check_still_alive num_players =
   if num_players = 2 then begin
     if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
     && (Game.get_score 1 > Game.get_score 2) 
-    then 
-      begin 
-        Game.update "pause" num_players; restart "PLAYER 1 WINS!" num_players; 
-        ()
-      end
+    then (Game.update "pause" num_players; restart "PLAYER 1 WINS!" num_players; 
+          ())
     else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
          && (Game.get_score 1 < Game.get_score 2) 
-    then 
-      begin
-        Game.update "pause" num_players; restart "PLAYER 2 WINS!" num_players; 
-        ()
-      end
+    then (Game.update "pause" num_players; restart "PLAYER 2 WINS!" num_players; 
+          ())
     else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
          && (Game.get_score 1 = Game.get_score 2)
-    then 
-      begin
-        Game.update "pause" num_players; restart "IT'S A TIE!" num_players; 
-        ()
-      end
+    then (Game.update "pause" num_players; restart "IT'S A TIE!" num_players; 
+          ())
     else check_key_pressed (wait_next_event [Key_pressed]) 2
   end
   else begin
@@ -233,4 +224,4 @@ and main () =
   print_endline level;
   play_game level num_players
 
-let () = main ()  
+(* let () = main ()   *)
