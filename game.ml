@@ -535,5 +535,3 @@ let rec update (inpt: string) (plyr: int): unit =
       clear_bottom_row_graphics new_state.matrix player_1_ref;
     if !player_2_ref.scored_this_arrow = true then
       clear_bottom_row_graphics new_state.matrix player_2_ref
-
-
