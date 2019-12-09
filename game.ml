@@ -280,11 +280,11 @@ let is_double_hit sec_inpt player =
 
 let is_health_hit inpt = 
   match inpt with
-  | "up" -> if  None = List.nth (bottom_row !state.matrix) 0
+  | "up" -> if  None = List.nth (bottom_row !state.matrix) 2
     then HealthHit else Miss
   | "down" -> if None = List.nth (bottom_row !state.matrix) 1
     then HealthHit else Miss
-  | "left" -> if None = List.nth (bottom_row !state.matrix) 2
+  | "left" -> if None = List.nth (bottom_row !state.matrix) 0
     then HealthHit else Miss
   | "right" -> if None = List.nth (bottom_row !state.matrix) 3
     then HealthHit else Miss
@@ -521,9 +521,8 @@ let rec update (inpt: string) (plyr: int): unit =
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
       players = !state.players;
-      base_increase = if (!state.beat mod 20) = 0 then 0.1 +. 
-                                                       (!state.base_increase) 
-        else !state.base_increase;
+      base_increase = if (!state.beat mod 20) = 0 && (!state.beat <> 0) 
+        then 0.1 +. (!state.base_increase) else !state.base_increase;
       health_beat = if (!state.beat mod 50 = 1) then
           (!state.beat + Random.int 50) else
           !state.health_beat
