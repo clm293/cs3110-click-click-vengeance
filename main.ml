@@ -25,43 +25,50 @@ let rec check_still_alive num_players =
     else check_key_pressed (wait_next_event [Key_pressed]) num_players
   end
 
+(** [check_key_one press num_players] checks if a key was pressed for a single
+    player game and updates the game accordingly. *)
+and check_key_one press num_players = 
+  match press.key with
+  | 'i' -> Game.update "up" 1; check_still_alive num_players
+  | 'j' -> Game.update "left" 1; check_still_alive num_players
+  | 'k' -> Game.update "down" 1; check_still_alive num_players
+  | 'l' -> Game.update "right" 1; check_still_alive num_players
+  | 'q' -> Game.update "quit" 1; Graphic.quit(); 
+    if (wait_next_event[Key_pressed]).key = 'q' 
+    then (restart "YOU QUIT!" num_players; ())
+    else Game.update "resume" 1; check_still_alive num_players
+  | ' ' -> Game.update "pause" 1; Graphic.pause ();
+    (wait_next_event [Key_pressed]); Game.update "resume" 1; 
+    check_still_alive num_players
+  | _ -> Game.update "" 1; check_still_alive num_players
+
+(** [check_key_two press num_players] checks if a key was pressed for a two
+    player game and updates the game accordingly. *)
+and check_key_two press num_players = 
+  match press.key with
+  | 'i' -> Game.update "up" 2; check_still_alive num_players
+  | 'j' -> Game.update"left" 2; check_still_alive num_players
+  | 'k' -> Game.update "down" 2; check_still_alive num_players
+  | 'l' -> Game.update "right" 2; check_still_alive num_players
+  | 'w' -> Game.update "up" 1; check_still_alive num_players
+  | 'a' -> Game.update "left" 1; check_still_alive num_players
+  | 's' -> Game.update "down" 1; check_still_alive num_players
+  | 'd' -> Game.update "right" 1; check_still_alive num_players
+  | 'q' -> Game.update "pause" 2; Graphic.quit(); 
+    if (wait_next_event [Key_pressed]).key = 'q' 
+    then (restart "" num_players; ())
+    else Game.update "resume" 2; check_still_alive num_players
+  | ' ' -> Game.update "pause" 1; Graphic.pause ();
+    (wait_next_event [Key_pressed]); Game.update "resume" 1; 
+    check_still_alive num_players
+  | _ -> Game.update "" 1; check_still_alive num_players
+
 (** [check_key_pressed press num_players] calls a function to update
     the game state on each player input. Then calls a function continue or end
     the game as indicated by the game state. *)
 and check_key_pressed press num_players= 
-  print_endline "at check key press";
-  if num_players = 1 then
-    match press.key with
-    | 'i' -> Game.update "up" 1; check_still_alive num_players
-    | 'j' -> Game.update "left" 1; check_still_alive num_players
-    | 'k' -> Game.update "down" 1; check_still_alive num_players
-    | 'l' -> Game.update "right" 1; check_still_alive num_players
-    | 'q' -> Game.update "quit" 1; Graphic.quit(); 
-      if (wait_next_event[Key_pressed]).key = 'q' 
-      then (restart "YOU QUIT!" num_players; ())
-      else Game.update "resume" 1; check_still_alive num_players
-    | ' ' -> Game.update "pause" 1; Graphic.pause ();
-      (wait_next_event [Key_pressed]); Game.update "resume" 1; 
-      check_still_alive num_players
-    | _ -> Game.update "" 1; check_still_alive num_players
-  else (*num_players = 2*)
-    match press.key with
-    | 'i' -> Game.update "up" 2; check_still_alive num_players
-    | 'j' -> Game.update"left" 2; check_still_alive num_players
-    | 'k' -> Game.update "down" 2; check_still_alive num_players
-    | 'l' -> Game.update "right" 2; check_still_alive num_players
-    | 'w' -> Game.update "up" 1; check_still_alive num_players
-    | 'a' -> Game.update "left" 1; check_still_alive num_players
-    | 's' -> Game.update "down" 1; check_still_alive num_players
-    | 'd' -> Game.update "right" 1; check_still_alive num_players
-    | 'q' -> Game.update "pause" 2; Graphic.quit(); 
-      if (wait_next_event [Key_pressed]).key = 'q' 
-      then (restart "" num_players; ())
-      else Game.update "resume" 2; check_still_alive num_players
-    | ' ' -> Game.update "pause" 1; Graphic.pause ();
-      (wait_next_event [Key_pressed]); Game.update "resume" 1; 
-      check_still_alive num_players
-    | _ -> Game.update "" 1; check_still_alive num_players
+  if num_players = 1 then check_key_one press num_players
+  else check_key_two press num_players
 
 (** [set_timer ()] uses the game speed to set the alarm that moves the game. *)
 and set_timer () =
@@ -81,28 +88,25 @@ and call_update num_players num =
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player via [mode] and [num_players] *)
 and play_game mode num_players =
-  begin match mode with
-    | "endless" -> 
-      Game.init_state num_players 50.0 max_int;
-      Graphic.init_graphics "" num_players;
-      set_timer ();
-      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
-      check_key_pressed (wait_next_event [Key_pressed]) num_players;
-      ()
-    | _ -> 
-      let level = Level.from_json (Yojson.Basic.from_file mode) in
-      print_endline (string_of_int (Level.length level));
-      Game.init_state num_players (Level.bpm level) (Level.length level);
-      print_endline "after init state";
-      Graphic.init_graphics "" num_players;
-      print_endline "after init graphics";
-      set_timer ();
-      print_endline "after set timeer";
-      Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
-      print_endline "after set signal";
-      check_key_pressed (wait_next_event [Key_pressed]) num_players;
-      ()
-  end
+  match mode with
+  | "endless" -> 
+    Game.init_state num_players 50.0 max_int;
+    Graphic.init_graphics "" num_players;
+    set_timer ();
+    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
+    check_key_pressed (wait_next_event [Key_pressed]) num_players; ()
+  | _ -> 
+    let level = Level.from_json (Yojson.Basic.from_file mode) in
+    print_endline (string_of_int (Level.length level));
+    Game.init_state num_players (Level.bpm level) (Level.length level);
+    print_endline "after init state";
+    Graphic.init_graphics "" num_players;
+    print_endline "after init graphics";
+    set_timer ();
+    print_endline "after set timeer";
+    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
+    print_endline "after set signal";
+    check_key_pressed (wait_next_event [Key_pressed]) num_players; ()
 
 (** [click_location click] is the x and y location of a user's click. *)
 and click_location click = 

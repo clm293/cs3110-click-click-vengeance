@@ -84,30 +84,28 @@ let init_player p =
       first_of_double = "";
     }
 
+let empty_matrix = [
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None]; 
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+]
+
 let init_state num bpm len = 
-  print_endline "init_state";
   state := {
-    matrix = [
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None]; 
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None];
-    ];
+    matrix = empty_matrix;
     num_players = num;
     speed = bpm;
     paused = false;
     length = len;
     beat = 0;
     players = if num = 1 then begin init_player 1; (!player_1_ref, None) end 
-      else 
-        begin 
-          init_player 1; init_player 2; 
-          (!player_1_ref, Some !player_2_ref) 
-        end;
+      else begin 
+        init_player 1; init_player 2; (!player_1_ref, Some !player_2_ref) end;
     base_increase = 1.0;
     health_beat = Random.int 50
   }
@@ -127,15 +125,7 @@ let get_length () = !state.length
 let get_score player =
   if player = 1 then !player_1_ref.score else !player_2_ref.score
 
-(** [single_rows] is a list of the possibilities of rows with a single arrow. *)
-let single_rows = [
-  [Some Left; None; None; None];
-  [None; Some Down; None; None];
-  [None; None; Some Up; None];
-  [None; None; None; Some Right]
-]
-
-(** [single_rows] is a list of the possibilities of rows with two arrows. *)
+(** [double_rows] is a list of the possibilities of rows with two arrows. *)
 let double_rows = [
   [Some Left; Some Down; None; None];
   [None; Some Down; Some Up; None];
@@ -145,40 +135,49 @@ let double_rows = [
   [Some Left; None; None; Some Right]
 ]
 
+(** [health_rows ()] is a random row that generates a health icon. *)
+let health_rows () = 
+  match Random.int 4 with
+  | 0 -> [None; Some Health; Some Health; Some Health]
+  | 1 -> [Some Health; None; Some Health; Some Health]
+  | 2 -> [Some Health; Some Health; None; Some Health]
+  | 3 -> [Some Health; Some Health; Some Health; None]
+  | _ -> failwith "generate random row error"
+
+(** [single_icon_rows ()] is a random row with a single icon. *)
+let single_icon_rows () = 
+  match Random.int 5 with
+  | 0 -> [Some Left; None; None; None]
+  | 1 -> [None; Some Down; None; None]
+  | 2 -> [None; None; Some Up; None]
+  | 3 -> [None; None; None; Some Right]
+  | 4 -> [None; None ; None; None]
+  | _ -> failwith "generate random row error"
+
+(** [double_icon_rows ()] is a random row with two icons. *)
+let double_icon_rows () = 
+  match Random.int 11 with 
+  | 0 -> [Some Left; None; None; None]
+  | 1 -> [None; Some Down; None; None]
+  | 2 -> [None; None; Some Up; None]
+  | 3 -> [None; None; None; Some Right]
+  | 4 -> [Some Left; Some Down; None; None]
+  | 5 -> [None; Some Down; Some Up; None]
+  | 6 -> [None; None; Some Up; Some Right]
+  | 7 -> [None; Some Down; None; Some Right]
+  | 8 -> [Some Left; None; Some Up; None]
+  | 9 -> [Some Left; None; None; Some Right]
+  | 10 -> [None; None; None; None]
+  | _ -> failwith "generate random row error"
+
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
-  if !state.beat mod 3 = 0 then 
-    match Random.int 4 with
-    | 0 -> [None; Some Health; Some Health; Some Health]
-    | 1 -> [Some Health; None; Some Health; Some Health]
-    | 2 -> [Some Health; Some Health; None; Some Health]
-    | 3 -> [Some Health; Some Health; Some Health; None]
-    | _ -> failwith "generate random row error"
+  if !state.beat mod 3 = 0 then health_rows ()
   else
     let len = if get_length () = max_int then 30 else get_length () in
-    if !state.beat < len then 
-      match Random.int 5 with
-      | 0 -> [Some Left; None; None; None]
-      | 1 -> [None; Some Down; None; None]
-      | 2 -> [None; None; Some Up; None]
-      | 3 -> [None; None; None; Some Right]
-      | 4 -> [None; None ; None; None]
-      | _ -> failwith "generate random row error"
-    else 
-      match Random.int 11 with 
-      | 0 -> [Some Left; None; None; None]
-      | 1 -> [None; Some Down; None; None]
-      | 2 -> [None; None; Some Up; None]
-      | 3 -> [None; None; None; Some Right]
-      | 4 -> [Some Left; Some Down; None; None]
-      | 5 -> [None; Some Down; Some Up; None]
-      | 6 -> [None; None; Some Up; Some Right]
-      | 7 -> [None; Some Down; None; Some Right]
-      | 8 -> [Some Left; None; Some Up; None]
-      | 9 -> [Some Left; None; None; Some Right]
-      | 10 -> [None; None; None; None]
-      | _ -> failwith "generate random row error"
+    if !state.beat < len then single_icon_rows ()
+    else double_icon_rows ()
 
 (** [is_hot lst] is true if the previous 10 presses were hits. *)
 let is_hot lst = 
@@ -194,49 +193,75 @@ let bottom_row m =
     made. *)
 let is_double_hit sec_inpt player = 
   let t = !state in
-  if not (List.mem (!player.first_of_double) ["right";"left";"up";"down"]) 
+  if not (List.mem (!player.first_of_double) ["right"; "left"; "up"; "down"]) 
   then Miss else
     let fst_inpt = !player.first_of_double in 
     match fst_inpt, sec_inpt with 
-    | "up", "left" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Left )(bottom_row t.matrix) 
+    | "up", "left" -> if List.mem (Some Up) (bottom_row t.matrix) && 
+                         List.mem (Some Left) (bottom_row t.matrix) 
       then Hit else Miss
-    | "left", "up" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Left )(bottom_row t.matrix) 
+    | "left", "up" -> if List.mem (Some Up) (bottom_row t.matrix) && 
+                         List.mem (Some Left) (bottom_row t.matrix) 
       then Hit else Miss
-    | "up", "right" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                          List.mem (Some Right )(bottom_row t.matrix) 
+    | "up", "right" -> if List.mem (Some Up) (bottom_row t.matrix) && 
+                          List.mem (Some Right) (bottom_row t.matrix) 
       then Hit else Miss
-    | "right", "up" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                          List.mem (Some Right )(bottom_row t.matrix) 
+    | "right", "up" -> if List.mem (Some Up) (bottom_row t.matrix) && 
+                          List.mem (Some Right) (bottom_row t.matrix) 
       then Hit else Miss
-    | "up", "down" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Down )(bottom_row t.matrix) 
+    | "up", "down" -> if List.mem (Some Up) (bottom_row t.matrix) && 
+                         List.mem (Some Down) (bottom_row t.matrix) 
       then Hit else Miss
-    | "down", "up" -> if List.mem (Some Up)(bottom_row t.matrix) && 
-                         List.mem (Some Down )(bottom_row t.matrix) 
+    | "down", "up" -> if List.mem (Some Up) (bottom_row t.matrix) && 
+                         List.mem (Some Down) (bottom_row t.matrix) 
       then Hit else Miss
-    | "left", "down" -> if List.mem (Some Left)(bottom_row t.matrix) && 
-                           List.mem (Some Down )(bottom_row t.matrix) 
+    | "left", "down" -> if List.mem (Some Left) (bottom_row t.matrix) && 
+                           List.mem (Some Down) (bottom_row t.matrix) 
       then Hit else Miss
-    | "down", "left" -> if List.mem (Some Left)(bottom_row t.matrix) && 
-                           List.mem (Some Down )(bottom_row t.matrix) 
+    | "down", "left" -> if List.mem (Some Left) (bottom_row t.matrix) && 
+                           List.mem (Some Down) (bottom_row t.matrix) 
       then Hit else Miss
-    | "right", "down" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Down )(bottom_row t.matrix) 
+    | "right", "down" -> if List.mem (Some Right) (bottom_row t.matrix) && 
+                            List.mem (Some Down) (bottom_row t.matrix) 
       then Hit else Miss
-    | "down", "right" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Down )(bottom_row t.matrix) 
+    | "down", "right" -> if List.mem (Some Right) (bottom_row t.matrix) && 
+                            List.mem (Some Down) (bottom_row t.matrix) 
       then Hit else Miss
-    | "left", "right" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Left )(bottom_row t.matrix) 
+    | "left", "right" -> if List.mem (Some Right) (bottom_row t.matrix) && 
+                            List.mem (Some Left) (bottom_row t.matrix) 
       then Hit else  Miss
-    | "right", "left" -> if List.mem (Some Right)(bottom_row t.matrix) && 
-                            List.mem (Some Left )(bottom_row t.matrix) 
+    | "right", "left" -> if List.mem (Some Right) (bottom_row t.matrix) && 
+                            List.mem (Some Left) (bottom_row t.matrix) 
       then Hit else Miss
     | "", _ -> Other
     | _, "" -> Other
     | _ -> Miss
+
+let is_health_hit inpt = 
+  match inpt with
+  | "up" -> if  None = List.nth (bottom_row !state.matrix) 0
+    then HealthHit else Miss
+  | "down" -> if None = List.nth (bottom_row !state.matrix) 1
+    then HealthHit else Miss
+  | "left" -> if None = List.nth (bottom_row !state.matrix) 2
+    then HealthHit else Miss
+  | "right" -> if None = List.nth (bottom_row !state.matrix) 3
+    then HealthHit else Miss
+  | "" -> Other
+  | _ -> Miss
+
+let is_single_hit inpt = 
+  match inpt with
+  | "up" -> if List.mem (Some Up) (bottom_row !state.matrix) 
+    then Hit else Miss
+  | "down" -> if List.mem (Some Down) (bottom_row !state.matrix) 
+    then Hit else Miss
+  | "left" -> if List.mem (Some Left) (bottom_row !state.matrix) 
+    then Hit else Miss
+  | "right" -> if List.mem (Some Right) (bottom_row !state.matrix) 
+    then Hit else Miss
+  | "" -> Other
+  | _ -> Miss
 
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
@@ -244,29 +269,8 @@ let is_hit inpt player =
   if List.mem (bottom_row (!state.matrix)) double_rows 
   then is_double_hit inpt player else 
   if List.mem (Some Health) (bottom_row (!state.matrix)) then 
-    match inpt with
-    | "up" -> if  None = List.nth (bottom_row !state.matrix) 0
-      then HealthHit else Miss
-    | "down" -> if None = List.nth (bottom_row !state.matrix) 1
-      then HealthHit else Miss
-    | "left" -> if None = List.nth (bottom_row !state.matrix) 2
-      then HealthHit else Miss
-    | "right" -> if None = List.nth (bottom_row !state.matrix) 3
-      then HealthHit else Miss
-    | "" -> Other
-    | _ -> Miss
-  else
-    match inpt with
-    | "up" -> if List.mem (Some Up) (bottom_row !state.matrix) 
-      then Hit else Miss
-    | "down" -> if List.mem (Some Down) (bottom_row !state.matrix) 
-      then Hit else Miss
-    | "left" -> if List.mem (Some Left) (bottom_row !state.matrix) 
-      then Hit else Miss
-    | "right" -> if List.mem (Some Right) (bottom_row !state.matrix) 
-      then Hit else Miss
-    | "" -> Other
-    | _ -> Miss
+    is_health_hit inpt
+  else is_single_hit inpt
 
 (** [update_matrix t] is a matrix with all of the rows in the matrix of [t] 
     shifted down and pops off the bottom row and adds a new random row to the 
@@ -394,16 +398,7 @@ let resume_game beat =
 
 let quit_game () = 
   let new_state = {
-    matrix = [
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None]; 
-      [None; None; None; None];
-      [None; None; None; None];
-      [None; None; None; None];
-    ];
+    matrix = empty_matrix;
     num_players = !state.num_players;
     speed = !state.speed;
     paused = false;
@@ -426,10 +421,9 @@ let rec update_player inpt matrix p =
     score = new_score;
     scored_this_arrow = scored_this_arrow inpt new_score !player;
     lives_remaining = lives_remaining inpt matrix p;
-    last_ten = if inpt <> "beat" 
-               && (!player.scored_this_arrow = false) 
-               && not (List.mem (bottom_row matrix) double_rows 
-                       && !player.first_of_double = "") 
+    last_ten = if inpt <> "beat" && (!player.scored_this_arrow = false) 
+                  && not (List.mem (bottom_row matrix) double_rows 
+                          && !player.first_of_double = "") 
       then (update_last_ten (is_hit inpt player) (!player.last_ten)) 
       else !player.last_ten;
     first_of_double = if List.mem (bottom_row matrix) double_rows &&
@@ -438,13 +432,13 @@ let rec update_player inpt matrix p =
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
-  if inpt = "quit" then begin print_endline "quitted!"; quit_game () end else 
-  if !state.paused = true then 
-    if inpt = "resume" then resume_game (!state.beat-3) else pause_game !state.beat 
-  else
-  if inpt = "pause" then pause_game (!state.beat-3) else
-    let new_matrix = if inpt = "beat" && (!state.paused = false) then 
-        update_matrix () else !state.matrix in
+  if inpt = "quit" then begin print_endline "quitted!"; quit_game () end 
+  else if !state.paused = true then 
+    if inpt = "resume" then resume_game (!state.beat-3) 
+    else pause_game !state.beat 
+  else if inpt = "pause" then pause_game (!state.beat-3) 
+  else let new_matrix = if inpt = "beat" && (!state.paused = false) 
+         then update_matrix () else !state.matrix in
     if inpt = "beat" then 
       begin 
         update_player inpt new_matrix 1; 
@@ -467,6 +461,5 @@ let rec update (inpt: string) (plyr: int): unit =
           !state.health_beat
     } 
     in 
-    print_endline (string_of_int new_state.beat);
     state := new_state;
     update_graphics () 
