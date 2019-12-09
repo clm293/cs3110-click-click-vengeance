@@ -5,12 +5,12 @@ Users need to have the following packages installed:
 * Graphics
 * camlimages
 
-To install these enter these commands into the command line:
+To install these enter the following commands into the command line:<br>
 ```opam install yojson``` <br>
 ```opam install graphics``` <br>
 ```opam install camlimages```
 
-To build and play the game:
+To build and play the game:<br>
 ```make build``` <br>
 ```make play``` <br>
 You can read instructions on how to play the game by clicking on the help icon in the bottom left corner of the start screen.

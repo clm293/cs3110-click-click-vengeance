@@ -412,7 +412,7 @@ let start_window s =
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;
-  set_window_title "Tap Tap Revenge";
+  set_window_title "Click Click Vengeance";
   draw_logo s;
   (draw_button "Start" 250 150 magenta black, draw_help s)
 
