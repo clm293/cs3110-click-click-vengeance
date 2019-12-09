@@ -179,8 +179,6 @@ let get_length () = !state.length
 let get_score player =
   if player = 1 then !player_1_ref.score else !player_2_ref.score
 
-
-
 (** [double_rows] is a list of the possibilities of rows with two arrows. *)
 let double_rows = [
   [Some Left; Some Down; None; None];
