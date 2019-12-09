@@ -359,22 +359,22 @@ let help s =
   set_color white;
   fill_rect 100 100 400 440;
   set_color magenta;
-  write_line "Click Click Vengence" 480;
+  write_line "Click Click Vengence" 490;
   set_color black;
   write_line "The objective of Click CLick Vengence" 450;
-  write_line "is to get the highest score possible." 420;
-  write_line "You can play alone or with a friend." 390;
-  write_line "Tap the corresponding key when the arrows reach the bottom row." 360;
-  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 330;
-  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 300;
-  write_line "There are 4 different modes: easy, medium, hard, and endless." 
-    270;
-  write_line "In easy, medium, and hard, play until the game ends" 240;
-  write_line "or you lose all your lives, whichever comes first." 210;
-  write_line "In enless mode, play untl you lose all 5 lives." 180;
-  write_line "Press space to pause, press 'q' to quit." 150;
+  write_line "is to beat previous high scores: earn points by tapping" 420;
+  write_line "the corresponding key when the arrows reach the bottom row." 390;
+  write_line "Hits become more valuable as the game progresses." 360;
+  write_line "You can play alone or with a friend." 330;
+  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 300;
+  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 270;
+  write_line "There are 4  modes: easy, medium, hard, and endless."  240;
+  write_line "In easy, medium, and hard, play until the game ends" 210;
+  write_line "or you lose all your lives, whichever comes first." 180;
+  write_line "In enless mode, play untl you lose all 5 lives." 150;
+  write_line "Press space to pause, press 'q' to quit." 120;
   set_color cyan;
-  write_line "GOOD LUCK!!!" 120;
+  write_line "GOOD LUCK!!!" 60;
   (size_x () - 30, 0)
 
 (** [draw_logo s] draws the logo. *)
