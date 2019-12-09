@@ -4,11 +4,13 @@ open Main
 open Level
 
 (** Our approach to testing:
- * unit tests for functions and initializations
- * testing changes made to the mutable state behave as intended
- * Much of our testing was done through game play and running our graphics.
-    The extent of our in-game testing, as well as trial game play with friends
-    outside our team, makes us confident in the correctness of our system.
+    We wrote unit tests to test game state initialization and game state updates.
+    We wanted to make sure changing the mutable game state resulted in the intended behaviors.
+    Since most of our functions in game.ml are private, we added testing functions in game.ml to allow for proper testing.
+    Most of our testing was done through game play though, to properly simulate real playing conditions and all possible combinations of different conditions throughout the game.
+    Our graphics cannot be tested through unit tests, so that testing was done primarily though playing.
+    We also couldn't test our main.ml functions because they mostly rely on input/output from the graphics and terminal.
+    We had friends play our game to maximize the extent of our testing.
 *)
 
 type arrow = Left | Down | Up | Right | Health 
