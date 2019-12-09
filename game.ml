@@ -156,7 +156,7 @@ let generate_random_row () =
     | 3 -> [Some Health; Some Health; Some Health; None]
     | _ -> failwith "generate random row error"
   else begin
-    let len = if get_length () = max_int then 30 else get_length () in
+    let len = if get_length () = max_int then 30 else (get_length ())/3 in
     if !state.beat < len then 
       match Random.int 5 with
       | 0 -> [Some Left; None; None; None]
@@ -244,15 +244,18 @@ let clear_bottom_row_graphics (matrix: cell list list) (player: player ref) =
     | _ -> failwith "bad matrix" in 
   if (!state.num_players = 2) then 
     if player = player_1_ref then
-      update_graphics_2 new_matrix !state.matrix !player_1_ref.score !player_1_ref.lives_remaining
-        (is_hot !player_1_ref.last_ten) !player_2_ref.score !player_2_ref.lives_remaining (is_hot !player_2_ref.last_ten) 
+      update_graphics_2 new_matrix !state.matrix !player_1_ref.score 
+        !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten) 
+        !player_2_ref.score !player_2_ref.lives_remaining
+        (is_hot !player_2_ref.last_ten) 
     else
-      update_graphics_2 !state.matrix new_matrix !player_1_ref.score !player_1_ref.lives_remaining
-        (is_hot !player_1_ref.last_ten) !player_2_ref.score !player_2_ref.lives_remaining (is_hot !player_2_ref.last_ten) 
+      update_graphics_2 !state.matrix new_matrix !player_1_ref.score 
+        !player_1_ref.lives_remaining(is_hot !player_1_ref.last_ten) 
+        !player_2_ref.score !player_2_ref.lives_remaining 
+        (is_hot !player_2_ref.last_ten) 
   else
-    update_graphics_1 new_matrix !player_1_ref.score !player_1_ref.lives_remaining
-      (is_hot !player_1_ref.last_ten);
-  print_endline "in botom"
+    update_graphics_1 new_matrix !player_1_ref.score
+      !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten)
 
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
@@ -457,7 +460,8 @@ let rec update_player inpt matrix p =
 let rec update (inpt: string) (plyr: int): unit =
   if inpt = "quit" then begin print_endline "quitted!"; quit_game () end else 
   if !state.paused = true then 
-    if inpt = "resume" then resume_game (!state.beat-3) else pause_game !state.beat 
+    if inpt = "resume" then resume_game (!state.beat-3) else 
+      pause_game !state.beat 
   else
   if inpt = "pause" then pause_game (!state.beat-3) else
     let new_matrix = if inpt = "beat" && (!state.paused = false) then 

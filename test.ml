@@ -4,8 +4,8 @@ open Main
 open Level
 
 (** Our approach to testing:
- *unit tests for functions and initializations
- *testing changes made to the mutable state behave as intended
+ * unit tests for functions and initializations
+ * testing changes made to the mutable state behave as intended
  * Much of our testing was done through game play and running our graphics.
     The extent of our in-game testing, as well as trial game play with friends
     outside our team, makes us confident in the correctness of our system.
@@ -37,7 +37,7 @@ let suite_one = "test suite one player" >::: (one_player_tests)
 let suite_pause = "test suite pause" >::: (paused_tests) 
 let suite_two = "test suite two player" >::: (two_player_tests)
 
-let () = 
+let _ = 
   Game.init_state 1 60.0 60; 
   run_test_tt_main suite_one;
   print_endline "done init";
