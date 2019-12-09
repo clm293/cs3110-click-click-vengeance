@@ -4,12 +4,17 @@ open Main
 open Level
 
 (** Our approach to testing:
-    We wrote unit tests to test game state initialization and game state updates.
-    We wanted to make sure changing the mutable game state resulted in the intended behaviors.
-    Since most of our functions in game.ml are private, we added testing functions in game.ml to allow for proper testing.
-    Most of our testing was done through game play though, to properly simulate real playing conditions and all possible combinations of different conditions throughout the game.
-    Our graphics cannot be tested through unit tests, so that testing was done primarily though playing.
-    We also couldn't test our main.ml functions because they mostly rely on input/output from the graphics and terminal.
+    We wrote unit tests to test game state initialization and game state 
+    updates.  We wanted to make sure changes to the mutable game state resulted
+    in the intended behaviors. Since most of our functions in game.ml are
+    private, we added testing functions in game.ml to allow for proper testing.
+    Most of our testing was done through game play though, to properly simulate
+    real playing conditions and all possible combinations of different 
+    conditions throughout the game.  
+    Our graphics cannot be tested through unit tests, so that testing was done
+    primarily though playing. We also couldn't 
+    test our main.ml functions because they mostly rely on input/output from the
+    graphics and terminal.
     We had friends play our game to maximize the extent of our testing,
     as well as to ensure that our user experience was optimized.
 *)
@@ -74,8 +79,10 @@ let pause_update_tests = [
 ]
 
 let hit_tests = [
-  "score should +1 p1" >:: (fun _ -> assert_equal (string_of_float 1.2) (string_of_float (get_score 1)));
-  "score should +1 p2" >:: (fun _ -> assert_equal (string_of_float 1.2) (string_of_float (get_score 2)));
+  "score should +1 p1" >:: (fun _ -> assert_equal (string_of_float 1.2) 
+                               (string_of_float (get_score 1)));
+  "score should +1 p2" >:: (fun _ -> assert_equal (string_of_float 1.2) 
+                               (string_of_float (get_score 2)));
 ]
 
 let hotstreak_tests = [
@@ -93,13 +100,15 @@ let miss_tests = [
 ]
 
 let hotstreak_end_tests = [
-  "p1 score increments by 1" >:: (fun _ -> assert_equal (string_of_float 15.6) (string_of_float (get_score 1)));
+  "p1 score increments by 1" >:: (fun _ -> assert_equal (string_of_float 15.6) 
+                                     (string_of_float (get_score 1)));
 ]
 
 let add_life_tests = [
   "p1 lives +2" >:: (fun _ -> assert_equal 6 (get_lives 1)
                         ~printer:string_of_int);
-  "p1 score doesn't change" >:: (fun _ -> assert_equal (string_of_float 15.6) (string_of_float (get_score 1)));
+  "p1 score doesn't change" >:: (fun _ -> assert_equal (string_of_float 15.6)
+                                    (string_of_float (get_score 1)));
 ]
 
 let suite_one = "test suite one player" >::: one_player_tests 
