@@ -1,5 +1,5 @@
 (**
-   insert description
+   Controls all graphics
 *)
 
 (** [update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2] 

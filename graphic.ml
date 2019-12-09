@@ -341,8 +341,8 @@ let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool)
 let draw_help s = 
   let img = Png.load_as_rgb24 "help.png" [] in
   let g = Graphic_image.of_image img in
-  Graphics.draw_image g ((size_x ())-30) (0);
-  (size_x () - 30, 0)
+  Graphics.draw_image g (0) (0);
+  (0, 0)
 
 (** [write_line str y] writes the line [str] in the center of the screen at 
     height [y]. *)
@@ -359,23 +359,25 @@ let help s =
   set_color white;
   fill_rect 100 100 400 440;
   set_color magenta;
-  write_line "Click Click Vengence" 490;
+  write_line "Click Click Vengence" 520;
   set_color black;
-  write_line "The objective of Click CLick Vengence" 450;
-  write_line "is to beat previous high scores: earn points by tapping" 420;
-  write_line "the corresponding key when the arrows reach the bottom row." 390;
-  write_line "Hits become more valuable as the game progresses." 360;
-  write_line "You can play alone or with a friend." 330;
-  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 300;
-  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 270;
-  write_line "There are 4  modes: easy, medium, hard, and endless."  240;
-  write_line "In easy, medium, and hard, play until the game ends" 210;
-  write_line "or you lose all your lives, whichever comes first." 180;
-  write_line "In enless mode, play untl you lose all 5 lives." 150;
-  write_line "Press space to pause, press 'q' to quit." 120;
+  write_line "The objective of Click CLick Vengence" 490;
+  write_line "is to beat previous high scores: earn points by tapping" 460;
+  write_line "the corresponding key when the arrows reach the bottom row." 430;
+  write_line "Hits become more valuable as the game progresses." 400;
+  write_line "You can play alone or with a friend." 370;
+  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 340;
+  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 310;
+  write_line "In signle player mode, use I (up), J (left), K (down), L (right)." 
+    280;
+  write_line "There are 4  modes: easy, medium, hard, and endless."  250;
+  write_line "In easy, medium, and hard, play until the game ends" 220;
+  write_line "or you lose all your lives, whichever comes first." 190;
+  write_line "In enless mode, play untl you lose all 5 lives." 160;
+  write_line "Press space to pause, press 'q' to quit." 130;
   set_color cyan;
-  write_line "GOOD LUCK!!!" 60;
-  (size_x () - 30, 0)
+  write_line "GOOD LUCK!!!" 100;
+  (0, 0)
 
 (** [draw_logo s] draws the logo. *)
 let draw_logo s = 
