@@ -155,7 +155,7 @@ and help s =
     then ()
     else help s
 
-(** [start_window s responds to user inputs into the starting screen *)
+(** [start_window s] responds to user inputs into the starting screen. *)
 and start_window s = 
   match Graphic.start_window s with
   | (b, h) ->  
@@ -178,7 +178,7 @@ and start_window s =
           then (help s; start_window s)
           else start_window s
 
-(** player_selection s responds to user inputs to give the number of players *)
+(** [player_selection s] responds to user inputs to give the number of players. *)
 and player_selection s =
   match Graphic.player_selection s with
   | (b1, b2, h) ->  
@@ -209,7 +209,7 @@ and player_selection s =
               then (help s; player_selection s)
               else player_selection s
 
-(** level_selection s responds to user inputs to give the level *)
+(** [level_selection s] responds to user inputs to give the level. *)
 and level_selection s = 
   match Graphic.level_selection s with
   | (b1, b2, b3, b4, h) ->  
@@ -265,4 +265,4 @@ and main () =
   print_endline level;
   play_game level num_players
 
-let () = main ()
+let () = main () 

@@ -269,15 +269,18 @@ let clear_bottom_row_graphics (matrix: cell list list) (player: player ref) =
     | _ -> failwith "bad matrix" in 
   if (!state.num_players = 2) then 
     if player = player_1_ref then
-      update_graphics_2 new_matrix !state.matrix !player_1_ref.score !player_1_ref.lives_remaining
-        (is_hot !player_1_ref.last_ten) !player_2_ref.score !player_2_ref.lives_remaining (is_hot !player_2_ref.last_ten) 
+      update_graphics_2 new_matrix !state.matrix !player_1_ref.score 
+        !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten) 
+        !player_2_ref.score !player_2_ref.lives_remaining
+        (is_hot !player_2_ref.last_ten) 
     else
-      update_graphics_2 !state.matrix new_matrix !player_1_ref.score !player_1_ref.lives_remaining
-        (is_hot !player_1_ref.last_ten) !player_2_ref.score !player_2_ref.lives_remaining (is_hot !player_2_ref.last_ten) 
+      update_graphics_2 !state.matrix new_matrix !player_1_ref.score 
+        !player_1_ref.lives_remaining(is_hot !player_1_ref.last_ten) 
+        !player_2_ref.score !player_2_ref.lives_remaining 
+        (is_hot !player_2_ref.last_ten) 
   else
-    update_graphics_1 new_matrix !player_1_ref.score !player_1_ref.lives_remaining
-      (is_hot !player_1_ref.last_ten);
-  print_endline "in botom"
+    update_graphics_1 new_matrix !player_1_ref.score
+      !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten)
 
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
@@ -449,40 +452,51 @@ let rec update_player inpt matrix p =
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
-  if inpt = "quit" then begin print_endline "quitted!"; quit_game () end 
-  else if !state.paused = true then 
-    if inpt = "resume" then resume_game (!state.beat-3) 
-    else pause_game !state.beat 
-  else if inpt = "pause" then pause_game (!state.beat-3) 
-  else let new_matrix = if inpt = "beat" && (!state.paused = false) 
-         then update_matrix () else !state.matrix in
-    if inpt = "beat" then 
-      begin 
-        update_player inpt new_matrix 1; 
-        update_player inpt new_matrix 2 
-      end
-    else
-      update_player inpt new_matrix plyr;
-    let new_state = {
-      matrix = new_matrix;
-      num_players = !state.num_players;
-      speed = if inpt = "beat" then increase_speed (!state.beat + 1) 
-        else !state.speed;
-      paused = !state.paused;
-      length = !state.length;
-      beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
-      players = !state.players;
-      base_increase = !state.base_increase;
-      health_beat = if (!state.beat mod 50 = 1) then
-          (!state.beat + Random.int 50) else
-          !state.health_beat
-    } 
-    in 
-    state := new_state;
-    update_graphics ();
-    if !player_1_ref.scored_this_arrow = true then
-      clear_bottom_row_graphics new_state.matrix player_1_ref;
-    if !player_2_ref.scored_this_arrow = true then
-      clear_bottom_row_graphics new_state.matrix player_2_ref
+  <<<<<<< HEAD
+    if inpt = "quit" then begin print_endline "quitted!"; quit_game () end 
+    else if !state.paused = true then 
+      if inpt = "resume" then resume_game (!state.beat-3) 
+      else pause_game !state.beat 
+    else if inpt = "pause" then pause_game (!state.beat-3) 
+    else let new_matrix = if inpt = "beat" && (!state.paused = false) 
+           then update_matrix () else !state.matrix in
+      =======
+      if inpt = "quit" then begin print_endline "quitted!"; quit_game () end else 
+      if !state.paused = true then 
+        if inpt = "resume" then resume_game (!state.beat-3) else 
+          pause_game !state.beat 
+      else
+      if inpt = "pause" then pause_game (!state.beat-3) else
+        let new_matrix = if inpt = "beat" && (!state.paused = false) then 
+            update_matrix () else !state.matrix in
+        >>>>>>> 9e3851c1fee2583b0328655984d4041e2d371867
+          if inpt = "beat" then 
+            begin 
+              update_player inpt new_matrix 1; 
+              update_player inpt new_matrix 2 
+            end
+          else
+            update_player inpt new_matrix plyr;
+        let new_state = {
+          matrix = new_matrix;
+          num_players = !state.num_players;
+          speed = if inpt = "beat" then increase_speed (!state.beat + 1) 
+            else !state.speed;
+          paused = !state.paused;
+          length = !state.length;
+          beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
+          players = !state.players;
+          base_increase = !state.base_increase;
+          health_beat = if (!state.beat mod 50 = 1) then
+              (!state.beat + Random.int 50) else
+              !state.health_beat
+        } 
+        in 
+        state := new_state;
+        update_graphics ();
+        if !player_1_ref.scored_this_arrow = true then
+          clear_bottom_row_graphics new_state.matrix player_1_ref;
+        if !player_2_ref.scored_this_arrow = true then
+          clear_bottom_row_graphics new_state.matrix player_2_ref
 
 
