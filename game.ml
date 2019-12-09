@@ -214,7 +214,7 @@ let double_icon_rows () =
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
 let generate_random_row () = 
-  if !state.beat mod 3 = 0 then health_rows ()
+  if !state.beat = !state.health_beat then health_rows ()
   else
     let len = if get_length () = max_int then 30 else get_length () in
     if !state.beat < len then single_icon_rows ()
