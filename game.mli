@@ -59,3 +59,5 @@ val set_state : matrix -> int -> float -> bool -> int -> unit
 val empty_matrix : matrix
 
 val test_matrix1 : matrix
+
+val test_health_matrix : matrix

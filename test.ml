@@ -16,8 +16,13 @@ type arrow = Left | Down | Up | Right | Health
 let lb = leaderboard := []; !leaderboard
 let new_lb = update_leaderboard 1.0; !leaderboard
 
-let rec update_x_times x inpt p = 
-  if x > 0 then update inpt p; update_x_times (x-1) inpt p
+let hot_streak_update x inpt p = 
+  for x = 1 to x do  
+    set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
+    update "left" 1;
+    update "left" 2;
+    update "beat" 2; 
+  done
 
 let one_player_tests = [
   "initial lives" >:: (fun _ -> (assert_equal 5 (get_lives 1)));
@@ -46,17 +51,17 @@ let beat_update_tests = [
 ]
 
 let speed_update_test1 = [
-  "speed is increased at beat 20" >:: (fun _ -> assert_equal 1.3 (get_bpm ())
+  "speed is increased at beat 20" >:: (fun _ -> assert_equal 1.3 (get_bpm ()) 
                                           ~printer:string_of_float);
 ]
 
 let speed_update_test2 = [
-  "speed is increased at beat 40" >:: (fun _ -> assert_equal (1.3*.1.3) (get_bpm ())
-                                          ~printer:string_of_float);
+  "speed is increased at beat 40" >:: (fun _ -> assert_equal (1.3*.1.3) 
+                                          (get_bpm ())~printer:string_of_float);
 ]
 
 let pause_update_tests = [
-  "speed doesn't change" >:: (fun _ -> assert_equal 1.0 (speed ())
+  "speed doesn't change" >:: (fun _ -> assert_equal 1.0 (speed ()) 
                                  ~printer:string_of_float);
   "score doesn't change p1" >:: (fun _ -> (assert_equal 0.0 (get_score 1)));
   "score doesn't change p2" >:: (fun _ -> (assert_equal 0.0 (get_score 2)));
@@ -71,10 +76,27 @@ let hit_tests = [
 ]
 
 let hotstreak_tests = [
-  "score should +2 p1" >:: (fun _ -> assert_equal 2.0 (get_score 1) 
+  "score should +2 p1" >:: (fun _ -> assert_equal 12.0 (get_score 1) 
                                ~printer:string_of_float);
-  "score should +2 p2" >:: (fun _ -> assert_equal 2.0 (get_score 2)
+  "score should +2 p2" >:: (fun _ -> assert_equal 12.0 (get_score 2)
                                ~printer:string_of_float);
+]
+
+let miss_tests = [
+  "score doesn't change p1" >:: (fun _ -> assert_equal 12.0 (get_score 1));
+  "score updates p2" >:: (fun _ -> assert_equal 14.0 (get_score 2)
+                             ~printer:string_of_float);
+  "p1 lives -1" >:: (fun _ -> assert_equal 4 (get_lives 1));
+]
+
+let hotstreak_end_tests = [
+  "p1 score increments by 1" >:: (fun _ -> assert_equal 13.0 (get_score 1));
+]
+
+let add_life_tests = [
+  "p1 lives +1" >:: (fun _ -> assert_equal 5 (get_lives 1)~printer:string_of_int);
+  "p1 score doesn't change" >:: (fun _ -> assert_equal 13.0 (get_score 1)
+                                    ~printer:string_of_float);
 ]
 
 let suite_one = "test suite one player" >::: one_player_tests 
@@ -85,6 +107,9 @@ let suite_speed1 = "test increase speed 1" >::: speed_update_test1
 let suite_speed2 = "test increase speed 2" >::: speed_update_test2
 let suite_hit = "test hit" >::: hit_tests
 let suite_hotstreak = "test hotstreak" >::: hotstreak_tests
+let suite_miss = "test miss" >::: miss_tests
+let suite_hotstreak_end = "test hotstreak end" >::: hotstreak_end_tests
+let suite_life = "test gaining life" >::: add_life_tests
 
 let _ = 
   init_state 1 60.0 60; 
@@ -113,39 +138,26 @@ let _ =
   update "left" 2;
   run_test_tt_main suite_hit;
   print_endline "done hits";
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  update "beat" 2;
-  print_endline (string_of_float (get_score 1));
-  update "left" 1;
-  update "left" 2;
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  print_endline (string_of_float (get_score 1));
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  print_endline (string_of_float (get_score 1));
-  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
-  update "left" 1;
-  update "left" 2;
-  print_endline (string_of_float (get_score 1));
+  hot_streak_update 11 "left" 2;
   run_test_tt_main suite_hotstreak;
   print_endline "done hotstreak";
+  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
+  update "right" 1;
+  update "left" 2;
+  update "beat" 2;
+  run_test_tt_main suite_miss;
+  print_endline "done miss";
+  set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
+  update "left" 1;
+  update "beat" 1;
+  run_test_tt_main suite_hotstreak_end;
+  print_endline "done hotstreak miss";
+  (* set_state test_health_matrix 2 (get_bpm ()) false (get_beat ());
+     update "left" 1;
+     update "beat" 1;
+     run_test_tt_main suite_life; *)
+
+
 
 
 

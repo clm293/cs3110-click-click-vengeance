@@ -132,6 +132,17 @@ let test_matrix1 = [
   [None; None; None; None];
   [Some Left; None; None; None];
 ]
+
+let test_health_matrix = [
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None]; 
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; Some Health; Some Health; Some Health];
+]
 (* END OF TESTING FUNCTIONS *)
 
 let init_state num bpm len = 
@@ -357,7 +368,6 @@ let rec resume_matrix m acc =
 
 (** [calc_score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
-  print_endline "calc_score";
   if !player.scored_this_arrow  then !player.score 
   else if !state.paused then !player.score
   else 
@@ -522,8 +532,7 @@ let rec update (inpt: string) (plyr: int): unit =
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
       players = !state.players;
-      base_increase = if !state.beat + 1 mod 15 = 0 
-        then !state.base_increase +. 0.1 else !state.base_increase;
+      base_increase = !state.base_increase;
       health_beat = if (!state.beat mod 50 = 1) then
           (!state.beat + Random.int 50) else
           !state.health_beat
