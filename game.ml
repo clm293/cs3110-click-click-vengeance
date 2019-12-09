@@ -455,9 +455,9 @@ let pause_game beat =
   } 
   in 
   (* if testing comment out the next two lines and uncomment the last line*)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  state := new_state;
+  update_graphics ()
+(* state := new_state *)
 
 (** [resume_game beat] resumes the game after being paused. *)
 let resume_game beat = 
@@ -474,9 +474,9 @@ let resume_game beat =
   } 
   in 
   (* if testing comment out the next two lines and uncomment the last line*)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  state := new_state;
+  update_graphics ()
+(* state := new_state *)
 
 let quit_game () = 
   let new_state = {
@@ -492,9 +492,9 @@ let quit_game () =
   } 
   in 
   (* if testing comment out the next two lines and uncomment the last line *)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  state := new_state;
+  update_graphics ()
+(* state := new_state *)
 
 (** [update_player i m p] updates the player state. *)
 let rec update_player inpt matrix p = 
@@ -548,11 +548,11 @@ let rec update (inpt: string) (plyr: int): unit =
     in 
     (* if testing comment out the next six lines and uncomment the last two 
        lines *)
-    (state := new_state;
-     update_graphics ();
-     if !player_1_ref.scored_this_arrow = true then
-       clear_bottom_row_graphics new_state.matrix player_1_ref;
-     if !player_2_ref.scored_this_arrow = true then
-       clear_bottom_row_graphics new_state.matrix player_2_ref;
-     state := new_state
+    state := new_state;
+    update_graphics ();
+    if !player_1_ref.scored_this_arrow = true then
+      clear_bottom_row_graphics new_state.matrix player_1_ref;
+    if !player_2_ref.scored_this_arrow = true then
+      clear_bottom_row_graphics new_state.matrix player_2_ref;
+    (* state := new_state *)
 
