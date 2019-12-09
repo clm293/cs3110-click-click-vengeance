@@ -65,7 +65,7 @@ and check_key_two press num_players =
   | 's' -> Game.update "down" 1; check_still_alive num_players
   | 'd' -> Game.update "right" 1; check_still_alive num_players
   | 'q' -> Game.update "quit" 2; Game.update "pause" 2; Graphic.quit(); 
-    if (wait_next_event[Key_pressed]).key = 'q' 
+    if (wait_next_event [Key_pressed]).key = 'q' 
     then (restart "YOU QUIT!" 2; ())
     else Game.update "resume" 2; check_still_alive num_players
   | ' ' -> Game.update "pause" 1; Graphic.pause ();
@@ -76,8 +76,9 @@ and check_key_two press num_players =
 (** [check_key_pressed press num_players] calls a function to update
     the game state on each player input. Then calls a function continue or end
     the game as indicated by the game state. *)
-and check_key_pressed press num_players= 
-  (* if Game.get_beat () = (Game.get_length ()-1) then Game.update "quit" num_players else *)
+and check_key_pressed press num_players = 
+  if Game.get_beat () = Game.get_length ()
+  then (Sys.set_signal Sys.sigalrm Sys.Signal_ignore; restart "YOU WIN" num_players) else
   if num_players = 1 then check_key_one press num_players
   else check_key_two press num_players
 
@@ -92,7 +93,7 @@ and call_update num_players num =
   if Game.get_beat () = Game.get_length ()
   then if num_players = 1 then restart "YOU WIN!" num_players else
       restart "BOTH PLAYERS WIN!" num_players
-  else set_timer (); Game.update "beat" num_players
+  else Game.update "beat" num_players; set_timer ()
 
 (** [play_game mode num_players] initializes the game with the appropriate 
     values given by the player via [mode] and [num_players] *)
@@ -134,8 +135,8 @@ and clicked b1x b1y click =
 (** [restart s num_players] uses the state to call graphics updates and 
     continue the game environment *)
 and restart s num_players = 
-  Game.update_leaderboard (Game.get_score 1);
-  if num_players = 2 then Game.update_leaderboard (Game.get_score 2);
+  Game.update_leaderboard (Game.final_score 1);
+  if num_players = 2 then Game.update_leaderboard (Game.final_score 2);
   let rec helper s = 
     match Graphic.restart s !Game.leaderboard with
     | (play_again, quit) ->  

@@ -375,27 +375,27 @@ let rec resume_matrix m acc =
    [None;None;None;None]] 
   |> List.rev_append (List.rev (remove_last_three m)) 
 
+let final_score p = 
+  if p = 1 
+  then !player_1_ref.score +. float_of_int (5 * !player_1_ref.lives_remaining) 
+  else !player_2_ref.score +. float_of_int (5 * !player_2_ref.lives_remaining)
+
 (** [calc_score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
   if !player.scored_this_arrow  then !player.score 
   else if !state.paused then !player.score
   else 
-    let new_score =
-      match is_hit inpt player with
-      | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
-        then (if is_hot (!player.last_ten)
-              then (!player.score +. (1.5 *. 2.0 *. !state.base_increase))
-              else !player.score +. (!state.base_increase *. 1.5))
-        else (if is_hot (!player.last_ten)
-              then !player.score +. (2.0 *. !state.base_increase) 
-              else !player.score +. !state.base_increase)
-      | HealthHit -> !player.score; 
-      | Miss -> !player.score
-      | Other -> !player.score
-    in 
-    if !state.length = !state.beat then new_score +.  float_of_int
-                                          (5 * !player.lives_remaining) 
-    else new_score
+    match is_hit inpt player with
+    | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
+      then (if is_hot (!player.last_ten)
+            then (!player.score +. (1.5 *. 2.0 *. !state.base_increase))
+            else !player.score +. (!state.base_increase *. 1.5))
+      else (if is_hot (!player.last_ten)
+            then !player.score +. (2.0 *. !state.base_increase) 
+            else !player.score +. !state.base_increase)
+    | HealthHit -> !player.score; 
+    | Miss -> !player.score
+    | Other -> !player.score
 
 (** [scored_this_arrow inpt new_score] is true if the player already scored 
     during this beat and false otherwise. *)

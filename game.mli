@@ -69,3 +69,6 @@ val test_matrix1 : matrix
 (** [test_health_matrix] is a test matrix with a health icon in the left 
     position of the bottom row. Used only for testing. *)
 val test_health_matrix : matrix
+
+(** [final_score p] is the final score of the player after the game has ended.*)
+val final_score : int -> float
