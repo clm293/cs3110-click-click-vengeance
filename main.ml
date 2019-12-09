@@ -5,31 +5,38 @@ type keey = Up | Down | Left | Right | Space
 
 type inpt = keey option
 
+(** [check_still_alive_1 np] checks if the player is still alive in a single
+    player game. *)
+let rec check_still_alive_1 num_players = 
+  if Game.get_lives 1 <= 0
+  then (Game.update "pause" num_players; restart "YOU LOSE!" num_players; ()) 
+  else if Game.get_beat () >= Game.get_length ()
+  then (Game.update "pause" num_players; restart "YOU WIN!" num_players; ())
+  else check_key_pressed (wait_next_event [Key_pressed]) num_players
+
+(** [check_still_alive_2 np] checks if both players are still alive in a 
+    multiplayer game.*)
+and check_still_alive_2 num_players = 
+  if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
+  && (Game.get_score 1 > Game.get_score 2) 
+  then (Game.update "pause" num_players; restart "PLAYER 1 WINS!" num_players; 
+        ())
+  else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
+       && (Game.get_score 1 < Game.get_score 2) 
+  then (Game.update "pause" num_players; restart "PLAYER 2 WINS!" num_players; 
+        ())
+  else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
+       && (Game.get_score 1 = Game.get_score 2)
+  then (Game.update "pause" num_players; restart "IT'S A TIE!" num_players; 
+        ())
+  else check_key_pressed (wait_next_event [Key_pressed]) 2
+
 (** [check_still_alive num_players] calls an end to the game if the conditions 
-    in the game state signal to do so.  Else continues the game with num_players. *)
-let rec check_still_alive num_players = 
-  if num_players = 2 then begin
-    if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-    && (Game.get_score 1 > Game.get_score 2) 
-    then (Game.update "pause" num_players; restart "PLAYER 1 WINS!" num_players; 
-          ())
-    else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-         && (Game.get_score 1 < Game.get_score 2) 
-    then (Game.update "pause" num_players; restart "PLAYER 2 WINS!" num_players; 
-          ())
-    else if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-         && (Game.get_score 1 = Game.get_score 2)
-    then (Game.update "pause" num_players; restart "IT'S A TIE!" num_players; 
-          ())
-    else check_key_pressed (wait_next_event [Key_pressed]) 2
-  end
-  else begin
-    if Game.get_lives 1 <= 0
-    then (Game.update "pause" num_players; restart "YOU LOSE!" num_players; ()) 
-    else if Game.get_beat () >= Game.get_length ()
-    then (Game.update "pause" num_players; restart "YOU WIN!" num_players; ())
-    else check_key_pressed (wait_next_event [Key_pressed]) num_players
-  end
+    in the game state signal to do so. Otherwise continues the game with 
+    num_players. *)
+and check_still_alive num_players = 
+  if num_players = 2 then check_still_alive_2 num_players
+  else check_still_alive_1 num_players
 
 (** [check_key_one press num_players] checks if a key was pressed for a single
     player game and updates the game accordingly. *)
@@ -73,6 +80,7 @@ and check_key_two press num_players =
     the game state on each player input. Then calls a function continue or end
     the game as indicated by the game state. *)
 and check_key_pressed press num_players= 
+  (* if Game.get_beat () = (Game.get_length ()-1) then Game.update "quit" num_players else *)
   if num_players = 1 then check_key_one press num_players
   else check_key_two press num_players
 
@@ -222,4 +230,5 @@ and main () =
   print_endline level;
   play_game level num_players
 
-let () = main ()
+(* TESTING_LINES: if you are testing, comment out the next line. *)
+let () = main ()  

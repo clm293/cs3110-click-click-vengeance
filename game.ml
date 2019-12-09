@@ -378,7 +378,7 @@ let calc_score inpt player =
       match is_hit inpt player with
       | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
         then (if is_hot (!player.last_ten)
-              then (print_endline "is_hot"; !player.score +. (1.5 *. 2.0 *. !state.base_increase))
+              then (!player.score +. (1.5 *. 2.0 *. !state.base_increase))
               else !player.score +. (!state.base_increase *. 1.5))
         else (if is_hot (!player.last_ten)
               then !player.score +. (2.0 *. !state.base_increase) 
@@ -458,10 +458,11 @@ let pause_game beat =
     health_beat = !state.health_beat
   } 
   in 
-  (* if testing comment out the next two lines and uncomment the last line*)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  (* TESTING_LINES: if testing comment out the next two lines and uncomment the 
+     last line*)
+  state := new_state;
+  update_graphics ()
+(* state := new_state *)
 
 (** [resume_game beat] resumes the game after being paused. *)
 let resume_game beat = 
@@ -478,9 +479,9 @@ let resume_game beat =
   } 
   in 
   (* if testing comment out the next two lines and uncomment the last line*)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  state := new_state;
+  update_graphics ()
+(* state := new_state *)
 
 let quit_game () = 
   let new_state = {
@@ -495,10 +496,11 @@ let quit_game () =
     health_beat =  !state.health_beat
   } 
   in 
-  (* if testing comment out the next two lines and uncomment the last line *)
+  (* TESTING_LINES: if testing comment out the next two lines and uncomment the 
+     last line *)
   state := new_state;
-  update_graphics () 
-(*state := new_state*)
+  update_graphics ()
+(* state := new_state *)
 
 (** [update_player i m p] updates the player state. *)
 let rec update_player inpt matrix p = 
@@ -550,13 +552,13 @@ let rec update (inpt: string) (plyr: int): unit =
           !state.health_beat
     } 
     in 
-    (* if testing comment out the next six lines and uncomment the last two 
-       lines *)
+    (* TESTING_LINES: if testing comment out the next six lines and uncomment 
+       the last two lines *)
     state := new_state;
     update_graphics ();
     if !player_1_ref.scored_this_arrow = true then
       clear_bottom_row_graphics new_state.matrix player_1_ref;
     if !player_2_ref.scored_this_arrow = true then
       clear_bottom_row_graphics new_state.matrix player_2_ref;
-    state := new_state
+    (* state := new_state *)
 

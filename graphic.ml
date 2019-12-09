@@ -341,8 +341,8 @@ let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool)
 let draw_help s = 
   let img = Png.load_as_rgb24 "help.png" [] in
   let g = Graphic_image.of_image img in
-  Graphics.draw_image g ((size_x ())-30) (0);
-  (size_x () - 30, 0)
+  Graphics.draw_image g (0) (0);
+  (0, 0)
 
 (** [write_line str y] writes the line [str] in the center of the screen at 
     height [y]. *)
@@ -359,7 +359,7 @@ let help s =
   set_color white;
   fill_rect 50 100 500 430;
   set_color magenta;
-  write_line "Click Click Vengence" 490;
+  write_line "Click Click Vengence" 520;
   set_color black;
   write_line "The objective of Click CLick Vengence" 450;
   write_line "is to beat previous high scores: earn points by tapping" 420;
@@ -374,8 +374,8 @@ let help s =
   write_line "In enless mode, play untl you lose all 5 lives." 150;
   write_line "Press space to pause, press 'q' to quit." 120;
   set_color cyan;
-  write_line "GOOD LUCK!!!" 60;
-  (size_x () - 30, 0)
+  write_line "GOOD LUCK!!!" 100;
+  (0, 0)
 
 (** [draw_logo s] draws the logo. *)
 let draw_logo s = 
@@ -410,7 +410,7 @@ let start_window s =
   resize_window 600 640;
   set_color black;
   fill_rect 0 0 600 640;
-  set_window_title "Tap Tap Revenge";
+  set_window_title "Click Click Vengeance";
   draw_logo s;
   (draw_button "Start" 250 150 magenta black, draw_help s)
 
