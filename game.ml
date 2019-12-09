@@ -95,6 +95,45 @@ let empty_matrix = [
   [None; None; None; None];
 ]
 
+(* TESTING FUNCTIONS *)
+(** [set_state m np s p b] sets the game state with the given arguments.
+    This function is used for testing. *)
+let set_state m np speed paused beat = 
+  state := {
+    matrix = m;
+    num_players = np;
+    speed = speed;
+    paused = paused;
+    length = !state.length;
+    beat = beat;
+    players = (!player_1_ref, None);
+    base_increase = !state.base_increase;
+    health_beat = !state.health_beat;
+  }
+
+let empty_matrix = [
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None]; 
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+]
+
+let test_matrix1 = [
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None];
+  [None; None; None; None]; 
+  [None; None; None; None];
+  [None; None; None; None];
+  [Some Left; None; None; None];
+]
+(* END OF TESTING FUNCTIONS *)
+
 let init_state num bpm len = 
   state := {
     matrix = empty_matrix;
@@ -124,6 +163,8 @@ let get_length () = !state.length
 
 let get_score player =
   if player = 1 then !player_1_ref.score else !player_2_ref.score
+
+let get_bpm () = !state.speed
 
 (** [double_rows] is a list of the possibilities of rows with two arrows. *)
 let double_rows = [
@@ -314,7 +355,7 @@ let rec resume_matrix m acc =
    [None;None;None;None]] 
   |> List.rev_append (List.rev (remove_last_three m)) 
 
-(** [calc-score inpt] is the score of the game, adjusted for hits and misses. *)
+(** [calc_score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
   if !player.scored_this_arrow  then !player.score 
   else if !state.paused then !player.score
@@ -322,7 +363,7 @@ let calc_score inpt player =
     begin
       match is_hit inpt player with
       | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
-        then (if is_hot (!player.last_ten )
+        then (if is_hot (!player.last_ten)
               then !player.score +. (1.5 *. 2.0 *. !state.base_increase) 
               else !player.score +. (!state.base_increase *. 1.5))
         else (if is_hot (!player.last_ten)
@@ -395,8 +436,10 @@ let pause_game beat =
     health_beat = !state.health_beat
   } 
   in 
-  state := new_state;
-  update_graphics ()
+  (* if testing comment out the next two lines and uncomment the last line*)
+  (* state := new_state;
+     update_graphics () *)
+  state := new_state
 
 (** [resume_game beat] resumes the game after being paused. *)
 let resume_game beat = 
@@ -412,8 +455,10 @@ let resume_game beat =
     health_beat = !state.health_beat
   } 
   in 
-  state := new_state;
-  update_graphics ()
+  (* if testing comment out the next two lines and uncomment the last line*)
+  (* state := new_state;
+     update_graphics () *)
+  state := new_state
 
 let quit_game () = 
   let new_state = {
@@ -428,8 +473,10 @@ let quit_game () =
     health_beat =  !state.health_beat
   } 
   in 
-  state := new_state;
-  update_graphics ()
+  (* if testing comment out the next two lines and uncomment the last line*)
+  (* state := new_state;
+     update_graphics () *)
+  state := new_state
 
 (** [update_player i m p] updates the player state. *)
 let rec update_player inpt matrix p = 
@@ -451,14 +498,13 @@ let rec update_player inpt matrix p =
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
-  if inpt = "quit" then begin print_endline "quitted!"; quit_game () end else 
-  if !state.paused = true then 
-    if inpt = "resume" then resume_game (!state.beat-3) else 
-      pause_game !state.beat 
-  else
-  if inpt = "pause" then pause_game (!state.beat-3) else
-    let new_matrix = if inpt = "beat" && (!state.paused = false) then 
-        update_matrix () else !state.matrix in
+  if inpt = "quit" then begin print_endline "quitted!"; quit_game () end 
+  else if !state.paused = true then 
+    if inpt = "resume" then resume_game (!state.beat-3) 
+    else pause_game !state.beat 
+  else if inpt = "pause" then pause_game (!state.beat-3) 
+  else let new_matrix = if inpt = "beat" && (!state.paused = false) 
+         then update_matrix () else !state.matrix in
     if inpt = "beat" then 
       begin 
         update_player inpt new_matrix 1; 
