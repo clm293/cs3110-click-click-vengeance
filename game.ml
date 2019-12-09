@@ -378,7 +378,7 @@ let calc_score inpt player =
       match is_hit inpt player with
       | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
         then (if is_hot (!player.last_ten)
-              then (print_endline "is_hot"; !player.score +. (1.5 *. 2.0 *. !state.base_increase))
+              then (!player.score +. (1.5 *. 2.0 *. !state.base_increase))
               else !player.score +. (!state.base_increase *. 1.5))
         else (if is_hot (!player.last_ten)
               then !player.score +. (2.0 *. !state.base_increase) 
@@ -454,7 +454,8 @@ let pause_game beat =
     health_beat = !state.health_beat
   } 
   in 
-  (* if testing comment out the next two lines and uncomment the last line*)
+  (* TESTING_LINES: if testing comment out the next two lines and uncomment the 
+     last line*)
   state := new_state;
   update_graphics ()
 (* state := new_state *)
@@ -483,7 +484,7 @@ let quit_game () =
     matrix = empty_matrix;
     num_players = !state.num_players;
     speed = !state.speed;
-    paused = false;
+    paused = true;
     length = !state.length;
     beat = 0;
     players = !state.players;
@@ -491,7 +492,8 @@ let quit_game () =
     health_beat =  !state.health_beat
   } 
   in 
-  (* if testing comment out the next two lines and uncomment the last line *)
+  (* TESTING_LINES: if testing comment out the next two lines and uncomment the 
+     last line *)
   state := new_state;
   update_graphics ()
 (* state := new_state *)
@@ -546,8 +548,8 @@ let rec update (inpt: string) (plyr: int): unit =
           !state.health_beat
     } 
     in 
-    (* if testing comment out the next six lines and uncomment the last two 
-       lines *)
+    (* TESTING_LINES: if testing comment out the next six lines and uncomment 
+       the last two lines *)
     state := new_state;
     update_graphics ();
     if !player_1_ref.scored_this_arrow = true then
