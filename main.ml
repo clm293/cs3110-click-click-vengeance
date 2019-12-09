@@ -99,13 +99,9 @@ and play_game mode num_players =
     let level = Level.from_json (Yojson.Basic.from_file mode) in
     print_endline (string_of_int (Level.length level));
     Game.init_state num_players (Level.bpm level) (Level.length level);
-    print_endline "after init state";
     Graphic.init_graphics "" num_players;
-    print_endline "after init graphics";
     set_timer ();
-    print_endline "after set timeer";
     Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
-    print_endline "after set signal";
     check_key_pressed (wait_next_event [Key_pressed]) num_players; ()
 
 (** [click_location click] is the x and y location of a user's click. *)
@@ -265,4 +261,4 @@ and main () =
   print_endline level;
   play_game level num_players
 
-let () = main () 
+(* let () = main ()  *)
