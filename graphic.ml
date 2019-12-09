@@ -277,7 +277,7 @@ let write_line str y =
     draw_string str;
     ()
 
-(** [help s] draws the help screen with the instructions. *)
+
 let help s = 
   set_color white;
   fill_rect 100 100 400 440;
