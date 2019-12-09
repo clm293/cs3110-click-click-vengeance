@@ -1,5 +1,6 @@
 (**
-   insert description
+   This module controls the interface between our game state and the OCaml
+   Graphics module.
 *)
 
 (** [update_graphics_2 matrix1 score1 lives1 hs1 matrix2 score2 lives2 hs2] 
