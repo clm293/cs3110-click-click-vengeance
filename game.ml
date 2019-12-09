@@ -380,7 +380,7 @@ let calc_score inpt player =
   if !player.scored_this_arrow  then !player.score 
   else if !state.paused then !player.score
   else 
-    begin
+    let new_score =
       match is_hit inpt player with
       | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
         then (if is_hot (!player.last_ten)
@@ -392,7 +392,10 @@ let calc_score inpt player =
       | HealthHit -> !player.score; 
       | Miss -> !player.score
       | Other -> !player.score
-    end
+    in 
+    if !state.length = !state.beat then new_score +.  float_of_int
+                                          (5 * !player.lives_remaining) 
+    else new_score
 
 (** [scored_this_arrow inpt new_score] is true if the player already scored 
     during this beat and false otherwise. *)
@@ -525,7 +528,7 @@ let rec update_player inpt matrix p =
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
-  if inpt = "quit" then begin print_endline "quitted!"; quit_game () end 
+  if inpt = "quit" then quit_game ()
   else if !state.paused = true then 
     if inpt = "resume" then resume_game (!state.beat-3) 
     else pause_game !state.beat 

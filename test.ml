@@ -10,7 +10,8 @@ open Level
     Most of our testing was done through game play though, to properly simulate real playing conditions and all possible combinations of different conditions throughout the game.
     Our graphics cannot be tested through unit tests, so that testing was done primarily though playing.
     We also couldn't test our main.ml functions because they mostly rely on input/output from the graphics and terminal.
-    We had friends play our game to maximize the extent of our testing.
+    We had friends play our game to maximize the extent of our testing,
+    as well as to ensure that our user experience was optimized.
 *)
 
 type arrow = Left | Down | Up | Right | Health 
@@ -116,45 +117,36 @@ let suite_life = "test gaining life" >::: add_life_tests
 let _ = 
   init_state 1 60.0 60; 
   run_test_tt_main suite_one;
-  print_endline "done single init";
   init_state 2 60.0 60;
   run_test_tt_main suite_two;
   print_endline (string_of_float (get_base_increase ()));
-  print_endline "done double init";
   update "beat" 1;
   run_test_tt_main suite_update_beat;
-  print_endline "done beat";
   update "pause" 1;
   run_test_tt_main suite_pause;
   update "beat" 1;
   run_test_tt_main suite_pause;
-  print_endline "done pause";
   set_state empty_matrix 2 1.0 false 19;
   update "beat" 1;
   run_test_tt_main suite_speed1;
   set_state empty_matrix 2 1.3 false 39;
   update "beat" 1;
   run_test_tt_main suite_speed2;
-  print_endline "done speed";
   set_state test_matrix1 2 1.0 false 0;
   update "left" 1;
   update "left" 2;
   run_test_tt_main suite_hit;
-  print_endline "done hits";
   hot_streak_update 11 "left" 2;
   run_test_tt_main suite_hotstreak;
-  print_endline "done hotstreak";
   set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
   update "right" 1;
   update "left" 2;
   update "beat" 2;
   run_test_tt_main suite_miss;
-  print_endline "done miss";
   set_state test_matrix1 2 (get_bpm ()) false (get_beat ());
   update "left" 1;
   update "beat" 1;
   run_test_tt_main suite_hotstreak_end;
-  print_endline "done hotstreak miss";
   set_state test_health_matrix 2 (get_bpm ()) false (get_beat ());
   update "left" 1;
   update "beat" 1;

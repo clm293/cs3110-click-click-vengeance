@@ -1,13 +1,13 @@
 (**
-   Representation of static song data.
+   Representation of static level data.
 
-   This module represents the data stored in song files. It handles loading of 
+   This module represents the data stored in level files. It handles loading of 
    that data from JSON as well as querying the data.
 *)
 
 type difficulty = Easy | Med | Hard
 
-(** The abstract type of values representing songs. *)
+(** The abstract type of values representing levels. *)
 type t
 
 (** [from_json j] is the level that [j] represents.

@@ -357,24 +357,22 @@ let write_line str y =
 (** [help s] draws the help screen that appears with game instructions. *)
 let help s = 
   set_color white;
-  fill_rect 100 100 400 440;
+  fill_rect 50 100 500 430;
   set_color magenta;
   write_line "Click Click Vengence" 520;
   set_color black;
-  write_line "The objective of Click CLick Vengence" 490;
-  write_line "is to beat previous high scores: earn points by tapping" 460;
-  write_line "the corresponding key when the arrows reach the bottom row." 430;
-  write_line "Hits become more valuable as the game progresses." 400;
-  write_line "You can play alone or with a friend." 370;
-  write_line "Player 1 will use W (up), A (left), S (down), D (right)." 340;
-  write_line "Player 2 will use I (up), J (left), K (down), L (right)." 310;
-  write_line "In signle player mode, use I (up), J (left), K (down), L (right)." 
-    280;
-  write_line "There are 4  modes: easy, medium, hard, and endless."  250;
-  write_line "In easy, medium, and hard, play until the game ends" 220;
-  write_line "or you lose all your lives, whichever comes first." 190;
-  write_line "In enless mode, play untl you lose all 5 lives." 160;
-  write_line "Press space to pause, press 'q' to quit." 130;
+  write_line "The objective of Click CLick Vengence" 450;
+  write_line "is to beat previous high scores: earn points by tapping" 420;
+  write_line "the corresponding key when the arrows reach the bottom row." 390;
+  write_line "Hits become more valuable as the game progresses and increases in difficulty, " 360;
+  write_line "and extra points are awarded for leftover lives at the end of the game." 330;
+  write_line "There are 4  modes: easy, medium, hard, and endless -- play alone or with a friend"  300;
+  write_line "In double player, Player 1 will use W (up), A (left), S (down), D (right)." 270;
+  write_line "Player 2 will use I (up), J (left), K (down), L (right) -- IJKL are used in solo." 240;
+  write_line "In easy, medium, and hard, play until the game ends" 210;
+  write_line "or you lose all your lives, whichever comes first." 180;
+  write_line "In enless mode, play untl you lose all 5 lives." 150;
+  write_line "Press space to pause, press 'q' to quit." 120;
   set_color cyan;
   write_line "GOOD LUCK!!!" 100;
   (0, 0)
