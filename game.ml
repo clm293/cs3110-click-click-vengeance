@@ -548,11 +548,11 @@ let rec update (inpt: string) (plyr: int): unit =
     in 
     (* if testing comment out the next six lines and uncomment the last two 
        lines *)
-    (* state := new_state;
-       update_graphics ();
-       if !player_1_ref.scored_this_arrow = true then
+    (state := new_state;
+     update_graphics ();
+     if !player_1_ref.scored_this_arrow = true then
        clear_bottom_row_graphics new_state.matrix player_1_ref;
-       if !player_2_ref.scored_this_arrow = true then
-       clear_bottom_row_graphics new_state.matrix player_2_ref *)
-    state := new_state
+     if !player_2_ref.scored_this_arrow = true then
+       clear_bottom_row_graphics new_state.matrix player_2_ref;
+     state := new_state
 
