@@ -143,6 +143,10 @@ let test_health_matrix = [
   [None; None; None; None];
   [None; Some Health; Some Health; Some Health];
 ]
+
+let get_bpm () = !state.speed
+
+let get_base_increase () = !state.base_increase
 (* END OF TESTING FUNCTIONS *)
 
 let init_state num bpm len = 
@@ -175,7 +179,7 @@ let get_length () = !state.length
 let get_score player =
   if player = 1 then !player_1_ref.score else !player_2_ref.score
 
-let get_bpm () = !state.speed
+
 
 (** [double_rows] is a list of the possibilities of rows with two arrows. *)
 let double_rows = [
@@ -403,7 +407,11 @@ let lives_remaining inpt new_matrix p =
         else !player.lives_remaining + addlife)
 
 let increase_speed beat = 
-  if (beat mod 20 = 0) then !state.speed *. 1.3 else !state.speed
+  if beat mod 20 = 0 && beat <> 0 then !state.speed *. 1.3 else !state.speed
+
+let increase_base beat = 
+  if beat mod 20 = 0 && beat <> 0
+  then 0.1 +. !state.base_increase else !state.base_increase
 
 let update_leaderboard (score:float) = 
   leaderboard := (score::!leaderboard) 
@@ -484,7 +492,7 @@ let quit_game () =
     health_beat =  !state.health_beat
   } 
   in 
-  (* if testing comment out the next two lines and uncomment the last line*)
+  (* if testing comment out the next two lines and uncomment the last line *)
   (* state := new_state;
      update_graphics () *)
   state := new_state
@@ -532,18 +540,20 @@ let rec update (inpt: string) (plyr: int): unit =
       length = !state.length;
       beat = if inpt = "beat" then !state.beat + 1 else !state.beat;
       players = !state.players;
-      base_increase = if (!state.beat mod 20) = 0 && (!state.beat <> 0) 
-        then 0.1 +. (!state.base_increase) else !state.base_increase;
+      base_increase = if inpt = "beat" then increase_base (!state.beat + 1) 
+        else !state.base_increase;
       health_beat = if (!state.beat mod 50 = 1) then
           (!state.beat + Random.int 50) else
           !state.health_beat
     } 
     in 
-    state := new_state;
-    update_graphics ();
-    if !player_1_ref.scored_this_arrow = true then
-      clear_bottom_row_graphics new_state.matrix player_1_ref;
-    if !player_2_ref.scored_this_arrow = true then
-      clear_bottom_row_graphics new_state.matrix player_2_ref
-
+    (* if testing comment out the next six lines and uncomment the last two 
+       lines *)
+    (* state := new_state;
+       update_graphics ();
+       if !player_1_ref.scored_this_arrow = true then
+       clear_bottom_row_graphics new_state.matrix player_1_ref;
+       if !player_2_ref.scored_this_arrow = true then
+       clear_bottom_row_graphics new_state.matrix player_2_ref *)
+    state := new_state
 

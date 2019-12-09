@@ -53,6 +53,8 @@ let beat_update_tests = [
 let speed_update_test1 = [
   "speed is increased at beat 20" >:: (fun _ -> assert_equal 1.3 (get_bpm ()) 
                                           ~printer:string_of_float);
+  "base increase" >:: (fun _ -> assert_equal 1.1 (get_base_increase ())
+                          ~printer:string_of_float)
 ]
 
 let speed_update_test2 = [
@@ -69,28 +71,26 @@ let pause_update_tests = [
 ]
 
 let hit_tests = [
-  "score should +1 p1" >:: (fun _ -> assert_equal 1.0 (get_score 1)
-                               ~printer:string_of_float);
-  "score should +1 p2" >:: (fun _ -> assert_equal 1.0 (get_score 2)
-                               ~printer:string_of_float);
+  "score should +1 p1" >:: (fun _ -> assert_equal (string_of_float 1.2) (string_of_float (get_score 1)));
+  "score should +1 p2" >:: (fun _ -> assert_equal (string_of_float 1.2) (string_of_float (get_score 2)));
 ]
 
 let hotstreak_tests = [
-  "score should +2 p1" >:: (fun _ -> assert_equal 12.0 (get_score 1) 
+  "score should +2 p1" >:: (fun _ -> assert_equal 14.4 (get_score 1) 
                                ~printer:string_of_float);
-  "score should +2 p2" >:: (fun _ -> assert_equal 12.0 (get_score 2)
+  "score should +2 p2" >:: (fun _ -> assert_equal 14.4 (get_score 2)
                                ~printer:string_of_float);
 ]
 
 let miss_tests = [
-  "score doesn't change p1" >:: (fun _ -> assert_equal 12.0 (get_score 1));
-  "score updates p2" >:: (fun _ -> assert_equal 14.0 (get_score 2)
+  "score doesn't change p1" >:: (fun _ -> assert_equal 14.4 (get_score 1));
+  "score updates p2" >:: (fun _ -> assert_equal 16.8 (get_score 2)
                              ~printer:string_of_float);
   "p1 lives -1" >:: (fun _ -> assert_equal 4 (get_lives 1));
 ]
 
 let hotstreak_end_tests = [
-  "p1 score increments by 1" >:: (fun _ -> assert_equal 13.0 (get_score 1));
+  "p1 score increments by 1" >:: (fun _ -> assert_equal (string_of_float 15.6) (string_of_float (get_score 1)));
 ]
 
 let add_life_tests = [
@@ -117,6 +117,7 @@ let _ =
   print_endline "done single init";
   init_state 2 60.0 60;
   run_test_tt_main suite_two;
+  print_endline (string_of_float (get_base_increase ()));
   print_endline "done double init";
   update "beat" 1;
   run_test_tt_main suite_update_beat;

@@ -34,6 +34,9 @@ val get_score : int -> float
 (** [get_bpm ()] is the bpm of the game. *)
 val get_bpm : unit -> float
 
+(** [get_bpm ()] is the current base score increase of the game. *)
+val get_base_increase : unit -> float
+
 (** [init_state num bpm len] is the initial state of a new game. *)
 val init_state : int -> float -> int -> unit
 
