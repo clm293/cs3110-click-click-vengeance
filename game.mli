@@ -3,6 +3,8 @@
    This module handles all scoring, music, and game data.
 *)
 
+type matrix
+
 (** The abstract type of values representing game state. *)
 type t 
 
@@ -29,6 +31,9 @@ val get_length : unit -> int
 (** [get_score p] is the score of player [p]. *)
 val get_score : int -> float
 
+(** [get_bpm ()] is the bpm of the game. *)
+val get_bpm : unit -> float
+
 (** [init_state num bpm len] is the initial state of a new game. *)
 val init_state : int -> float -> int -> unit
 
@@ -46,3 +51,11 @@ val increase_speed : int -> float
 
 (** [update_leaderboard score] is the new leaderboard with [score] added on. *)
 val update_leaderboard : float -> unit
+
+(** [set_state np s p b] sets the game state with the given arguments.
+    This function is used for testing. *)
+val set_state : matrix -> int -> float -> bool -> int -> unit
+
+val empty_matrix : matrix
+
+val test_matrix1 : matrix

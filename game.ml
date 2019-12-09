@@ -357,6 +357,7 @@ let rec resume_matrix m acc =
 
 (** [calc_score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
+  print_endline "calc_score";
   if !player.scored_this_arrow  then !player.score 
   else if !state.paused then !player.score
   else 
@@ -364,7 +365,7 @@ let calc_score inpt player =
       match is_hit inpt player with
       | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
         then (if is_hot (!player.last_ten)
-              then !player.score +. (1.5 *. 2.0 *. !state.base_increase) 
+              then (print_endline "is_hot"; !player.score +. (1.5 *. 2.0 *. !state.base_increase))
               else !player.score +. (!state.base_increase *. 1.5))
         else (if is_hot (!player.last_ten)
               then !player.score +. (2.0 *. !state.base_increase) 
