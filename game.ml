@@ -2,7 +2,7 @@ open Graphics
 open Graphic
 
 (** [arrow] is the type of values representing an arrow on the screen. *)
-type arrow = Left | Down | Up | Right | Health
+type arrow = Left | Down | Up | Right | Health 
 
 (** The type of values representing a cell in the game matrix. *)
 type cell = arrow option
@@ -181,7 +181,7 @@ let generate_random_row () =
 
 (** [is_hot lst] is true if the previous 10 presses were hits. *)
 let is_hot lst = 
-  lst = [Hit; Hit; Hit; Hit; Hit; Hit; Hit; Hit; Hit; Hit]
+  not (List.mem Miss lst)
 
 (** [bottom_row m] is the bottom row of the matrix [m] *)
 let bottom_row m = 
@@ -263,6 +263,22 @@ let is_single_hit inpt =
   | "" -> Other
   | _ -> Miss
 
+let clear_bottom_row_graphics (matrix: cell list list) (player: player ref) = 
+  let new_matrix = match List.rev matrix with
+    | h :: t -> List.rev_append t [[None; None; None; None]]
+    | _ -> failwith "bad matrix" in 
+  if (!state.num_players = 2) then 
+    if player = player_1_ref then
+      update_graphics_2 new_matrix !state.matrix !player_1_ref.score !player_1_ref.lives_remaining
+        (is_hot !player_1_ref.last_ten) !player_2_ref.score !player_2_ref.lives_remaining (is_hot !player_2_ref.last_ten) 
+    else
+      update_graphics_2 !state.matrix new_matrix !player_1_ref.score !player_1_ref.lives_remaining
+        (is_hot !player_1_ref.last_ten) !player_2_ref.score !player_2_ref.lives_remaining (is_hot !player_2_ref.last_ten) 
+  else
+    update_graphics_1 new_matrix !player_1_ref.score !player_1_ref.lives_remaining
+      (is_hot !player_1_ref.last_ten);
+  print_endline "in botom"
+
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
     A tap is accurate if it is hit at the correct time and position. *)
 let is_hit inpt player = 
@@ -279,6 +295,7 @@ let update_matrix () =
   match List.rev !state.matrix with
   | h :: t -> (generate_random_row ())::(List.rev t)
   | _ -> failwith "bad matrix"
+
 
 (** [remove_last_three m] removes the last rows of the matrix [m]. *)
 let rec remove_last_three m = 
@@ -309,7 +326,7 @@ let calc_score inpt player =
         else (if is_hot (!player.last_ten)
               then !player.score +. (2.0 *. !state.base_increase) 
               else !player.score +. !state.base_increase)
-      | HealthHit -> !player.score
+      | HealthHit -> !player.score; 
       | Miss -> !player.score
       | Other -> !player.score
     end
@@ -349,7 +366,7 @@ let update_graphics () =
   else if !state.paused = true then () 
   else 
     begin 
-      Graphic.update_graphics_2 !state.matrix !player_1_ref.score 
+      Graphic.update_graphics_2 !state.matrix !state.matrix !player_1_ref.score 
         !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) 
         !player_2_ref.score 
         !player_2_ref.lives_remaining (is_hot (!player_2_ref.last_ten)) 
@@ -462,4 +479,10 @@ let rec update (inpt: string) (plyr: int): unit =
     } 
     in 
     state := new_state;
-    update_graphics () 
+    update_graphics ();
+    if !player_1_ref.scored_this_arrow = true then
+      clear_bottom_row_graphics new_state.matrix player_1_ref;
+    if !player_2_ref.scored_this_arrow = true then
+      clear_bottom_row_graphics new_state.matrix player_2_ref
+
+
