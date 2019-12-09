@@ -324,4 +324,4 @@ and main () =
   print_endline level;
   play_game level num_players
 
-(* let () = main ()  *)
+let () = main ()  
