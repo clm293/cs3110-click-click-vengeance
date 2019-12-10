@@ -220,7 +220,7 @@ let rec generate_random_row () =
   if !state.beat = !state.health_beat then health_rows ()
   else
     let len = if get_length () = max_int then 90 else get_length () in
-    let new_row = if !state.beat < len/3 then  single_icon_rows ()
+    let new_row = if !state.beat < len/3 then single_icon_rows ()
       else double_icon_rows () in
     if !state.beat = 0 then
       match new_row with
@@ -322,19 +322,17 @@ let clear_bottom_row_graphics (matrix: cell list list) (player: player ref) =
   let new_matrix = match List.rev matrix with
     | h :: t -> List.rev_append t [[None; None; None; None]]
     | _ -> failwith "bad matrix" in 
-  if (!state.num_players = 2) then 
+  if !state.num_players = 2 then 
     if player = player_1_ref then
       update_graphics_2 new_matrix !state.matrix !player_1_ref.score 
         !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten) 
         !player_2_ref.score !player_2_ref.lives_remaining
         (is_hot !player_2_ref.last_ten) 
-    else
-      update_graphics_2 !state.matrix new_matrix !player_1_ref.score 
+    else update_graphics_2 !state.matrix new_matrix !player_1_ref.score 
         !player_1_ref.lives_remaining(is_hot !player_1_ref.last_ten) 
         !player_2_ref.score !player_2_ref.lives_remaining 
         (is_hot !player_2_ref.last_ten) 
-  else
-    update_graphics_1 new_matrix !player_1_ref.score
+  else update_graphics_1 new_matrix !player_1_ref.score
       !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten)
 
 (** [is_hit t inpt] is whether or not the player's tap is accurate. 
@@ -380,13 +378,13 @@ let calc_score inpt player =
   else if !state.paused then !player.score
   else 
     match is_hit inpt player with
-    | Hit -> if (List.mem (bottom_row !state.matrix) double_rows)
-      then (if is_hot (!player.last_ten)
-            then (!player.score +. (1.5 *. 2.0 *. !state.base_increase))
-            else !player.score +. (!state.base_increase *. 1.5))
-      else (if is_hot (!player.last_ten)
-            then !player.score +. (2.0 *. !state.base_increase) 
-            else !player.score +. !state.base_increase)
+    | Hit -> if List.mem (bottom_row !state.matrix) double_rows
+      then if is_hot !player.last_ten
+        then !player.score +. (1.5 *. 2.0 *. !state.base_increase)
+        else !player.score +. (!state.base_increase *. 1.5)
+      else if is_hot (!player.last_ten)
+      then !player.score +. (2.0 *. !state.base_increase) 
+      else !player.score +. !state.base_increase
     | HealthHit -> !player.score; 
     | Miss -> !player.score
     | Other -> !player.score
@@ -395,19 +393,19 @@ let calc_score inpt player =
     during this beat and false otherwise. *)
 let scored_this_arrow inpt new_score player = 
   if inpt = "beat" then false 
-  else (if player.scored_this_arrow = true then true else 
-        if (new_score <> player.score) then true else false)
+  else if player.scored_this_arrow = true then true 
+  else new_score <> player.score
 
 (** [lives_remaining inpt] is the number of remaining lives the player has. *)
 let lives_remaining inpt new_matrix p = 
   let player = if p = 1 then player_1_ref else player_2_ref in
-  let addlife = if (is_hit inpt player) = HealthHit && 
+  let addlife = if is_hit inpt player = HealthHit && 
                    !player.lives_remaining < 6 then 1 else 0 in
-  if (List.mem (bottom_row new_matrix) double_rows) &&
+  if List.mem (bottom_row new_matrix) double_rows &&
      !player.first_of_double = "" then !player.lives_remaining 
-  else (if inpt <> "beat" && (is_hit inpt player = Miss) then
-          !player.lives_remaining - 1 + addlife
-        else !player.lives_remaining + addlife)
+  else if inpt <> "beat" && is_hit inpt player = Miss then
+    !player.lives_remaining - 1 + addlife
+  else !player.lives_remaining + addlife
 
 let increase_speed beat = 
   if beat mod 20 = 0 && beat <> 0 then !state.speed *. 1.3 else !state.speed
@@ -426,21 +424,21 @@ let update_graphics () =
     begin 
       if !state.paused = true then ()
       else Graphic.update_graphics_1 !state.matrix !player_1_ref.score 
-          !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) 
+          !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten) 
     end
   else if !state.paused = true then () 
   else 
     begin 
       Graphic.update_graphics_2 !state.matrix !state.matrix !player_1_ref.score 
-        !player_1_ref.lives_remaining (is_hot (!player_1_ref.last_ten)) 
+        !player_1_ref.lives_remaining (is_hot !player_1_ref.last_ten) 
         !player_2_ref.score 
-        !player_2_ref.lives_remaining (is_hot (!player_2_ref.last_ten)) 
+        !player_2_ref.lives_remaining (is_hot !player_2_ref.last_ten) 
     end
 
 (* [update_last_ten i player m] is the 10 most recent press results, with the most 
    recent being the last element of the list*)
 let update_last_ten inpt player matrix = 
-  let p = (is_hit inpt player) in
+  let p = is_hit inpt player in
   if inpt <> "beat" && !player.scored_this_arrow = false
      && not (List.mem (bottom_row matrix) double_rows 
              && !player.first_of_double = "") 
