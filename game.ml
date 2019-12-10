@@ -230,8 +230,8 @@ let generate_random_row () =
   if !state.beat > !state.length - 8 then [None;None;None;None] else
   if !state.beat = !state.health_beat then health_rows ()
   else
-    let len = if get_length () = max_int then 30 else get_length () in
-    if !state.beat < len then single_icon_rows ()
+    let len = if get_length () = max_int then 90 else get_length () in
+    if !state.beat < len/3 then single_icon_rows ()
     else double_icon_rows ()
 
 (** [is_hot lst] is true if the previous 10 presses were hits. *)
@@ -377,8 +377,8 @@ let rec resume_matrix m acc =
 
 let final_score p = 
   if p = 1 
-  then !player_1_ref.score +. float_of_int (5 * !player_1_ref.lives_remaining) -. 1.
-  else !player_2_ref.score +. float_of_int (5 * !player_2_ref.lives_remaining) -. 1.
+  then !player_1_ref.score +. float_of_int (5 * !player_1_ref.lives_remaining)
+  else !player_2_ref.score +. float_of_int (5 * !player_2_ref.lives_remaining) 
 
 (** [calc_score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
@@ -466,9 +466,9 @@ let pause_game beat =
   in 
   (* TESTING_LINES: if testing comment out the next two lines and uncomment the 
      last line*)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  state := new_state;
+  update_graphics () 
+(*state := new_state*)
 
 (** [resume_game beat] resumes the game after being paused. *)
 let resume_game beat = 
@@ -560,11 +560,11 @@ let rec update (inpt: string) (plyr: int): unit =
     in 
     (* TESTING_LINES: if testing comment out the next six lines and uncomment 
        the last two lines *)
-    (* state := new_state;
-       update_graphics ();
-       if !player_1_ref.scored_this_arrow = true then
-       clear_bottom_row_graphics new_state.matrix player_1_ref;
-       if !player_2_ref.scored_this_arrow = true then
-       clear_bottom_row_graphics new_state.matrix player_2_ref; *)
-    state := new_state
+    state := new_state;
+    update_graphics ();
+    if !player_1_ref.scored_this_arrow = true then
+      clear_bottom_row_graphics new_state.matrix player_1_ref;
+    if !player_2_ref.scored_this_arrow = true then
+      clear_bottom_row_graphics new_state.matrix player_2_ref; 
+    (* state := new_state*)
 
