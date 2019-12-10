@@ -226,13 +226,18 @@ let double_icon_rows () =
 
 (** [generate_random_row ()] is a row with an arrow in a randomly generated 
     position *)
-let generate_random_row () = 
+let rec generate_random_row () = 
   if !state.beat > !state.length - 8 then [None;None;None;None] else
   if !state.beat = !state.health_beat then health_rows ()
   else
     let len = if get_length () = max_int then 90 else get_length () in
-    if !state.beat < len/3 then single_icon_rows ()
-    else double_icon_rows ()
+    let new_row = if !state.beat < len/3 then  single_icon_rows ()
+      else double_icon_rows () in
+    if !state.beat = 0 then
+      match new_row with
+      | [None;None;None;None] -> generate_random_row ()
+      | _ -> new_row
+    else new_row 
 
 (** [is_hot lst] is true if the previous 10 presses were hits. *)
 let is_hot lst = 
@@ -528,7 +533,6 @@ let rec update_player inpt matrix p =
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
-  print_endline (string_of_int (!state.beat));
   if inpt = "quit" then quit_game ()
   else if !state.paused = true then 
     if inpt = "resume" then resume_game (!state.beat-3) 

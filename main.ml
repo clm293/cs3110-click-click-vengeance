@@ -15,16 +15,16 @@ let check_win_string () =
     player game. *)
 let rec check_still_alive_1 num_players = 
   if Game.get_lives 1 <= 0
-  then (Game.update "pause" num_players; restart "YOU LOSE!" num_players; ()) 
+  then (Game.update "quit" num_players; restart "YOU LOSE!" num_players; ()) 
   else if Game.get_beat () >= Game.get_length ()
-  then (Game.update "pause" num_players; restart "YOU WIN!" num_players; ())
+  then (Game.update "quit" num_players; restart "YOU WIN!" num_players; ())
   else check_key_pressed (wait_next_event [Key_pressed]) num_players
 
 (** [check_still_alive_2 np] checks if both players are still alive in a 
     multiplayer game.*)
 and check_still_alive_2 num_players = 
   if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-  then (Game.update "pause" num_players; restart (check_win_string ())
+  then (Game.update "quit" num_players; restart (check_win_string ())
           num_players; ())
   else check_key_pressed (wait_next_event [Key_pressed]) 2
 
@@ -64,7 +64,7 @@ and check_key_two press num_players =
   | 'a' -> Game.update "left" 1; check_still_alive num_players
   | 's' -> Game.update "down" 1; check_still_alive num_players
   | 'd' -> Game.update "right" 1; check_still_alive num_players
-  | 'q' -> Game.update "quit" 2; Game.update "pause" 2; Graphic.quit(); 
+  | 'q' -> Game.update "quit" 2; Game.update "quit" 2; Graphic.quit(); 
     if (wait_next_event [Key_pressed]).key = 'q' 
     then (restart "YOU QUIT!" 2; ())
     else Game.update "resume" 2; check_still_alive num_players
