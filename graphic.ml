@@ -369,7 +369,7 @@ let help s =
                ^ "in difficulty, ") 360;
   write_line ("and extra points are awarded for leftover lives at the end of "
               ^ "the game.") 330;
-  write_line ("There are 4  modes: easy, medium, hard, and endless -- play"
+  write_line ("There are 4 modes: easy, medium, hard, and endless -- play"
               ^ " alone or with a friend")  300;
   write_line ("In double player, Player 1 will use W (up), A (left), S (down),"
               ^ " D (right).") 270;
