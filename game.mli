@@ -1,6 +1,7 @@
 (** 
    Controls all game functions.
-   This module handles all scoring, music, and game data.
+   This module represents the state of the game throughout game play, 
+   including initializaitons, updates, and each players' state.
 *)
 
 type matrix
