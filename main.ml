@@ -78,7 +78,8 @@ and check_key_two press num_players =
     the game as indicated by the game state. *)
 and check_key_pressed press num_players = 
   (* if Game.get_beat () = Game.get_length ()
-     then (Sys.set_signal Sys.sigalrm Sys.Signal_ignore; restart "YOU WIN" num_players; ()) else *)
+     then (Sys.set_signal Sys.sigalrm Sys.Signal_ignore; restart "YOU WIN" 
+     num_players; ()) else *)
   if num_players = 1 then check_key_one press num_players
   else check_key_two press num_players
 
@@ -107,7 +108,6 @@ and play_game mode num_players =
     check_key_pressed (wait_next_event [Key_pressed]) num_players; ()
   | _ -> 
     let level = Level.from_json (Yojson.Basic.from_file mode) in
-    print_endline (string_of_int (Level.length level));
     Game.init_state num_players (Level.bpm level) (Level.length level);
     Graphic.init_graphics "" num_players;
     set_timer ();
@@ -152,8 +152,6 @@ and main () =
   start_window "";
   let num_players = player_selection "" in 
   let level = level_selection "" in
-  print_int num_players;
-  print_endline level;
   play_game level num_players
 
 (* TESTING_LINES: if you are testing, comment out the next line. *)
