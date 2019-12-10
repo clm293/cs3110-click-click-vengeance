@@ -84,17 +84,6 @@ let init_player p =
       first_of_double = "";
     }
 
-let empty_matrix = [
-  [None; None; None; None];
-  [None; None; None; None];
-  [None; None; None; None];
-  [None; None; None; None];
-  [None; None; None; None]; 
-  [None; None; None; None];
-  [None; None; None; None];
-  [None; None; None; None];
-]
-
 (* TESTING FUNCTIONS *)
 (** [set_state m np s p b] sets the game state with the given arguments.
     This function is used for testing. *)
@@ -297,7 +286,7 @@ let is_double_hit sec_inpt player =
     | _, "" -> Other
     | _ -> Miss
 
-(** [is_health_hit i] is a [HealthHit] if there is a hit in the bottom row when 
+(** [is_health_hit inpt] is a [HealthHit] if there is a hit in the bottom row when 
     there is a health icon and [Miss] otherwise.*)
 let is_health_hit inpt = 
   match inpt with
@@ -448,12 +437,17 @@ let update_graphics () =
         !player_2_ref.lives_remaining (is_hot (!player_2_ref.last_ten)) 
     end
 
-(* [update_last_ten p lst] is the 10 most recent press results, with the most 
+(* [update_last_ten i player m] is the 10 most recent press results, with the most 
    recent being the last element of the list*)
-let update_last_ten (p:press) (lst: press list) = 
-  match lst with
-  | h::t -> List.concat [t; [p]]
-  | _ -> failwith "invalid list"
+let update_last_ten inpt player matrix = 
+  let p = (is_hit inpt player) in
+  if inpt <> "beat" && !player.scored_this_arrow = false
+     && not (List.mem (bottom_row matrix) double_rows 
+             && !player.first_of_double = "") 
+  then match !player.last_ten with
+    | h::t -> List.concat [t; [p]]
+    | _ -> failwith "invalid list"
+  else !player.last_ten
 
 (** [pause_game beat] pauses the game. *)
 let pause_game beat = 
@@ -490,9 +484,9 @@ let resume_game beat =
   } 
   in 
   (* if testing comment out the next two lines and uncomment the last line*)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  state := new_state;
+  update_graphics ()
+(* state := new_state *)
 
 let quit_game () = 
   let new_state = {
@@ -522,14 +516,11 @@ let rec update_player inpt matrix p =
     score = new_score;
     scored_this_arrow = scored_this_arrow inpt new_score !player;
     lives_remaining = lives_remaining inpt matrix p;
-    last_ten = if inpt <> "beat" && (!player.scored_this_arrow = false) 
-                  && not (List.mem (bottom_row matrix) double_rows 
-                          && !player.first_of_double = "") 
-      then (update_last_ten (is_hit inpt player) (!player.last_ten)) 
-      else !player.last_ten;
+    last_ten = update_last_ten inpt player matrix;
     first_of_double = if List.mem (bottom_row matrix) double_rows &&
                          inpt <> "beat" then inpt else "";
-  } in 
+  } 
+  in 
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
@@ -538,15 +529,11 @@ let rec update (inpt: string) (plyr: int): unit =
     if inpt = "resume" then resume_game (!state.beat-3) 
     else pause_game !state.beat 
   else if inpt = "pause" then pause_game (!state.beat-3) 
-  else let new_matrix = if inpt = "beat" && (!state.paused = false) 
+  else let new_matrix = if inpt = "beat" && !state.paused = false
          then update_matrix () else !state.matrix in
-    if inpt = "beat" then 
-      begin 
-        update_player inpt new_matrix 1; 
-        update_player inpt new_matrix 2 
-      end
-    else
-      update_player inpt new_matrix plyr;
+    if inpt = "beat" then (update_player inpt new_matrix 1; 
+                           update_player inpt new_matrix 2)
+    else update_player inpt new_matrix plyr;
     let new_state = {
       matrix = new_matrix;
       num_players = !state.num_players;
@@ -558,8 +545,8 @@ let rec update (inpt: string) (plyr: int): unit =
       players = !state.players;
       base_increase = if inpt = "beat" then increase_base (!state.beat + 1) 
         else !state.base_increase;
-      health_beat = if (!state.beat mod 50 = 1) then
-          (!state.beat + Random.int 50) else
+      health_beat = if !state.beat mod 50 = 1 then
+          !state.beat + Random.int 50 else
           !state.health_beat
     } 
     in 
