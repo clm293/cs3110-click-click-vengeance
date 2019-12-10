@@ -404,8 +404,35 @@ let draw_button str x y bkg_color txt_color=
     draw_string str;
     (x,y)
 
-(** [start_window s] is the first window shown when the game starts. *)
-let start_window s =
+(** [click_location click] is the x and y location of a user's click. *)
+and click_location click = 
+  (click.mouse_x,click.mouse_y)
+
+(** [button_clicked x1 x2 y1 y2 click] is true if a user's click
+     falls within the boudnaries of a box with bounds [x1], [x2], [y1], [y2] *)
+let button_clicked x1 x2 y1 y2 click = 
+  match click_location click with 
+  | (x,y) -> if y < y2 && y > y1 && x < x2 && x > x1 then true else false
+
+(** [clicked b1x b1y click] checks weather a button was clicked. *)
+let clicked b1x b1y click = 
+  let b1x1 = b1x in 
+  let b1x2 = b1x + 100 in 
+  let b1y1 = b1y in 
+  let b1y2 = b1y + 75 in 
+  button_clicked b1x1 b1x2 b1y1 b1y2 click
+
+(** [help s] calls the graphcis functions for the help screen. *)
+let rec help_window s = 
+  match help s with 
+  | (x,y) -> let click = wait_next_event [Button_down] in 
+    let x1 = x in let x2 = x + 30 in let y1 = y in let y2 = y + 30 in
+    if button_clicked x1 x2 y1 y2 click 
+    then ()
+    else help_window s
+
+(** [start s] is the first window shown when the game starts. *)
+let start s =
   open_graph s;
   resize_window 600 640;
   set_color black;
@@ -414,13 +441,28 @@ let start_window s =
   draw_logo s;
   (draw_button "Start" 250 150 magenta black, draw_help s)
 
-(** [player_selection st] is the where the player(s) chooses 
+(** [start_window s] responds to user inputs into the starting screen. *)
+let rec start_window s = 
+  match start s with
+  | (b, h) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match b with 
+    | (bx,by) -> 
+      if clicked bx by click
+      then "start"
+      else match h with 
+        | (hx,hy) -> 
+          if clicked hx hy click
+          then (help_window s; start_window s)
+          else start_window s
+
+(** [player_selection s] is the where the player(s) chooses 
     the number of players in the game. *)
-let player_selection st = 
+let player_selection s = 
   clear_graph ();
   set_color black;
   fill_rect 0 0 600 640;
-  draw_logo st;
+  draw_logo s;
   set_color white;
   match text_size "Select a Playing Mode" with
   | (x,_) -> let x_pos = (600-x)/2 in
@@ -429,6 +471,26 @@ let player_selection st =
     (draw_button "Single Player" (400/3) 150 cyan black, 
      draw_button "Double Player" (800/3 + 100) 150 magenta black, 
      draw_help "")
+
+(** [player_selection s] responds to user inputs  
+    to give the number of players. *)
+let rec player_selection_window s =
+  match player_selection s with
+  | (b1, b2, h) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match b1 with 
+    | (b1x,b1y) -> 
+      if clicked b1x b1y click
+      then 1
+      else match b2 with 
+        | (b2x,b2y) -> 
+          if clicked b2x b2y click
+          then 2
+          else match h with 
+            | (hx,hy) -> 
+              if clicked hx hy click
+              then (help_window s; player_selection_window s)
+              else player_selection_window s
 
 (** [level_selection st] is where the player(s) chooses the difficulty. *)
 let level_selection st =
@@ -447,6 +509,30 @@ let level_selection st =
      draw_button "Hard" (600/5 + 200) 150 green black,
      draw_button "Endless" (800/5 + 300) 150 magenta black, 
      draw_help "")
+
+(** [level_selection_window s] responds to user inputs to give the level. *)
+let rec level_selection_window s = 
+  match level_selection s with
+  | (b1, b2, b3, b4, h) ->  
+    let click = (wait_next_event [Button_down]) in 
+    match b1 with 
+    | (b1x,b1y) -> 
+      if clicked b1x b1y click then "easy.json"
+      else match b2 with 
+        | (b2x,b2y) -> 
+          if clicked b2x b2y click then "med.json"
+          else match b3 with 
+            | (b3x,b3y) -> 
+              if clicked b3x b3y click then "hard.json"
+              else match b4 with 
+                | (b4x,b4y) -> 
+                  if clicked b4x b4y click then "endless"
+                  else match h with 
+                    | (hx,hy) -> 
+                      if clicked hx hy click 
+                      then (help_window s; level_selection_window s)
+                      else level_selection_window s
+
 
 (** [init_graphics s num_players] is where the first screen 
     when the game officially begins. *)
@@ -628,3 +714,21 @@ let restart s (lst:float list) =
     moveto 200 300;
     (draw_button "Play Again" (400/3) 150 cyan black, 
      draw_button "Quit" (800/3 + 100) 150 magenta black)
+
+(** [restart_window s ] uses the state to call graphics updates and 
+    continue the game environment *)
+let restart_window s leaderboard = 
+  let rec helper s = 
+    match restart s leaderboard with
+    | (play_again, quit) ->  
+      let click = (wait_next_event [Button_down]) in 
+      match play_again with 
+      | (b1x,b1y) -> 
+        if clicked b1x b1y click
+        then "play again"
+        else match quit with 
+          | (b2x,b2y) -> 
+            if clicked b2x b2y click
+            then "quit"
+            else helper s in
+  helper s
