@@ -77,8 +77,6 @@ and check_key_two press num_players =
     the game state on each player input. Then calls a function continue or end
     the game as indicated by the game state. *)
 and check_key_pressed press num_players = 
-  (* if Game.get_beat () = Game.get_length ()
-     then (Sys.set_signal Sys.sigalrm Sys.Signal_ignore; restart "YOU WIN" num_players; ()) else *)
   if num_players = 1 then check_key_one press num_players
   else check_key_two press num_players
 
@@ -92,7 +90,7 @@ and set_timer () =
 and call_update num_players num = 
   if Game.get_beat () = Game.get_length ()
   then (if num_players = 1 then (restart "YOU WIN!" num_players; ()) else
-          restart "BOTH PLAYERS WIN!" num_players; ())
+          restart (check_win_string ()) num_players; ())
   else Game.update "beat" num_players; set_timer ()
 
 (** [play_game mode num_players] initializes the game with the appropriate 

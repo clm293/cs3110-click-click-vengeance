@@ -528,6 +528,7 @@ let rec update_player inpt matrix p =
   player := new_player_state
 
 let rec update (inpt: string) (plyr: int): unit =
+  print_endline (string_of_int (!state.beat));
   if inpt = "quit" then quit_game ()
   else if !state.paused = true then 
     if inpt = "resume" then resume_game (!state.beat-3) 
