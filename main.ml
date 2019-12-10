@@ -48,7 +48,7 @@ and check_key_one press num_players =
     then (restart "YOU QUIT!" 1; ())
     else Game.update "resume" 1; check_still_alive num_players
   | ' ' -> Game.update "pause" 1; Graphic.pause ();
-    (wait_next_event [Key_pressed]); Game.update "resume" 1; 
+    let _ = (wait_next_event [Key_pressed]) in Game.update "resume" 1; 
     check_still_alive num_players
   | _ -> Game.update "" 1; check_still_alive num_players
 
@@ -69,7 +69,7 @@ and check_key_two press num_players =
     then (restart "YOU QUIT!" 2; ())
     else Game.update "resume" 2; check_still_alive num_players
   | ' ' -> Game.update "pause" 1; Graphic.pause ();
-    (wait_next_event [Key_pressed]); Game.update "resume" 1; 
+    let _ = (wait_next_event [Key_pressed]) in Game.update "resume" 1; 
     check_still_alive num_players
   | _ -> Game.update "" 1; check_still_alive num_players
 
@@ -86,7 +86,7 @@ and check_key_pressed press num_players =
 and set_timer () =
   let its = {it_interval = (Game.speed ());
              it_value = (Game.speed ())} in
-  setitimer ITIMER_REAL its; ()
+  let _ = setitimer ITIMER_REAL its in ()
 
 (** [call_update num] updates the game state for a beat. *)
 and call_update num_players num = 
