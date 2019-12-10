@@ -105,7 +105,6 @@ and play_game mode num_players =
     check_key_pressed (wait_next_event [Key_pressed]) num_players; ()
   | _ -> 
     let level = Level.from_json (Yojson.Basic.from_file mode) in
-    print_endline (string_of_int (Level.length level));
     Game.init_state num_players (Level.bpm level) (Level.length level);
     Graphic.init_graphics "" num_players;
     set_timer ();
@@ -150,8 +149,6 @@ and main () =
   start_window "";
   let num_players = player_selection "" in 
   let level = level_selection "" in
-  print_int num_players;
-  print_endline level;
   play_game level num_players
 
 (* TESTING_LINES: if you are testing, comment out the next line. *)

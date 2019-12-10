@@ -509,9 +509,9 @@ let quit_game () =
   in 
   (* TESTING_LINES: if testing comment out the next two lines and uncomment the 
      last line *)
-  (* state := new_state;
-     update_graphics () *)
-  state := new_state
+  state := new_state;
+  update_graphics () 
+(*state := new_state*)
 
 (** [update_player i m p] updates the player state. *)
 let rec update_player inpt matrix p = 
