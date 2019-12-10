@@ -22,6 +22,7 @@ let of_list list =
 (** [make3 arr] repeates the array [arr] 3 times. *)
 let make3 arr =
   Array.make 3 arr
+
 (** [line8right c1 c2] draws the 8th line of the right arrow 
     with arrow color [c1] and background color [c2]. *)
 let line8right c1 c2 = 
@@ -405,7 +406,7 @@ let draw_button str x y bkg_color txt_color=
     (x,y)
 
 (** [click_location click] is the x and y location of a user's click. *)
-and click_location click = 
+let click_location click = 
   (click.mouse_x,click.mouse_y)
 
 (** [button_clicked x1 x2 y1 y2 click] is true if a user's click
@@ -472,7 +473,7 @@ let player_selection s =
      draw_button "Double Player" (800/3 + 100) 150 magenta black, 
      draw_help "")
 
-(** [player_selection s] responds to user inputs  
+(** [player_selection_window s] responds to user inputs  
     to give the number of players. *)
 let rec player_selection_window s =
   match player_selection s with
@@ -492,12 +493,12 @@ let rec player_selection_window s =
               then (help_window s; player_selection_window s)
               else player_selection_window s
 
-(** [level_selection st] is where the player(s) chooses the difficulty. *)
-let level_selection st =
+(** [level_selection s] is where the player(s) chooses the difficulty. *)
+let level_selection s =
   clear_graph ();
   set_color black;
   fill_rect 0 0 600 640;
-  draw_logo st;
+  draw_logo s;
   moveto 200 300;
   set_color white;
   match text_size "Select a Level" with

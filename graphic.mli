@@ -32,17 +32,21 @@ val help : 'a -> int * int
 (** [start_window s] is the first window shown when the game starts. *)
 val start_window : string -> string
 
-(** [player_selection st] is the where the player(s) chooses 
+(** [player_selection s] is the where the player(s) chooses 
     the number of players in the game. *)
 val player_selection : 'a -> (int * int) * (int * int) * (int * int)
 
+(** [player_selection_window s] responds to user inputs  
+    to give the number of players. *)
 val player_selection_window : 'a -> int
 
 (** [level_selection st] is where the player(s) chooses the difficulty. *)
 val level_selection : 'a -> (int * int) * (int * int) * (int * int) * 
                             (int * int) * (int * int)
 
+(** [level_selection_window s] responds to user inputs to give the level. *)
 val level_selection_window : 'a -> string
 
-
+(** [restart_window s ] uses the state to call graphics updates and 
+    continue the game environment *)
 val restart_window : string -> float list -> string
