@@ -521,25 +521,25 @@ let help s =
   set_color white;
   fill_rect 50 100 500 430;
   set_color magenta;
-  write_line "Click Click Vengeance" 520;
+  write_line "Click Click Vengeance" 510;
   set_color black;
-  write_line "The objective of Click CLick Vengence" 450;
-  write_line "is to beat previous high scores: earn points by tapping" 420;
-  write_line "the corresponding key when the arrows reach the bottom row." 390;
+  write_line "The objective of Click CLick Vengence" 470;
+  write_line "is to beat previous high scores: earn points by tapping" 440;
+  write_line "the corresponding key when the arrows reach the bottom row." 410;
   write_line  ("Hits become more valuable as the game progresses and increases" 
-               ^ "in difficulty, ") 360;
+               ^ "in difficulty, ") 380;
   write_line ("and extra points are awarded for leftover lives at the end of "
-              ^ "the game.") 330;
+              ^ "the game.") 350;
   write_line ("There are 4 modes: easy, medium, hard, and endless -- play"
-              ^ " alone or with a friend")  300;
+              ^ " alone or with a friend")  320;
   write_line ("In double player, Player 1 will use W (up), A (left), S (down),"
-              ^ " D (right).") 270;
+              ^ " D (right).") 290;
   write_line ("Player 2 will use I (up), J (left), K (down), L (right) -- IJKL"
-              ^" are used in solo.") 240;
-  write_line "In easy, medium, and hard, play until the game ends" 210;
-  write_line "or you lose all your lives, whichever comes first." 180;
-  write_line "In enless mode, play untl you lose all 5 lives." 150;
-  write_line "Press space to pause, press 'q' to quit." 120;
+              ^" are used in solo.") 260;
+  write_line "In easy, medium, and hard, play until the game ends" 230;
+  write_line "or you lose all your lives, whichever comes first." 200;
+  write_line "In enless mode, play untl you lose all 5 lives." 170;
+  write_line "Press space to pause, press 'q' to quit." 130;
   set_color cyan;
   write_line "GOOD LUCK!!!" 100;
   (0, 0)
