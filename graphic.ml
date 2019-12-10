@@ -184,7 +184,7 @@ let draw_left_arrow x y =
   draw_image (make_image (create_left_arrow_matrix black transp)) x y;
   ()
 
-(** [draw_down_arrow x y] draws the down arrow with at [([x],[y]). *)
+(** [draw_down_arrow x y] draws the down arrow with at [([x],[y])]. *)
 let draw_down_arrow x y = 
   draw_image (make_image (create_down_arrow_matrix black transp)) x y;
   ()
