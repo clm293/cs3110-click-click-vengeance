@@ -1,7 +1,7 @@
 # Click Click Vengeance
 
 ## Description
-As a groupt of three, we made this game as our project for CS 3110: Functional Programming and Data Structures. It is based on the games Tap Tap Revenge and Dance Dance Revolution. Both follow the same objective: gain points by hitting specific key/buttons when an icon reaches the bottom of the screen. Our game also follows this objective. We have a window that displays arrows moving down the screen until they reach a certain position at the bottom of the screen. At that point, players should hit the arrow, in order to gain points. The game is multiplayer, so that two players can compete against each other at the same time. We’ve also implemented a leaderboard so that players can try to top their previous scores. We’ve created multiple default modes, each at a different difficulty level. We’ve also implemented hot streaks, in which a player will receive double points if they’ve completed a sequence of ten hits without any mistakes. To increase difficulty, harder modes start at a faster speed, and speed dynamically increases as you continue to play the game. Key combinations also become more complex. Since we could not find a library in OCaml that allows us to play music, we removed that component from our game. 
+As a groupt of three, we made this game, written in the functional programming language OCaml, as our project for CS 3110: Functional Programming and Data Structures. It is based on the games Tap Tap Revenge and Dance Dance Revolution. Both follow the same objective: gain points by hitting specific key/buttons when an icon reaches the bottom of the screen. Our game also follows this objective. We have a window that displays arrows moving down the screen until they reach a certain position at the bottom of the screen. At that point, players should hit the arrow, in order to gain points. The game is multiplayer, so that two players can compete against each other at the same time. We’ve also implemented a leaderboard so that players can try to top their previous scores. We’ve created multiple default modes, each at a different difficulty level. We’ve also implemented hot streaks, in which a player will receive double points if they’ve completed a sequence of ten hits without any mistakes. To increase difficulty, harder modes start at a faster speed, and speed dynamically increases as you continue to play the game. Key combinations also become more complex. Since we could not find a library in OCaml that allows us to play music, we removed that component from our game. 
 
 ![Start Page](/screenshots/start_page.png)
 ![Select Player Page](/screenshots/select_player.png)
@@ -10,7 +10,7 @@ As a groupt of three, we made this game as our project for CS 3110: Functional P
 ![End Page](/screenshots/end_page.png)
 
 ## Installation and Running Instructions
-After cloning this repo...
+After cloning this repo and installing OCaml on your system...
 
 Users need to have the following packages installed:
 * Yojson
