@@ -288,29 +288,29 @@ let draw_background_2_colors c1 c2 c3 c4 =
 (** [draw_lives_1 lives1] draws the lives for player 1 in double player mode. *)
 let draw_lives_1 lives1 = 
   match lives1 with 
-  | 1 -> draw_heart 500 550
-  | 2 -> draw_heart 500 550; draw_heart 500 530
-  | 3 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510
-  | 4 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
-    draw_heart 500 490
-  | 5 -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
-    draw_heart 500 490; draw_heart 500 470
-  | _ -> draw_heart 500 550; draw_heart 500 530; draw_heart 500 510; 
-    draw_heart 500 490; draw_heart 500 470; draw_heart 500 450;
+  | 1 -> draw_heart 500 520
+  | 2 -> draw_heart 500 520; draw_heart 500 500
+  | 3 -> draw_heart 500 520; draw_heart 500 500; draw_heart 500 480
+  | 4 -> draw_heart 500 520; draw_heart 500 500; draw_heart 500 480; 
+    draw_heart 500 460
+  | 5 -> draw_heart 500 520; draw_heart 500 500; draw_heart 500 480; 
+    draw_heart 500 460; draw_heart 500 440
+  | _ -> draw_heart 500 520; draw_heart 500 500; draw_heart 500 480; 
+    draw_heart 500 460; draw_heart 500 440; draw_heart 500 420;
     ()
 
 (** [draw_lives_2 lives2] draws the lives for player 2 in double player mode. *)
 let draw_lives_2 lives2 = 
   match lives2 with 
-  | 1 -> draw_heart 1100 550
-  | 2 -> draw_heart 1100 550; draw_heart 1100 530
-  | 3 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510
-  | 4 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510; 
-    draw_heart 1100 490
-  | 5 -> draw_heart 1100 550; draw_heart 1100 530; draw_heart 1100 510; 
-    draw_heart 1100 490; draw_heart 1100 470
-  | _ -> draw_heart 500 550; draw_heart 1100 530; draw_heart 1100 510; 
-    draw_heart 1100 490; draw_heart 1100 470; draw_heart 1100 450; 
+  | 1 -> draw_heart 1100 520
+  | 2 -> draw_heart 1100 520; draw_heart 1100 500
+  | 3 -> draw_heart 1100 520; draw_heart 1100 500; draw_heart 1100 480
+  | 4 -> draw_heart 1100 520; draw_heart 1100 500; draw_heart 1100 480; 
+    draw_heart 1100 460
+  | 5 -> draw_heart 1100 520; draw_heart 1100 500; draw_heart 1100 480; 
+    draw_heart 1100 460; draw_heart 1100 440
+  | _ -> draw_heart 1100 520; draw_heart 1100 500; draw_heart 1100 480; 
+    draw_heart 1100 460; draw_heart 1100 440; draw_heart 1100 420;
     ()
 
 (** [draw_background_2 c1 c2 c3 c4 score1 lives1 hotstreak1 
@@ -325,13 +325,13 @@ let draw_background_2 c1 c2 c3 c4 (score1:float) (lives1:int) (hotstreak1:bool)
   draw_string "Player 1";
   moveto 500 580;
   draw_string ("Score: " ^ (string_of_float score1));
-  moveto 500 500;
+  moveto 500 550;
   if hotstreak1 then draw_string  ("HOTSTREAK!") else ();
   moveto 1100 610;
   draw_string "Player 2";
   moveto 1100 580;
   draw_string ("Score: " ^ (string_of_float score2));
-  moveto 1100 580;
+  moveto 1100 550;
   if hotstreak2 then draw_string  ("HOTSTREAK!") else ();
   draw_lives_1 lives1;
   draw_lives_2 lives2;
