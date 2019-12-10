@@ -367,10 +367,6 @@ let draw_right_arrow x y =
 (** [draw_health x y] draws the health symbol at given [x] [y]. *)
 let draw_health x y = 
   draw_image (make_image (create_health red transp)) x y
-(* let img = Png.load_as_rgb24 "plus-one.png" [] in
-   let g = Graphic_image.of_image img in
-   Graphics.draw_image g x y;
-   () *)
 
 (** [draw_heart x y] draws a heart for a life at the given [x] and [y]. *)
 let draw_heart x y = 
