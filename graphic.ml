@@ -180,6 +180,8 @@ let create_up_arrow_matrix c1 c2 =
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
+(** [line3health c1 c2] draws the 3rd line of the health icon
+    with color [c1] and background color [c2]. *)
 let line3health c1 c2 = 
   Array.make 15 c2 
   |> Array.append (Array.make 12 c1)
@@ -187,6 +189,8 @@ let line3health c1 c2 =
   |> Array.append (Array.make 12 c1)
   |> Array.append (Array.make 15 c2)
 
+(** [line4health c1 c2] draws the 4th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line4health c1 c2 = 
   Array.make 12 c2 
   |> Array.append (Array.make 18 c1)
@@ -194,6 +198,8 @@ let line4health c1 c2 =
   |> Array.append (Array.make 18 c1)
   |> Array.append (Array.make 12 c2)
 
+(** [line5health c1 c2] draws the 5th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line5health c1 c2 = 
   Array.make 9 c2 
   |> Array.append (Array.make 24 c1)
@@ -201,6 +207,8 @@ let line5health c1 c2 =
   |> Array.append (Array.make 24 c1)
   |> Array.append (Array.make 9 c2)
 
+(** [line6health c1 c2] draws the 6th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line6health c1 c2 = 
   Array.make 6 c2 
   |> Array.append (Array.make 30 c1)
@@ -208,6 +216,8 @@ let line6health c1 c2 =
   |> Array.append (Array.make 30 c1)
   |> Array.append (Array.make 6 c2)
 
+(** [topsec c1 c2] draws the top section of the health icon
+    with color [c1] and background color [c2]. *)
 let topsec c1 c2 = 
   let line3 = line3health c1 c2 in
   let line4 = line4health c1 c2 in
@@ -218,62 +228,86 @@ let topsec c1 c2 =
   |> Array.append (make3 line4) 
   |> Array.append (make3 line3)
 
+(** [middlesec c1 c2] draws the middle section of the health icon
+    with color [c1] and background color [c2]. *)
 let middlesec c1 c2 = 
   let line = (Array.make 6 c2)
              |> Array.append 
                (Array.append (Array.make 6 c2) (Array.make 63 c1)) in 
   Array.make 21 line
 
+(** [line14health c1 c2] draws the 14th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line14health c1 c2 = 
   Array.make 9 c2 
   |> Array.append (Array.make 57 c1)
   |> Array.append (Array.make 9 c2)
 
+(** [line15health c1 c2] draws the 15th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line15health c1 c2 = 
   Array.make 12 c2 
   |> Array.append (Array.make 51 c1)
   |> Array.append (Array.make 12 c2)
 
+(** [line16health c1 c2] draws the 16th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line16health c1 c2 = 
   Array.make 15 c2 
   |> Array.append (Array.make 45 c1)
   |> Array.append (Array.make 15 c2)
 
+(** [line17health c1 c2] draws the 17th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line17health c1 c2 = 
   Array.make 18 c2 
   |> Array.append (Array.make 39 c1)
   |> Array.append (Array.make 18 c2)
 
+(** [line18health c1 c2] draws the 18th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line18health c1 c2 = 
   Array.make 21 c2 
   |> Array.append (Array.make 33 c1)
   |> Array.append (Array.make 21 c2)
 
+(** [line19health c1 c2] draws the 19th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line19health c1 c2 = 
   Array.make 24 c2 
   |> Array.append (Array.make 27 c1)
   |> Array.append (Array.make 24 c2)
 
+(** [line20health c1 c2] draws the 20th line of the health icon
+    with color [c1] and background color [c2]. *)
 let line20health c1 c2 = 
   Array.make 27 c2 
   |> Array.append (Array.make 21 c1)
   |> Array.append (Array.make 27 c2)
 
+(** [line21health c1 c2] draws the 21st line of the health icon
+    with color [c1] and background color [c2]. *)
 let line21health c1 c2 = 
   Array.make 30 c2 
   |> Array.append (Array.make 15 c1)
   |> Array.append (Array.make 30 c2)
 
+(** [line22health c1 c2] draws the 22nd line of the health icon
+    with color [c1] and background color [c2]. *)
 let line22health c1 c2 = 
   Array.make 33 c2 
   |> Array.append (Array.make 9 c1)
   |> Array.append (Array.make 33 c2)
 
+(** [line23health c1 c2] draws the 23rd line of the health icon
+    with color [c1] and background color [c2]. *)
 let line23health c1 c2 = 
   Array.make 36 c2 
   |> Array.append (Array.make 3 c1)
   |> Array.append (Array.make 36 c2)
 
+(** [bottomsec c1 c2] draws the bottom section of the health icon
+    with color [c1] and background color [c2]. *)
 let bottomsec c1 c2 = 
   let line14 = line14health c1 c2 in
   let line15 = line15health c1 c2 in
@@ -296,6 +330,8 @@ let bottomsec c1 c2 =
   |> Array.append (make3 line15)
   |> Array.append (make3 line14)
 
+(** [create_health c1 c2] creates the health icon
+    with color [c1] and background color [c2]. *)
 let create_health c1 c2 = 
   let empty = Array.make 75 c2 in
   let emptysec = Array.make 6 empty in 
@@ -331,10 +367,6 @@ let draw_right_arrow x y =
 (** [draw_health x y] draws the health symbol at given [x] [y]. *)
 let draw_health x y = 
   draw_image (make_image (create_health red transp)) x y
-(* let img = Png.load_as_rgb24 "plus-one.png" [] in
-   let g = Graphic_image.of_image img in
-   Graphics.draw_image g x y;
-   () *)
 
 (** [draw_heart x y] draws a heart for a life at the given [x] and [y]. *)
 let draw_heart x y = 
