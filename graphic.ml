@@ -360,7 +360,7 @@ let help s =
   set_color white;
   fill_rect 50 100 500 430;
   set_color magenta;
-  write_line "Click Click Vengence" 520;
+  write_line "Click Click Vengeance" 520;
   set_color black;
   write_line "The objective of Click CLick Vengence" 450;
   write_line "is to beat previous high scores: earn points by tapping" 420;
