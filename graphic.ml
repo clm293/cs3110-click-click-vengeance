@@ -180,6 +180,134 @@ let create_up_arrow_matrix c1 c2 =
 let create_down_arrow_matrix c1 c2 = 
   create_up_arrow_matrix c1 c2 |> Array.to_list |> List.rev |> Array.of_list
 
+let line3health c1 c2 = 
+  Array.make 15 c2 
+  |> Array.append (Array.make 12 c1)
+  |> Array.append (Array.make 21 c2)
+  |> Array.append (Array.make 12 c1)
+  |> Array.append (Array.make 15 c2)
+
+let line4health c1 c2 = 
+  Array.make 12 c2 
+  |> Array.append (Array.make 18 c1)
+  |> Array.append (Array.make 15 c2)
+  |> Array.append (Array.make 18 c1)
+  |> Array.append (Array.make 12 c2)
+
+let line5health c1 c2 = 
+  Array.make 9 c2 
+  |> Array.append (Array.make 24 c1)
+  |> Array.append (Array.make 9 c2)
+  |> Array.append (Array.make 24 c1)
+  |> Array.append (Array.make 9 c2)
+
+let line6health c1 c2 = 
+  Array.make 6 c2 
+  |> Array.append (Array.make 30 c1)
+  |> Array.append (Array.make 3 c2)
+  |> Array.append (Array.make 30 c1)
+  |> Array.append (Array.make 6 c2)
+
+let topsec c1 c2 = 
+  let line3 = line3health c1 c2 in
+  let line4 = line4health c1 c2 in
+  let line5 = line5health c1 c2 in
+  let line6 = line6health c1 c2 in
+  (make3 line6) 
+  |> Array.append (make3 line5) 
+  |> Array.append (make3 line4) 
+  |> Array.append (make3 line3)
+
+let middlesec c1 c2 = 
+  let line = (Array.make 6 c2)
+             |> Array.append 
+               (Array.append (Array.make 6 c2) (Array.make 63 c1)) in 
+  Array.make 21 line
+
+let line14health c1 c2 = 
+  Array.make 9 c2 
+  |> Array.append (Array.make 57 c1)
+  |> Array.append (Array.make 9 c2)
+
+let line15health c1 c2 = 
+  Array.make 12 c2 
+  |> Array.append (Array.make 51 c1)
+  |> Array.append (Array.make 12 c2)
+
+let line16health c1 c2 = 
+  Array.make 15 c2 
+  |> Array.append (Array.make 45 c1)
+  |> Array.append (Array.make 15 c2)
+
+let line17health c1 c2 = 
+  Array.make 18 c2 
+  |> Array.append (Array.make 39 c1)
+  |> Array.append (Array.make 18 c2)
+
+let line18health c1 c2 = 
+  Array.make 21 c2 
+  |> Array.append (Array.make 33 c1)
+  |> Array.append (Array.make 21 c2)
+
+let line19health c1 c2 = 
+  Array.make 24 c2 
+  |> Array.append (Array.make 27 c1)
+  |> Array.append (Array.make 24 c2)
+
+let line20health c1 c2 = 
+  Array.make 27 c2 
+  |> Array.append (Array.make 21 c1)
+  |> Array.append (Array.make 27 c2)
+
+let line21health c1 c2 = 
+  Array.make 30 c2 
+  |> Array.append (Array.make 15 c1)
+  |> Array.append (Array.make 30 c2)
+
+let line22health c1 c2 = 
+  Array.make 33 c2 
+  |> Array.append (Array.make 9 c1)
+  |> Array.append (Array.make 33 c2)
+
+let line23health c1 c2 = 
+  Array.make 36 c2 
+  |> Array.append (Array.make 3 c1)
+  |> Array.append (Array.make 36 c2)
+
+let bottomsec c1 c2 = 
+  let line14 = line14health c1 c2 in
+  let line15 = line15health c1 c2 in
+  let line16 = line16health c1 c2 in
+  let line17 = line17health c1 c2 in
+  let line18 = line18health c1 c2 in
+  let line19 = line19health c1 c2 in
+  let line20 = line20health c1 c2 in
+  let line21 = line21health c1 c2 in
+  let line22 = line22health c1 c2 in
+  let line23 = line23health c1 c2 in
+  (make3 line23) 
+  |> Array.append (make3 line22) 
+  |> Array.append (make3 line21) 
+  |> Array.append (make3 line20) 
+  |> Array.append (make3 line19)
+  |> Array.append (make3 line18)
+  |> Array.append (make3 line17)
+  |> Array.append (make3 line16)
+  |> Array.append (make3 line15)
+  |> Array.append (make3 line14)
+
+let create_health c1 c2 = 
+  let empty = Array.make 75 c2 in
+  let emptysec = Array.make 6 empty in 
+  let topsec = topsec c1 c2 in 
+  let middlesec = middlesec c1 c2 in
+  let bottomsec = bottomsec c1 c2 in 
+  emptysec 
+  |> Array.append bottomsec 
+  |> Array.append middlesec 
+  |> Array.append topsec 
+  |> Array.append emptysec
+
 (** [draw_left_arrow x y] draws the left arrow with at ([x],[y]). *)
 let draw_left_arrow x y = 
   draw_image (make_image (create_left_arrow_matrix black transp)) x y;
@@ -202,10 +330,11 @@ let draw_right_arrow x y =
 
 (** [draw_health x y] draws the health symbol at given [x] [y]. *)
 let draw_health x y = 
-  let img = Png.load_as_rgb24 "plus-one.png" [] in
-  let g = Graphic_image.of_image img in
-  Graphics.draw_image g x y;
-  ()
+  draw_image (make_image (create_health red transp)) x y
+(* let img = Png.load_as_rgb24 "plus-one.png" [] in
+   let g = Graphic_image.of_image img in
+   Graphics.draw_image g x y;
+   () *)
 
 (** [draw_heart x y] draws a heart for a life at the given [x] and [y]. *)
 let draw_heart x y = 
@@ -539,7 +668,6 @@ let rec level_selection_window s =
                       then (help_window s; level_selection_window s)
                       else level_selection_window s
 
-
 (** [init_graphics s num_players] is where the first screen 
     when the game officially begins. *)
 let init_graphics s num_players = 
@@ -738,3 +866,4 @@ let restart_window s leaderboard =
             then "quit"
             else helper s in
   helper s
+
