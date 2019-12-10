@@ -114,110 +114,38 @@ and play_game mode num_players =
     Sys.set_signal Sys.sigalrm (Sys.Signal_handle (call_update num_players));
     check_key_pressed (wait_next_event [Key_pressed]) num_players; ()
 
-(** [click_location click] is the x and y location of a user's click. *)
-and click_location click = 
-  (click.mouse_x,click.mouse_y)
-
-(** [button_clicked x1 x2 y1 y2 click] is true if a user's click
-     falls within the boudnaries of a box with bounds [x1], [x2], [y1], [y2] *)
-and button_clicked x1 x2 y1 y2 click = 
-  match click_location click with 
-  | (x,y) -> if y < y2 && y > y1 && x < x2 && x > x1 then true else false
-
-(** [clicked b1x b1y click] checks weather a button was clicked. *)
-and clicked b1x b1y click = 
-  let b1x1 = b1x in 
-  let b1x2 = b1x + 100 in 
-  let b1y1 = b1y in 
-  let b1y2 = b1y + 75 in 
-  button_clicked b1x1 b1x2 b1y1 b1y2 click
-
 (** [restart s num_players] uses the state to call graphics updates and 
     continue the game environment *)
 and restart s num_players = 
   Game.update_leaderboard (Game.final_score 1);
   if num_players = 2 then Game.update_leaderboard (Game.final_score 2);
-  let rec helper s = 
-    match Graphic.restart s !Game.leaderboard with
-    | (play_again, quit) ->  
-      let click = (wait_next_event [Button_down]) in 
-      match play_again with 
-      | (b1x,b1y) -> 
-        if clicked b1x b1y click
-        then main ()
-        else match quit with 
-          | (b2x,b2y) -> 
-            if clicked b2x b2y click
-            then close_graph ()
-            else helper s in
-  helper s
-
-(** [help s] calls the graphcis functions for the help screen. *)
-and help s = 
-  match Graphic.help s with 
-  | (x,y) -> let click = wait_next_event [Button_down] in 
-    let x1 = x in let x2 = x + 30 in let y1 = y in let y2 = y + 30 in
-    if button_clicked x1 x2 y1 y2 click 
-    then ()
-    else help s
+  match Graphic.restart_window "" (!Game.leaderboard) with
+  | "play again" -> main ()
+  | "quit" -> close_graph ()
+  | _ -> restart s num_players
 
 (** [start_window s] responds to user inputs into the starting screen. *)
 and start_window s = 
-  match Graphic.start_window s with
-  | (b, h) ->  
-    let click = (wait_next_event [Button_down]) in 
-    match b with 
-    | (bx,by) -> 
-      if clicked bx by click
-      then ()
-      else match h with 
-        | (hx,hy) -> 
-          if clicked hx hy click
-          then (help s; start_window s)
-          else start_window s
+  match Graphic.start_window "" with 
+  | "start" -> ()
+  | _ -> start_window s
 
-(** [player_selection s] responds to user inputs 
+(** [player_selection s] responds to user inputs  
     to give the number of players. *)
 and player_selection s =
-  match Graphic.player_selection s with
-  | (b1, b2, h) ->  
-    let click = (wait_next_event [Button_down]) in 
-    match b1 with 
-    | (b1x,b1y) -> 
-      if clicked b1x b1y click
-      then 1
-      else match b2 with 
-        | (b2x,b2y) -> 
-          if clicked b2x b2y click
-          then 2
-          else match h with 
-            | (hx,hy) -> 
-              if clicked hx hy click
-              then (help s; player_selection s)
-              else player_selection s
+  match Graphic.player_selection_window "" with
+  | 1 -> 1
+  | 2 -> 2
+  | _ -> player_selection s
 
 (** [level_selection s] responds to user inputs to give the level. *)
 and level_selection s = 
-  match Graphic.level_selection s with
-  | (b1, b2, b3, b4, h) ->  
-    let click = (wait_next_event [Button_down]) in 
-    match b1 with 
-    | (b1x,b1y) -> 
-      if clicked b1x b1y click then "easy.json"
-      else match b2 with 
-        | (b2x,b2y) -> 
-          if clicked b2x b2y click then "med.json"
-          else match b3 with 
-            | (b3x,b3y) -> 
-              if clicked b3x b3y click then "hard.json"
-              else match b4 with 
-                | (b4x,b4y) -> 
-                  if clicked b4x b4y click then "endless"
-                  else match h with 
-                    | (hx,hy) -> 
-                      if clicked hx hy click 
-                      then (help s; level_selection s)
-                      else level_selection s
+  match Graphic.level_selection_window s with
+  | "easy.json" -> "easy.json"
+  | "med.json" -> "med.json"
+  | "hard.json" -> "hard.json"
+  | "endless" -> "endless"
+  | _ -> level_selection s
 
 (** [main ()] runs the game. *)
 and main () =
@@ -229,4 +157,4 @@ and main () =
   play_game level num_players
 
 (* TESTING_LINES: if you are testing, comment out the next line. *)
-(* let () = main ()   *)
+let () = main ()  
