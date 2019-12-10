@@ -85,17 +85,10 @@ let pause_update_tests = [
 ]
 
 let hit_tests = [
-  <<<<<<< HEAD
-    "score should +1 p1" >:: (fun _ -> assert_equal (string_of_float 1.2) (string_of_float (get_score 1)));
+  "score should +1 p1" >:: (fun _ -> assert_equal (string_of_float 1.2) (string_of_float (get_score 1)));
   "score should +1 p2" >:: (fun _ -> assert_equal (string_of_float 1.2) (string_of_float (get_score 2)));
   "beat stays same" >:: (fun _ -> assert_equal 0 (get_beat ())
                             ~printer:string_of_int);
-  =======
-  "score should +1 p1" >:: (fun _ -> assert_equal (string_of_float 1.2) 
-                               (string_of_float (get_score 1)));
-  "score should +1 p2" >:: (fun _ -> assert_equal (string_of_float 1.2) 
-                               (string_of_float (get_score 2)));
-  >>>>>>> e81767acb50e022f06a869e8e7bada5aba847d16
 ]
 
 let hotstreak_tests = [
