@@ -369,8 +369,10 @@ let rec resume_matrix m acc =
 
 let final_score p = 
   if p = 1 
-  then !player_1_ref.score +. float_of_int (5 * !player_1_ref.lives_remaining)
-  else !player_2_ref.score +. float_of_int (5 * !player_2_ref.lives_remaining) 
+  then if !player_1_ref.score < 0. then 0. else
+      !player_1_ref.score +. float_of_int (5 * !player_1_ref.lives_remaining)
+  else if !player_2_ref.score < 0. then 0. else 
+    !player_2_ref.score +. float_of_int (5 * !player_2_ref.lives_remaining) 
 
 (** [calc_score inpt] is the score of the game, adjusted for hits and misses. *)
 let calc_score inpt player = 
