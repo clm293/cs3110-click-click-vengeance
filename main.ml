@@ -24,7 +24,7 @@ let rec check_still_alive_1 num_players =
     multiplayer game.*)
 and check_still_alive_2 num_players = 
   if (Game.get_lives 1 <= 0 || (Game.get_lives 2) <= 0) 
-  then (Game.update "pause" num_players; restart (check_win_string ()) 
+  then (Game.update "pause" num_players; restart (check_win_string ())
           num_players; ())
   else check_key_pressed (wait_next_event [Key_pressed]) 2
 
@@ -77,8 +77,8 @@ and check_key_two press num_players =
     the game state on each player input. Then calls a function continue or end
     the game as indicated by the game state. *)
 and check_key_pressed press num_players = 
-  if Game.get_beat () = Game.get_length ()
-  then (Sys.set_signal Sys.sigalrm Sys.Signal_ignore; restart "YOU WIN" num_players) else
+  (* if Game.get_beat () = Game.get_length ()
+     then (Sys.set_signal Sys.sigalrm Sys.Signal_ignore; restart "YOU WIN" num_players; ()) else *)
   if num_players = 1 then check_key_one press num_players
   else check_key_two press num_players
 
@@ -91,8 +91,8 @@ and set_timer () =
 (** [call_update num] updates the game state for a beat. *)
 and call_update num_players num = 
   if Game.get_beat () = Game.get_length ()
-  then if num_players = 1 then restart "YOU WIN!" num_players else
-      restart "BOTH PLAYERS WIN!" num_players
+  then (if num_players = 1 then (restart "YOU WIN!" num_players; ()) else
+          restart "BOTH PLAYERS WIN!" num_players; ())
   else Game.update "beat" num_players; set_timer ()
 
 (** [play_game mode num_players] initializes the game with the appropriate 
@@ -229,4 +229,4 @@ and main () =
   play_game level num_players
 
 (* TESTING_LINES: if you are testing, comment out the next line. *)
-let () = main ()  
+(* let () = main ()   *)
